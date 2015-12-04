@@ -53,7 +53,7 @@
 
     <!-- CHECKSTYLE RULE -->
     <module name="FileLength">
-        <property name="max" value="500"/> <!-- TODO is this a reasonable max? -->
+        <property name="max" value="500"/>
     </module>
     <module name="FileTabCharacter">
         <property name="eachLine" value="true"/>
