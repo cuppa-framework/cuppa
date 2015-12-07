@@ -1,0 +1,265 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE module PUBLIC
+        "-//Puppy Crawl//DTD Check Configuration 1.3//EN"
+        "http://www.puppycrawl.com/dtds/configuration_1_3.dtd">
+
+<module name="Checker">
+    <!-- SUPPRESSION FILTERS -->
+    <!--
+        Toggle Checkstyle on/off
+
+        // @Checkstyle:off
+        ... ignored
+        // @Checkstyle:on
+    -->
+    <module name="SuppressionCommentFilter">
+        <property name="offCommentFormat" value="@Checkstyle:off" />
+        <property name="onCommentFormat" value="@Checkstyle:on" />
+    </module>
+    <!--
+        Instruct Checkstyle to ignore a specific check for a whole file
+
+        // @Checkstyle:ignore AvoidNestedBlocks
+    -->
+    <module name="SuppressWithNearbyCommentFilter">
+        <property name="commentFormat" value="@Checkstyle:ignore ([\w\|]+)"/>
+        <property name="checkFormat" value="$1"/>
+        <property name="influenceFormat" value="1000000" />
+    </module>
+    <!--
+        Instruct Checkstyle to ignore next line
+
+        // @Checkstyle:ignore
+        ... ignored
+        ... checked
+    -->
+    <module name="SuppressWithNearbyCommentFilter">
+        <property name="commentFormat" value="@Checkstyle:ignore" />
+        <property name="influenceFormat" value="1" />
+    </module>
+    <!--
+        Instruct Checkstyle to ignore next N lines (-ve means previous lines)
+
+        // @Checkstyle:ignoreFor 2
+        ... ignored
+        ... ignored
+        ... checked
+    -->
+    <module name="SuppressWithNearbyCommentFilter">
+        <property name="commentFormat" value="@Checkstyle:ignoreFor (\d+)" />
+        <property name="influenceFormat" value="$1" />
+    </module>
+
+
+    <!-- CHECKSTYLE RULE -->
+    <module name="FileLength">
+        <property name="max" value="500"/>
+    </module>
+    <module name="FileTabCharacter">
+        <property name="eachLine" value="true"/>
+    </module>
+    <module name="JavadocPackage"/>
+    <module name="NewlineAtEndOfFile"/>
+    <!-- Disallow trailing white space -->
+    <module name="RegexpSingleline">
+        <property name="format" value="\s+$" />
+        <property name="message" value="Line has trailing spaces." />
+    </module>
+    <module name="Translation"/>
+    <module name="UniqueProperties"/>
+
+    <module name="TreeWalker">
+        <!-- Required for suppressions -->
+        <module name="FileContentsHolder" />
+
+        <module name="AbbreviationAsWordInName">
+            <property name="ignoreStatic" value="false"/>
+        </module>
+        <module name="AnnotationLocation">
+            <property name="allowSamelineSingleParameterlessAnnotation" value="false"/>
+        </module>
+        <module name="AnnotationUseStyle"/>
+        <module name="AnonInnerLength"/>
+        <module name="ArrayTrailingComma"/>
+        <module name="ArrayTypeStyle"/>
+        <module name="AtclauseOrder"/>
+        <module name="AvoidEscapedUnicodeCharacters"/>
+        <!-- Disabled due to the format we like for declaring the cuppa tests --> <!-- Might be able to suppress on test code -->
+        <!--<module name="AvoidNestedBlocks">
+            <property name="allowInSwitchCase" value="true"/>
+        </module>-->
+        <module name="AvoidStarImport">
+            <property name="allowStaticMemberImports" value="true" />
+        </module>
+        <module name="BooleanExpressionComplexity"/>
+        <module name="ClassDataAbstractionCoupling"/>
+        <module name="ClassFanOutComplexity"/>
+        <module name="ClassTypeParameterName"/>
+        <module name="ConstantName"/>
+        <module name="CommentsIndentation"/>
+        <module name="CovariantEquals"/>
+        <!-- To prevent needless re-ordering of imports -->
+        <module name="CustomImportOrder">
+            <property name="customImportOrderRules" value="STATIC###STANDARD_JAVA_PACKAGE###SPECIAL_IMPORTS"/>
+            <property name="sortImportsInGroupAlphabetically" value="true"/>
+        </module>
+        <module name="CyclomaticComplexity"/>
+        <module name="DeclarationOrder"/>
+        <module name="DefaultComesLast"/>
+        <module name="DesignForExtension"/>
+        <module name="EmptyBlock"/>
+        <module name="EmptyCatchBlock">
+            <property name="exceptionVariableName" value="expected|ignored"/>
+            <property name="commentFormat" value="This is expected"/>
+        </module>
+        <module name="EmptyForInitializerPad"/>
+        <module name="EmptyForIteratorPad"/>
+        <module name="EmptyStatement"/>
+        <module name="EqualsAvoidNull"/>
+        <module name="EqualsHashCode"/>
+        <module name="ExecutableStatementCount"/>
+        <module name="ExplicitInitialization"/>
+        <module name="FallThrough">
+            <property name="reliefPattern" value="falls? ?through"/>
+        </module>
+        <module name="FinalClass"/>
+        <module name="GenericWhitespace"/>
+        <module name="HiddenField">
+            <property name="ignoreConstructorParameter" value="true"/>
+            <property name="ignoreSetter" value="true"/>
+            <property name="setterCanReturnItsClass" value="true"/>
+        </module>
+        <module name="HideUtilityClassConstructor"/>
+        <module name="IllegalImport" />
+        <module name="IllegalInstantiation" />
+        <module name="Indentation">
+            <property name="throwsIndent" value="8" />
+            <property name="lineWrappingIndentation" value="8" />
+            <property name="forceStrictCondition" value="true" />
+        </module>
+        <module name="InnerAssignment"/>
+        <module name="InnerTypeLast"/>
+        <module name="InterfaceIsType"/>
+        <module name="InterfaceTypeParameterName"/>
+        <module name="JavaNCSS"/>
+        <module name="JavadocMethod">
+            <property name="validateThrows" value="true"/>
+            <property name="scope" value="protected"/>
+            <property name="allowUndeclaredRTE" value="true"/>
+            <property name="allowThrowsTagsForSubclasses" value="true" />
+            <property name="allowMissingPropertyJavadoc" value="true"/>
+        </module>
+        <module name="JavadocTagContinuationIndentation"/>
+        <module name="JavadocParagraph"/>
+        <!-- If Javadoc is present then it must be valid -->
+        <module name="JavadocStyle">
+            <property name="scope" value="private" />
+            <property name="checkEmptyJavadoc" value="true" />
+        </module>
+        <module name="JavadocType">
+            <property name="scope" value="protected" />
+        </module>
+        <module name="JavadocVariable">
+            <property name="scope" value="protected" />
+        </module>
+        <module name="LeftCurly">
+            <property name="maxLineLength" value="120" />
+        </module>
+        <module name="LineLength">
+            <property name="max" value="120"/>
+            <property name="ignorePattern" value="^import " />
+        </module>
+        <module name="LocalFinalVariableName"/>
+        <module name="LocalVariableName"/>
+        <module name="MagicNumber"/>
+        <module name="MemberName"/>
+        <module name="MethodCount"/>
+        <module name="MethodLength"/>
+        <module name="MethodName"/>
+        <module name="MethodParamPad"/>
+        <module name="MethodTypeParameterName"/>
+        <module name="MissingDeprecated"/>
+        <module name="MissingSwitchDefault"/>
+        <module name="ModifiedControlVariable"/>
+        <module name="ModifierOrder"/>
+        <module name="MultipleVariableDeclarations"/>
+        <module name="MutableException"/>
+        <module name="NPathComplexity"/>
+        <module name="NeedBraces"/>
+        <!-- Encourage use of functional style instead of nesting for loops -->
+        <module name="NestedForDepth"/>
+        <module name="NestedIfDepth">
+            <property name="max" value="2"/>
+        </module>
+        <module name="NestedTryDepth">
+            <property name="max" value="2"/>
+        </module>
+        <module name="NoClone"/>
+        <module name="NoFinalizer"/>
+        <module name="NoLineWrap"/>
+        <!-- Allow whitespace after array initializer -->
+        <module name="NoWhitespaceAfter">
+            <property name="tokens" value="BNOT,DEC,DOT,INC,LNOT,UNARY_MINUS,UNARY_PLUS" />
+        </module>
+        <module name="NoWhitespaceBefore"/>
+        <module name="OneStatementPerLine"/>
+        <module name="OperatorWrap"/>
+        <module name="OuterTypeFilename"/>
+        <module name="OuterTypeNumber"/>
+        <module name="OverloadMethodsDeclarationOrder"/>
+        <module name="PackageAnnotation"/>
+        <module name="PackageDeclaration"/>
+        <module name="PackageName"/>
+        <module name="ParameterAssignment"/>
+        <module name="ParameterName"/>
+        <module name="ParameterNumber"/>
+        <module name="ParenPad"/>
+        <module name="RedundantImport"/>
+        <module name="RedundantModifier"/>
+        <!-- Don't need to use this to enforce the header file template -->
+        <!--<module name="RegexpHeader">
+            <property name="headerFile" value="${checkstyle.header.file}" />
+            <property name="multiLines" value="1,2,3" />
+        </module>-->
+        <module name="ReturnCount">
+            <property name="max" value="3"/>
+        </module>
+        <module name="RightCurly"/>
+        <module name="SeparatorWrap">
+            <property name="tokens" value="DOT"/>
+            <property name="option" value="nl"/>
+        </module>
+        <module name="SeparatorWrap">
+            <property name="tokens" value="COMMA"/>
+            <property name="option" value="EOL"/>
+        </module>
+        <module name="SingleLineJavadoc"/>
+        <module name="SimplifyBooleanExpression"/>
+        <module name="SimplifyBooleanReturn"/>
+        <module name="StaticVariableName"/>
+        <module name="StringLiteralEquality"/>
+        <module name="ThrowsCount"/>
+        <module name="TodoComment">
+            <property name="format" value="(TODO)|(FIXME)"/>
+        </module>
+        <module name="TrailingComment"/>
+        <module name="TypeName"/>
+        <module name="TypecastParenPad"/>
+        <module name="UncommentedMain"/>
+        <module name="UnnecessaryParentheses"/>
+        <module name="UnusedImports"/>
+        <module name="UpperEll"/>
+        <module name="VisibilityModifier"/>
+        <module name="WhitespaceAfter"/>
+        <module name="WhitespaceAround"/>
+        <!--  Javadoc should not contain author annotations -->
+        <module name="WriteTag">
+            <property name="tag" value="@author"/>
+            <property name="tagFormat" value="\S"/>
+            <!-- Ignore when not present -->
+            <property name="severity" value="ignore"/>
+            <!-- Warn when present -->
+            <property name="tagSeverity" value="error"/>
+        </module>
+    </module>
+</module>
