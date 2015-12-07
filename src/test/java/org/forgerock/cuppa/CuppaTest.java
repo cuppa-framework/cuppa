@@ -3,10 +3,12 @@ package org.forgerock.cuppa;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.forgerock.cuppa.Cuppa.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.Arrays;
+import java.util.stream.Stream;
 
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -22,11 +24,11 @@ public class CuppaTest {
     public void basicApiUsageWithSingleTestBlock() {
 
         //Given
-        AtomicInteger hasTestFunctionRun = new AtomicInteger();
+        Function testFunction = mock(Function.class);
         {
             describe("basic API usage", () -> {
                 when("the 'when' is run", () -> {
-                    it("runs the test", hasTestFunctionRun::incrementAndGet);
+                    it("runs the test", testFunction);
                 });
             });
         }
@@ -35,7 +37,7 @@ public class CuppaTest {
         TestResults results = Cuppa.runTests();
 
         //Then
-        assertThat(hasTestFunctionRun.get()).isEqualTo(1);
+        verify(testFunction).apply();
         assertTestResources(results, 1, 0, 0);
     }
 
@@ -43,42 +45,26 @@ public class CuppaTest {
     public void basicApiUsageWithMultipleDescribeWhenAndTestBlocks() {
 
         //Given
-        List<String> testFunctionRuns = new ArrayList<>();
+        Function[] testFunctions = Stream.generate(() -> mock(Function.class)).limit(8).toArray(Function[]::new);
         {
             describe("basic API usage with multiple blocks", () -> {
                 when("the first 'when' block is run", () -> {
-                    it("runs the first test", () -> {
-                        testFunctionRuns.add("A");
-                    });
-                    it("runs the second test", () -> {
-                        testFunctionRuns.add("B");
-                    });
+                    it("runs the first test", testFunctions[0]);
+                    it("runs the second test", testFunctions[1]);
                 });
                 when("the second 'when' block is run", () -> {
-                    it("runs the third test", () -> {
-                        testFunctionRuns.add("C");
-                    });
-                    it("runs the fourth test", () -> {
-                        testFunctionRuns.add("D");
-                    });
+                    it("runs the third test", testFunctions[2]);
+                    it("runs the fourth test", testFunctions[3]);
                 });
             });
             describe("second basic API usage with multiple blocks", () -> {
                 when("the third 'when' block is run", () -> {
-                    it("runs the fifth test", () -> {
-                        testFunctionRuns.add("E");
-                    });
-                    it("runs the sixth test", () -> {
-                        testFunctionRuns.add("F");
-                    });
+                    it("runs the fifth test", testFunctions[4]);
+                    it("runs the sixth test", testFunctions[5]);
                 });
                 when("the fourth 'when' block is run", () -> {
-                    it("runs the seventh test", () -> {
-                        testFunctionRuns.add("G");
-                    });
-                    it("runs the eighth test", () -> {
-                        testFunctionRuns.add("H");
-                    });
+                    it("runs the seventh test", testFunctions[6]);
+                    it("runs the eighth test", testFunctions[7]);
                 });
             });
         }
@@ -87,7 +73,7 @@ public class CuppaTest {
         TestResults results = Cuppa.runTests();
 
         //Then
-        assertThat(testFunctionRuns).containsExactly("A", "B", "C", "D", "E", "F", "G", "H");
+        Arrays.stream(testFunctions).forEach((f) -> verify(f).apply());
         assertTestResources(results, 8, 0, 0);
     }
 
@@ -95,12 +81,12 @@ public class CuppaTest {
     public void basicApiUsageWithNestedDescribeBlock() {
 
         //Given
-        AtomicInteger hasTestFunctionRun = new AtomicInteger();
+        Function testFunction = mock(Function.class);
         {
             describe("basic API usage", () -> {
                 describe("nested describe", () -> {
                     when("the 'when' block is run", () -> {
-                        it("runs the test", hasTestFunctionRun::incrementAndGet);
+                        it("runs the test", testFunction);
                     });
                 });
             });
@@ -110,7 +96,7 @@ public class CuppaTest {
         TestResults results = Cuppa.runTests();
 
         //Then
-        assertThat(hasTestFunctionRun.get()).isEqualTo(1);
+        verify(testFunction).apply();
         assertTestResources(results, 1, 0, 0);
     }
 
@@ -118,12 +104,12 @@ public class CuppaTest {
     public void basicApiUsageWithNestedDescribeInWhenBlock() {
 
         //Given
-        AtomicInteger hasTestFunctionRun = new AtomicInteger();
+        Function testFunction = mock(Function.class);
         {
             describe("basic API usage", () -> {
                 when("the top level 'when' block is run", () -> {
                     when("the nested 'when' block is run", () -> {
-                        it("runs the test", hasTestFunctionRun::incrementAndGet);
+                        it("runs the test", testFunction);
                     });
                 });
             });
@@ -133,7 +119,7 @@ public class CuppaTest {
         TestResults results = Cuppa.runTests();
 
         //Then
-        assertThat(hasTestFunctionRun.get()).isEqualTo(1);
+        verify(testFunction).apply();
         assertTestResources(results, 1, 0, 0);
     }
 
@@ -141,36 +127,37 @@ public class CuppaTest {
     public void basicApiUsageShouldThrowErrorWithTopLevelWhenBlock() {
 
         //Given
-        AtomicInteger hasWhenFunctionRun = new AtomicInteger();
+        Function whenFunction = mock(Function.class);
 
         //When/Then
-        assertThatThrownBy(() -> when("basic API usage", hasWhenFunctionRun::incrementAndGet))
+        assertThatThrownBy(() -> when("basic API usage", whenFunction))
                 .hasCauseInstanceOf(IllegalStateException.class);
-        assertThat(hasWhenFunctionRun.get()).isEqualTo(0);
+        verify(whenFunction, never()).apply();
     }
 
     @Test
     public void basicApiUsageShouldThrowErrorWithTopLevelItBlock() {
 
         //Given
-        AtomicInteger hasTestFunctionRun = new AtomicInteger();
+        Function testFunction = mock(Function.class);
 
         //When/Then
-        assertThatThrownBy(() -> it("basic API usage", hasTestFunctionRun::incrementAndGet))
+        assertThatThrownBy(() -> it("basic API usage", testFunction))
                 .hasCauseInstanceOf(IllegalStateException.class);
-        assertThat(hasTestFunctionRun.get()).isEqualTo(0);
+        verify(testFunction, never()).apply();
     }
 
     @Test
     public void basicApiUsageShouldReportTestErrorWithDescribeBlockNestedUnderItBlock() {
 
         //Given
-        AtomicInteger hasInvalidUseOfDescribeFunctionRun = new AtomicInteger();
         {
             describe("basic API usage", () -> {
                 when("the 'when' block is run", () -> {
                     it("runs the test, which errors", () -> {
-                        describe("invalid use of 'describe'", hasInvalidUseOfDescribeFunctionRun::incrementAndGet);
+                        describe("invalid use of 'describe'", () -> {
+
+                        });
                     });
                 });
             });
@@ -187,12 +174,13 @@ public class CuppaTest {
     public void basicApiUsageShouldReportTestErrorWithWhenNestedUnderItBlock() {
 
         //Given
-        AtomicInteger hasInvalidUseOfWhenFunctionRun = new AtomicInteger();
         {
             describe("basic API usage", () -> {
                 when("the 'when' block is run", () -> {
                     it("runs the test, which errors", () -> {
-                        when("invalid use of 'when'", hasInvalidUseOfWhenFunctionRun::incrementAndGet);
+                        when("invalid use of 'when'", () -> {
+
+                        });
                     });
                 });
             });
@@ -209,12 +197,13 @@ public class CuppaTest {
     public void basicApiUsageShouldRunTestsAfterErroredTest() {
 
         //Given
-        AtomicInteger hasInvalidUseOfDescribeFunctionRun = new AtomicInteger();
         {
             describe("basic API usage", () -> {
                 when("the 'when' is run", () -> {
                     it("runs the first test, which fails", () -> {
-                        describe("invalid use of 'describe'", hasInvalidUseOfDescribeFunctionRun::incrementAndGet);
+                        describe("invalid use of 'describe'", () -> {
+
+                        });
                     });
                     it("runs the second test, which passes", () -> {
                         assertThat(true).isTrue();
