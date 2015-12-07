@@ -2,6 +2,7 @@ package org.forgerock.cuppa;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.forgerock.cuppa.Assertions.assertTestResources;
 import static org.forgerock.cuppa.Cuppa.*;
 import static org.mockito.Mockito.*;
 
@@ -11,7 +12,7 @@ import java.util.stream.Stream;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-public class CuppaTest {
+public class BasicApiTests {
 
     @BeforeMethod
     public void setup() {
@@ -284,139 +285,5 @@ public class CuppaTest {
 
         //Then
         assertTestResources(results, 1, 1, 1);
-    }
-
-    @Test
-    public void beforeShouldRunOnceBeforeTests() {
-
-        //Given
-        Function topLevelBeforeFunction = mock(Function.class);
-        Function nestedBeforeFunction = mock(Function.class);
-        {
-            describe("before blocks", () -> {
-                before("running any tests", topLevelBeforeFunction);
-                when("the first 'when' block is run", () -> {
-                    before(nestedBeforeFunction);
-                    it("runs the first test", () -> {
-                    });
-                    it("runs the second test", () -> {
-                    });
-                });
-                when("the second 'when' block is run", () -> {
-                    it("runs the third test", () -> {
-                    });
-                });
-            });
-        }
-
-        //When
-        TestResults results = Cuppa.runTests();
-
-        //Then
-        verify(topLevelBeforeFunction).apply();
-        verify(nestedBeforeFunction).apply();
-        assertTestResources(results, 3, 0, 0);
-    }
-
-    @Test
-    public void afterShouldRunOnceAfterTests() {
-
-        //Given
-        Function topLevelAfterFunction = mock(Function.class);
-        Function nestedAfterFunction = mock(Function.class);
-        {
-            describe("after blocks", () -> {
-                after("running any tests", topLevelAfterFunction);
-                when("the first 'when' block is run", () -> {
-                    after(nestedAfterFunction);
-                    it("runs the first test", () -> {
-                    });
-                    it("runs the second test", () -> {
-                    });
-                });
-                when("the second 'when' block is run", () -> {
-                    it("runs the third test", () -> {
-                    });
-                });
-            });
-        }
-
-        //When
-        TestResults results = Cuppa.runTests();
-
-        //Then
-        verify(topLevelAfterFunction).apply();
-        verify(nestedAfterFunction).apply();
-        assertTestResources(results, 3, 0, 0);
-    }
-
-    @Test
-    public void beforeEachShouldRunBeforeEachTest() {
-
-        //Given
-        Function topLevelBeforeEachFunction = mock(Function.class);
-        Function nestedBeforeEachFunction = mock(Function.class);
-        {
-            describe("beforeEach blocks", () -> {
-                beforeEach("running each test", topLevelBeforeEachFunction);
-                when("the first 'when' block is run", () -> {
-                    beforeEach(nestedBeforeEachFunction);
-                    it("runs the first test", () -> {
-                    });
-                    it("runs the second test", () -> {
-                    });
-                });
-                when("the second 'when' block is run", () -> {
-                    it("runs the third test", () -> {
-                    });
-                });
-            });
-        }
-
-        //When
-        TestResults results = Cuppa.runTests();
-
-        //Then
-        verify(topLevelBeforeEachFunction, times(3)).apply();
-        verify(nestedBeforeEachFunction, times(2)).apply();
-        assertTestResources(results, 3, 0, 0);
-    }
-
-    @Test
-    public void afterEachShouldRunAfterEachTest() {
-
-        //Given
-        Function topLevelAfterEachFunction = mock(Function.class);
-        Function nestedAfterEachFunction = mock(Function.class);
-        {
-            describe("afterEach blocks", () -> {
-                afterEach("running each test", topLevelAfterEachFunction);
-                when("the first 'when' block is run", () -> {
-                    afterEach(nestedAfterEachFunction);
-                    it("runs the first test", () -> {
-                    });
-                    it("runs the second test", () -> {
-                    });
-                });
-                when("the second 'when' block is run", () -> {
-                    it("runs the third test", () -> {
-                    });
-                });
-            });
-        }
-
-        //When
-        TestResults results = Cuppa.runTests();
-
-        //Then
-        verify(topLevelAfterEachFunction, times(3)).apply();
-        verify(nestedAfterEachFunction, times(2)).apply();
-        assertTestResources(results, 3, 0, 0);
-    }
-
-    private void assertTestResources(TestResults results, int passed, int failed, int errored) {
-        assertThat(results.getPassedTestsCount()).isEqualTo(passed);
-        assertThat(results.getFailedTestsCount()).isEqualTo(failed);
-        assertThat(results.getErroredTestsCount()).isEqualTo(errored);
     }
 }

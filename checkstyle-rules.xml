@@ -217,7 +217,7 @@
             <property name="multiLines" value="1,2,3" />
         </module>-->
         <module name="ReturnCount">
-            <property name="max" value="3"/>
+            <property name="max" value="4"/>
         </module>
         <module name="RightCurly"/>
         <module name="SeparatorWrap">

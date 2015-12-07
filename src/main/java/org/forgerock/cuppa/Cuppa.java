@@ -36,9 +36,8 @@ public final class Cuppa {
      */
     public static void describe(String description, Function function) {
         assertNotRunningTests("describe");
-        DescribeBlock currentDescribeBlock = getCurrentDescribeBlock();
-        DescribeBlock describeBlock = new DescribeBlock(description, Optional.of(currentDescribeBlock));
-        currentDescribeBlock.addDescribeBlock(describeBlock);
+        DescribeBlock describeBlock = new DescribeBlock(description);
+        getCurrentDescribeBlock().addDescribeBlock(describeBlock);
         stack.push(describeBlock);
         try {
             function.apply();
@@ -169,8 +168,7 @@ public final class Cuppa {
             throw new IllegalStateException("Invariant broken! The stack should never be empty.");
         }
         runningTests = true;
-        root.runTests();
-        return root.getTestResults();
+        return root.runTests();
     }
 
     /**
@@ -180,7 +178,7 @@ public final class Cuppa {
      */
     static void reset() {
         runningTests = false;
-        root = new DescribeBlock("", Optional.empty());
+        root = new DescribeBlock("");
         stack = new Stack<DescribeBlock>() {
             { push(root); }
         };
