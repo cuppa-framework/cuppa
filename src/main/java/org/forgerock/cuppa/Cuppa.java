@@ -1,5 +1,6 @@
 package org.forgerock.cuppa;
 
+import java.util.Optional;
 import java.util.Stack;
 
 /**
@@ -36,7 +37,7 @@ public final class Cuppa {
     public static void describe(String description, Function function) {
         assertNotRunningTests("describe");
         DescribeBlock currentDescribeBlock = getCurrentDescribeBlock();
-        DescribeBlock describeBlock = new DescribeBlock(description);
+        DescribeBlock describeBlock = new DescribeBlock(description, Optional.of(currentDescribeBlock));
         currentDescribeBlock.addDescribeBlock(describeBlock);
         stack.push(describeBlock);
         try {
@@ -56,6 +57,82 @@ public final class Cuppa {
         assertNotRunningTests("when");
         assertNotRootDescribeBlock("when", "describe");
         describe(description, function);
+    }
+
+    /**
+     * Registers a 'before' block to be run.
+     *
+     * @param function The 'before' block.
+     */
+    public static void before(Function function) {
+        before(null, function);
+    }
+
+    /**
+     * Registers a 'before' block to be run.
+     *
+     * @param description The description of the 'before' block.
+     * @param function The 'before' block.
+     */
+    public static void before(String description, Function function) {
+        getCurrentDescribeBlock().addBefore(Optional.ofNullable(description), function);
+    }
+
+    /**
+     * Registers a 'after' block to be run.
+     *
+     * @param function The 'after' block.
+     */
+    public static void after(Function function) {
+        after(null, function);
+    }
+
+    /**
+     * Registers a 'after' block to be run.
+     *
+     * @param description The description of the 'after' block.
+     * @param function The 'after' block.
+     */
+    public static void after(String description, Function function) {
+        getCurrentDescribeBlock().addAfter(Optional.ofNullable(description), function);
+    }
+
+    /**
+     * Registers a 'beforeEach' block to be run.
+     *
+     * @param function The 'beforeEach' block.
+     */
+    public static void beforeEach(Function function) {
+        beforeEach(null, function);
+    }
+
+    /**
+     * Registers a 'beforeEach' block to be run.
+     *
+     * @param description The description of the 'beforeEach' block.
+     * @param function The 'beforeEach' block.
+     */
+    public static void beforeEach(String description, Function function) {
+        getCurrentDescribeBlock().addBeforeEach(Optional.ofNullable(description), function);
+    }
+
+    /**
+     * Registers a 'afterEach' block to be run.
+     *
+     * @param function The 'afterEach' block.
+     */
+    public static void afterEach(Function function) {
+        afterEach(null, function);
+    }
+
+    /**
+     * Registers a 'afterEach' block to be run.
+     *
+     * @param description The description of the 'afterEach' block.
+     * @param function The 'afterEach' block.
+     */
+    public static void afterEach(String description, Function function) {
+        getCurrentDescribeBlock().addAfterEach(Optional.ofNullable(description), function);
     }
 
     /**
@@ -103,7 +180,7 @@ public final class Cuppa {
      */
     static void reset() {
         runningTests = false;
-        root = new DescribeBlock("");
+        root = new DescribeBlock("", Optional.empty());
         stack = new Stack<DescribeBlock>() {
             { push(root); }
         };
