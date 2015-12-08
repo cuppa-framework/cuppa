@@ -9,11 +9,11 @@ import java.util.Stack;
  * runner.
  *
  * <p>Test class register themselves by simply being instantiated, (if using the recommended format
- * of test classes), and the tests are run by calling {@link #runTests()}.</p>
+ * of test classes), and the tests are run by calling {@link #runTests(Reporter)}.</p>
  *
- * <p>Test runner implementations are responsible for calling {@link #runTests()}, which will run
- * all the registered tests and provide the test results back to the calling test runner for
- * output.</p>
+ * <p>Test runner implementations are responsible for calling {@link #runTests(Reporter)}, which
+ * will run all the registered tests and provide the test results back to the calling test runner
+ * for output.</p>
  */
 public final class Cuppa {
 
@@ -74,6 +74,8 @@ public final class Cuppa {
      * @param function The 'before' block.
      */
     public static void before(String description, Function function) {
+        assertNotRunningTests("before");
+        assertNotRootDescribeBlock("when", "describe");
         getCurrentDescribeBlock().addBefore(Optional.ofNullable(description), function);
     }
 
@@ -93,6 +95,8 @@ public final class Cuppa {
      * @param function The 'after' block.
      */
     public static void after(String description, Function function) {
+        assertNotRunningTests("after");
+        assertNotRootDescribeBlock("when", "describe");
         getCurrentDescribeBlock().addAfter(Optional.ofNullable(description), function);
     }
 
@@ -112,6 +116,8 @@ public final class Cuppa {
      * @param function The 'beforeEach' block.
      */
     public static void beforeEach(String description, Function function) {
+        assertNotRunningTests("beforeEach");
+        assertNotRootDescribeBlock("when", "describe");
         getCurrentDescribeBlock().addBeforeEach(Optional.ofNullable(description), function);
     }
 
@@ -131,6 +137,8 @@ public final class Cuppa {
      * @param function The 'afterEach' block.
      */
     public static void afterEach(String description, Function function) {
+        assertNotRunningTests("afterEach");
+        assertNotRootDescribeBlock("when", "describe");
         getCurrentDescribeBlock().addAfterEach(Optional.ofNullable(description), function);
     }
 
@@ -163,12 +171,14 @@ public final class Cuppa {
     /**
      * Runs all the tests that have been loaded into the test framework.
      */
-    static TestResults runTests() {
+    static void runTests(Reporter reporter) {
         if (stack.size() != 1) {
             throw new IllegalStateException("Invariant broken! The stack should never be empty.");
         }
         runningTests = true;
-        return root.runTests();
+        reporter.start();
+        root.runTests(reporter);
+        reporter.end();
     }
 
     /**

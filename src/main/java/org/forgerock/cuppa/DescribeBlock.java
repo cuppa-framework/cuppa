@@ -1,7 +1,6 @@
 package org.forgerock.cuppa;
 
-import static org.forgerock.cuppa.TestResults.EMPTY_RESULTS;
-import static org.forgerock.cuppa.TestResults.ERROR_RESULT;
+import static org.forgerock.cuppa.Reporter.Outcome.ERRORED;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,51 +26,52 @@ class DescribeBlock {
         this.description = description;
     }
 
-    TestResults runTests() {
-        return runTests(TestRunner::apply);
+    void runTests(Reporter reporter) {
+        runTests(reporter, Function::apply);
     }
 
-    private TestResults runTests(TestWrapper outerTestWrapper) {
+    private void runTests(Reporter reporter, TestWrapper outerTestWrapper) {
+        TestWrapper testWrapper = createWrapper(outerTestWrapper, reporter);
         try {
-            TestWrapper testWrapper = createWrapper(outerTestWrapper);
-            beforeFunctions.forEach(Function::apply);
-            TestResults testResults = testBlocks.stream()
-                    .map((t) -> testWrapper.apply(t::runTest))
-                    .reduce(EMPTY_RESULTS, TestResults::combine);
-            return describeBlocks.stream()
-                    .map((d) -> d.runTests(testWrapper))
-                    .reduce(testResults, TestResults::combine);
-        } catch (BeforeEachException e) {
-            if (e.getDescribeBlock() == this) {
-                return ERROR_RESULT;
-            } else {
+            reporter.describeStart(description);
+            try {
+                beforeFunctions.forEach(Function::apply);
+            } catch (Exception e) {
+                reporter.testOutcome("before", ERRORED);
+                return;
+            }
+            testBlocks.stream().forEach((t) -> testWrapper.apply(() -> t.runTest(reporter)));
+            describeBlocks.stream().forEach((d) -> d.runTests(reporter, testWrapper));
+        } catch (HookException e) {
+            if (e.getDescribeBlock() != this) {
                 throw e;
             }
-        } catch (Exception e) {
-            return ERROR_RESULT;
         } finally {
             try {
                 afterFunctions.forEach(Function::apply);
             } catch (Exception e) {
-                return ERROR_RESULT;
+                reporter.testOutcome("after", ERRORED);
             }
+            reporter.describeEnd(description);
         }
     }
 
-    private TestWrapper createWrapper(TestWrapper outerTestRunner) {
+    private TestWrapper createWrapper(TestWrapper outerTestRunner, Reporter reporter) {
         return outerTestRunner.compose((f) -> {
             try {
-                beforeEachFunctions.forEach(Function::apply);
-                return f.apply();
-            } catch (BeforeEachException e) {
-                throw e;
-            } catch (Exception e) {
-                throw new BeforeEachException(this, e);
+                try {
+                    beforeEachFunctions.forEach(Function::apply);
+                } catch (Exception e) {
+                    reporter.testOutcome("beforeEach", ERRORED);
+                    throw new HookException(this, e);
+                }
+                f.apply();
             } finally {
                 try {
                     afterEachFunctions.forEach(Function::apply);
                 } catch (Exception e) {
-                    throw new BeforeEachException(this, e);
+                    reporter.testOutcome("afterEach", ERRORED);
+                    throw new HookException(this, e);
                 }
             }
         });
@@ -103,15 +103,10 @@ class DescribeBlock {
 
     @FunctionalInterface
     private interface TestWrapper {
-        TestResults apply(TestRunner testRunner);
+        void apply(Function testRunner);
 
         default TestWrapper compose(TestWrapper after) {
             return (f) -> apply(() -> after.apply(f));
         }
-    }
-
-    @FunctionalInterface
-    private interface TestRunner {
-        TestResults apply();
     }
 }

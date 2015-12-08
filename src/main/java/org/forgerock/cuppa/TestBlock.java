@@ -1,6 +1,6 @@
 package org.forgerock.cuppa;
 
-import static org.forgerock.cuppa.TestResults.*;
+import static org.forgerock.cuppa.Reporter.Outcome.*;
 
 /**
  * Encapsulates the test ('it') function block.
@@ -15,14 +15,14 @@ class TestBlock {
         this.function = function;
     }
 
-    TestResults runTest() {
+    void runTest(Reporter reporter) {
         try {
             function.apply();
-            return PASSED_RESULT;
+            reporter.testOutcome(description, PASSED);
         } catch (AssertionError e) {
-            return FAILED_RESULT;
+            reporter.testOutcome(description, FAILED);
         } catch (Exception e) {
-            return ERROR_RESULT;
+            reporter.testOutcome(description, ERRORED);
         }
     }
 }

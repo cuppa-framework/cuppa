@@ -1,6 +1,5 @@
 package org.forgerock.cuppa;
 
-import static org.forgerock.cuppa.Assertions.assertTestResources;
 import static org.forgerock.cuppa.Cuppa.*;
 import static org.mockito.Mockito.*;
 
@@ -42,7 +41,7 @@ public class HookTests {
         }
 
         //When
-        Cuppa.runTests();
+        Cuppa.runTests(mock(Reporter.class));
 
         //Then
         verify(topLevelBeforeFunction).apply();
@@ -65,13 +64,10 @@ public class HookTests {
         }
 
         //When
-        Cuppa.runTests();
+        Cuppa.runTests(mock(Reporter.class));
 
         //Then
-        InOrder inOrder = inOrder(firstBeforeFunction, secondBeforeFunction);
-
-        inOrder.verify(firstBeforeFunction).apply();
-        inOrder.verify(secondBeforeFunction).apply();
+        verifiedCalledInOrder(firstBeforeFunction, secondBeforeFunction);
     }
 
     @Test
@@ -98,12 +94,11 @@ public class HookTests {
         }
 
         //When
-        TestResults results = Cuppa.runTests();
+        Cuppa.runTests(mock(Reporter.class));
 
         //Then
         verify(topLevelAfterFunction).apply();
         verify(nestedAfterFunction).apply();
-        assertTestResources(results, 3, 0, 0);
     }
 
     @Test
@@ -122,13 +117,10 @@ public class HookTests {
         }
 
         //When
-        Cuppa.runTests();
+        Cuppa.runTests(mock(Reporter.class));
 
         //Then
-        InOrder inOrder = inOrder(firstAfterFunction, secondAfterFunction);
-
-        inOrder.verify(firstAfterFunction).apply();
-        inOrder.verify(secondAfterFunction).apply();
+        verifiedCalledInOrder(firstAfterFunction, secondAfterFunction);
     }
 
     @Test
@@ -155,7 +147,7 @@ public class HookTests {
         }
 
         //When
-        Cuppa.runTests();
+        Cuppa.runTests(mock(Reporter.class));
 
         //Then
         verify(topLevelBeforeEachFunction, times(3)).apply();
@@ -178,13 +170,10 @@ public class HookTests {
         }
 
         //When
-        Cuppa.runTests();
+        Cuppa.runTests(mock(Reporter.class));
 
         //Then
-        InOrder inOrder = inOrder(firstBeforeEachFunction, secondBeforeEachFunction);
-
-        inOrder.verify(firstBeforeEachFunction).apply();
-        inOrder.verify(secondBeforeEachFunction).apply();
+        verifiedCalledInOrder(firstBeforeEachFunction, secondBeforeEachFunction);
     }
 
     @Test
@@ -211,12 +200,11 @@ public class HookTests {
         }
 
         //When
-        TestResults results = Cuppa.runTests();
+        Cuppa.runTests(mock(Reporter.class));
 
         //Then
         verify(topLevelAfterEachFunction, times(3)).apply();
         verify(nestedAfterEachFunction, times(2)).apply();
-        assertTestResources(results, 3, 0, 0);
     }
 
     @Test
@@ -235,13 +223,10 @@ public class HookTests {
         }
 
         //When
-        Cuppa.runTests();
+        Cuppa.runTests(mock(Reporter.class));
 
         //Then
-        InOrder inOrder = inOrder(firstAfterEachFunction, secondAfterEachFunction);
-
-        inOrder.verify(firstAfterEachFunction).apply();
-        inOrder.verify(secondAfterEachFunction).apply();
+        verifiedCalledInOrder(firstAfterEachFunction, secondAfterEachFunction);
     }
 
     @Test
@@ -277,16 +262,17 @@ public class HookTests {
         }
 
         //When
-        Cuppa.runTests();
+        Cuppa.runTests(mock(Reporter.class));
 
         //Then
-        Function[] functions = new Function[] {
-                topLevelBeforeFunction, topLevelBeforeEachFunction, testFunction, topLevelAfterEachFunction,
-                nestedBeforeFunction, topLevelBeforeEachFunction, nestedBeforeEachFunction, nestedTestFunction,
-                nestedAfterEachFunction, topLevelAfterEachFunction, nestedAfterFunction, topLevelAfterFunction,
-        };
-        InOrder inOrder = inOrder(functions);
+        verifiedCalledInOrder(topLevelBeforeFunction, topLevelBeforeEachFunction, testFunction,
+                topLevelAfterEachFunction, nestedBeforeFunction, topLevelBeforeEachFunction, nestedBeforeEachFunction,
+                nestedTestFunction, nestedAfterEachFunction, topLevelAfterEachFunction, nestedAfterFunction,
+                topLevelAfterFunction);
+    }
 
+    private void verifiedCalledInOrder(Function... functions) {
+        InOrder inOrder = inOrder(functions);
         Arrays.stream(functions).forEach((f) -> inOrder.verify(f).apply());
     }
 }

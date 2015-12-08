@@ -2,8 +2,9 @@ package org.forgerock.cuppa;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.forgerock.cuppa.Assertions.assertTestResources;
 import static org.forgerock.cuppa.Cuppa.*;
+import static org.forgerock.cuppa.Cuppa.when;
+import static org.forgerock.cuppa.Reporter.Outcome.*;
 import static org.mockito.Mockito.*;
 
 import java.util.Arrays;
@@ -33,11 +34,10 @@ public class BasicApiTests {
         }
 
         //When
-        TestResults results = Cuppa.runTests();
+        Cuppa.runTests(mock(Reporter.class));
 
         //Then
         verify(testFunction).apply();
-        assertTestResources(results, 1, 0, 0);
     }
 
     @Test
@@ -69,11 +69,10 @@ public class BasicApiTests {
         }
 
         //When
-        TestResults results = Cuppa.runTests();
+        Cuppa.runTests(mock(Reporter.class));
 
         //Then
         Arrays.stream(testFunctions).forEach((f) -> verify(f).apply());
-        assertTestResources(results, 8, 0, 0);
     }
 
     @Test
@@ -92,11 +91,10 @@ public class BasicApiTests {
         }
 
         //When
-        TestResults results = Cuppa.runTests();
+        Cuppa.runTests(mock(Reporter.class));
 
         //Then
         verify(testFunction).apply();
-        assertTestResources(results, 1, 0, 0);
     }
 
     @Test
@@ -115,11 +113,10 @@ public class BasicApiTests {
         }
 
         //When
-        TestResults results = Cuppa.runTests();
+        Cuppa.runTests(mock(Reporter.class));
 
         //Then
         verify(testFunction).apply();
-        assertTestResources(results, 1, 0, 0);
     }
 
     @Test
@@ -150,6 +147,7 @@ public class BasicApiTests {
     public void basicApiUsageShouldReportTestErrorWithDescribeBlockNestedUnderItBlock() {
 
         //Given
+        Reporter reporter = mock(Reporter.class);
         {
             describe("basic API usage", () -> {
                 when("the 'when' block is run", () -> {
@@ -163,16 +161,17 @@ public class BasicApiTests {
         }
 
         //When
-        TestResults results = Cuppa.runTests();
+        Cuppa.runTests(reporter);
 
         //Then
-        assertTestResources(results, 0, 0, 1);
+        verify(reporter).testOutcome("runs the test, which errors", ERRORED);
     }
 
     @Test
     public void basicApiUsageShouldReportTestErrorWithWhenNestedUnderItBlock() {
 
         //Given
+        Reporter reporter = mock(Reporter.class);
         {
             describe("basic API usage", () -> {
                 when("the 'when' block is run", () -> {
@@ -186,20 +185,21 @@ public class BasicApiTests {
         }
 
         //When
-        TestResults results = Cuppa.runTests();
+        Cuppa.runTests(reporter);
 
         //Then
-        assertTestResources(results, 0, 0, 1);
+        verify(reporter).testOutcome("runs the test, which errors", ERRORED);
     }
 
     @Test
     public void basicApiUsageShouldRunTestsAfterErroredTest() {
 
         //Given
+        Reporter reporter = mock(Reporter.class);
         {
             describe("basic API usage", () -> {
                 when("the 'when' is run", () -> {
-                    it("runs the first test, which fails", () -> {
+                    it("runs the first test, which errors", () -> {
                         describe("invalid use of 'describe'", () -> {
 
                         });
@@ -212,16 +212,18 @@ public class BasicApiTests {
         }
 
         //When
-        TestResults results = Cuppa.runTests();
+        Cuppa.runTests(reporter);
 
         //Then
-        assertTestResources(results, 1, 0, 1);
+        verify(reporter).testOutcome("runs the first test, which errors", ERRORED);
+        verify(reporter).testOutcome("runs the second test, which passes", PASSED);
     }
 
     @Test
     public void basicApiUsageWithSingleFailingTest() {
 
         //Given
+        Reporter reporter = mock(Reporter.class);
         {
             describe("basic API usage", () -> {
                 when("the 'when' block is run", () -> {
@@ -233,16 +235,17 @@ public class BasicApiTests {
         }
 
         //When
-        TestResults results = Cuppa.runTests();
+        Cuppa.runTests(reporter);
 
         //Then
-        assertTestResources(results, 0, 1, 0);
+        verify(reporter).testOutcome("runs the test, which fails", FAILED);
     }
 
     @Test
     public void basicApiUsageWithSingleErroredTest() {
 
         //Given
+        Reporter reporter = mock(Reporter.class);
         {
             describe("basic API usage", () -> {
                 when("the 'when' block is run", () -> {
@@ -254,16 +257,17 @@ public class BasicApiTests {
         }
 
         //When
-        TestResults results = Cuppa.runTests();
+        Cuppa.runTests(reporter);
 
         //Then
-        assertTestResources(results, 0, 0, 1);
+        verify(reporter).testOutcome("runs the test, which errors", ERRORED);
     }
 
     @Test
     public void basicApiUsageWithPassingFailingAndErroredTests() {
 
         //Given
+        Reporter reporter = mock(Reporter.class);
         {
             describe("basic API usage", () -> {
                 when("the 'when' block is run", () -> {
@@ -281,9 +285,11 @@ public class BasicApiTests {
         }
 
         //When
-        TestResults results = Cuppa.runTests();
+        Cuppa.runTests(reporter);
 
         //Then
-        assertTestResources(results, 1, 1, 1);
+        verify(reporter).testOutcome("runs the first test, which errors", ERRORED);
+        verify(reporter).testOutcome("runs the second test, which fails", FAILED);
+        verify(reporter).testOutcome("runs the third test, which passes", PASSED);
     }
 }

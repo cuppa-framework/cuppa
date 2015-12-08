@@ -1,13 +1,34 @@
 package org.forgerock.cuppa;
 
-import static org.forgerock.cuppa.Assertions.assertTestResources;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.forgerock.cuppa.Cuppa.*;
+import static org.forgerock.cuppa.Cuppa.after;
+import static org.forgerock.cuppa.Cuppa.when;
+import static org.forgerock.cuppa.Reporter.Outcome.ERRORED;
 import static org.mockito.Mockito.*;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.function.BiConsumer;
+
 import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 public class HookExceptionTests {
+
+    private static final Function EMPTY_FUNCTION = () -> {
+    };
+    private static final List<BiConsumer<String, Function>> ALL_HOOKS =
+            new ArrayList<BiConsumer<String, Function>>() {
+                {
+                    add(Cuppa::before);
+                    add(Cuppa::after);
+                    add(Cuppa::beforeEach);
+                    add(Cuppa::afterEach);
+                }
+            };
 
     @BeforeMethod
     public void setup() {
@@ -18,10 +39,9 @@ public class HookExceptionTests {
     public void shouldReturnSingleErrorResultIfBeforeHookThrowsException() {
 
         //Given
+        Reporter reporter = mock(Reporter.class);
         Function beforeFunction = mock(Function.class, "beforeFunction");
-
         doThrow(new RuntimeException("Before failed")).when(beforeFunction).apply();
-
         {
             describe("before blocks", () -> {
                 before(beforeFunction);
@@ -33,10 +53,10 @@ public class HookExceptionTests {
         }
 
         //When
-        TestResults results = Cuppa.runTests();
+        Cuppa.runTests(reporter);
 
         //Then
-        assertTestResources(results, 0, 0, 1);
+        verify(reporter).testOutcome("before", ERRORED);
     }
 
     @Test
@@ -58,7 +78,7 @@ public class HookExceptionTests {
         }
 
         //When
-        Cuppa.runTests();
+        Cuppa.runTests(mock(Reporter.class));
 
         //Then
         verify(afterFunction).apply();
@@ -83,7 +103,7 @@ public class HookExceptionTests {
         }
 
         //When
-        Cuppa.runTests();
+        Cuppa.runTests(mock(Reporter.class));
 
         //Then
         verify(beforeEachFunction, never()).apply();
@@ -108,7 +128,7 @@ public class HookExceptionTests {
         }
 
         //When
-        Cuppa.runTests();
+        Cuppa.runTests(mock(Reporter.class));
 
         //Then
         verify(afterEachFunction, never()).apply();
@@ -131,7 +151,7 @@ public class HookExceptionTests {
         }
 
         //When
-        Cuppa.runTests();
+        Cuppa.runTests(mock(Reporter.class));
 
         //Then
         verify(testFunction, never()).apply();
@@ -164,7 +184,7 @@ public class HookExceptionTests {
         }
 
         //When
-        Cuppa.runTests();
+        Cuppa.runTests(mock(Reporter.class));
 
         //Then
         verify(nestedBeforeFunction, never()).apply();
@@ -178,10 +198,9 @@ public class HookExceptionTests {
     public void shouldReturnSingleErrorResultIfBeforeEachHookThrowsException() {
 
         //Given
+        Reporter reporter = mock(Reporter.class);
         Function beforeEachFunction = mock(Function.class, "beforeEachFunction");
-
         doThrow(new RuntimeException("Before each failed")).when(beforeEachFunction).apply();
-
         {
             describe("beforeEach blocks", () -> {
                 beforeEach(beforeEachFunction);
@@ -193,10 +212,10 @@ public class HookExceptionTests {
         }
 
         //When
-        TestResults results = Cuppa.runTests();
+        Cuppa.runTests(reporter);
 
         //Then
-        assertTestResources(results, 0, 0, 1);
+        verify(reporter).testOutcome("beforeEach", ERRORED);
     }
 
     @Test
@@ -218,7 +237,7 @@ public class HookExceptionTests {
         }
 
         //When
-        Cuppa.runTests();
+        Cuppa.runTests(mock(Reporter.class));
 
         //Then
         verify(afterFunction).apply();
@@ -243,7 +262,7 @@ public class HookExceptionTests {
         }
 
         //When
-        Cuppa.runTests();
+        Cuppa.runTests(mock(Reporter.class));
 
         //Then
         verify(afterEachFunction).apply();
@@ -268,7 +287,7 @@ public class HookExceptionTests {
         }
 
         //When
-        Cuppa.runTests();
+        Cuppa.runTests(mock(Reporter.class));
 
         //Then
         verify(testFunction1, never()).apply();
@@ -298,7 +317,7 @@ public class HookExceptionTests {
         }
 
         //When
-        Cuppa.runTests();
+        Cuppa.runTests(mock(Reporter.class));
 
         //Then
         verify(nestedBeforeEachFunction, never()).apply();
@@ -329,7 +348,7 @@ public class HookExceptionTests {
         }
 
         //When
-        Cuppa.runTests();
+        Cuppa.runTests(mock(Reporter.class));
 
         //Then
         verify(nestedBeforeFunction).apply();
@@ -361,7 +380,7 @@ public class HookExceptionTests {
         }
 
         //When
-        Cuppa.runTests();
+        Cuppa.runTests(mock(Reporter.class));
 
         //Then
         verify(nestedBeforeFunction, never()).apply();
@@ -385,7 +404,7 @@ public class HookExceptionTests {
                         });
                     });
                 });
-                when("nested block 2", () -> {
+                when("nested block", () -> {
                     before(nestedBeforeFunction);
                     it("doesn't run the test nested", () -> {
                     });
@@ -394,14 +413,122 @@ public class HookExceptionTests {
         }
 
         //When
-        Cuppa.runTests();
+        Cuppa.runTests(mock(Reporter.class));
 
         //Then
         verify(nestedBeforeFunction).apply();
     }
 
-    @Test(enabled = false)
+    @Test
+    public void shouldReturnErrorResultInPlaceOfNestedBlocksIfBeforeHookThrowsException() {
+
+        //Given
+        Reporter reporter = mock(Reporter.class);
+        Function beforeFunction = mock(Function.class, "beforeFunction");
+        doThrow(new RuntimeException("Before failed")).when(beforeFunction).apply();
+        {
+            describe("before blocks", () -> {
+                before(beforeFunction);
+                it("does not run the first test", EMPTY_FUNCTION);
+            });
+        }
+
+        //When
+        Cuppa.runTests(reporter);
+
+        //Then
+        verify(reporter).testOutcome(anyString(), any(Reporter.Outcome.class));
+        verify(reporter).testOutcome("before", ERRORED);
+    }
+
+    @Test
+    public void shouldReturnAdditionalErrorResultIfAfterHookThrowsException() {
+
+        //Given
+        Reporter reporter = mock(Reporter.class);
+        Function afterFunction = mock(Function.class, "afterFunction");
+        doThrow(new RuntimeException("Before failed")).when(afterFunction).apply();
+        {
+            describe("after blocks", () -> {
+                after(afterFunction);
+                it("runs the first test", EMPTY_FUNCTION);
+            });
+        }
+
+        //When
+        Cuppa.runTests(reporter);
+
+        //Then
+        verify(reporter).testOutcome("after", ERRORED);
+    }
+
+    @Test
+    public void shouldReturnErrorResultInPlaceOfTestsIfBeforeEachHookThrowsException() {
+
+        //Given
+        Reporter reporter = mock(Reporter.class);
+        Function beforeEachFunction = mock(Function.class, "beforeEachFunction");
+        doThrow(new RuntimeException("Before each failed")).when(beforeEachFunction).apply();
+        {
+            describe("beforeEach blocks", () -> {
+                beforeEach(beforeEachFunction);
+                it("does not run the test", EMPTY_FUNCTION);
+            });
+        }
+
+        //When
+        Cuppa.runTests(reporter);
+
+        //Then
+        verify(reporter).testOutcome(anyString(), any(Reporter.Outcome.class));
+        verify(reporter).testOutcome("beforeEach", ERRORED);
+    }
+
+    @Test
     public void shouldReturnAdditionalErrorResultIfAfterEachHookThrowsException() {
+
+        //Given
+        Reporter reporter = mock(Reporter.class);
+        Function afterEachFunction = mock(Function.class, "afterEachFunction");
+        doThrow(new RuntimeException("After each failed")).when(afterEachFunction).apply();
+        {
+            describe("afterEach blocks", () -> {
+                afterEach(afterEachFunction);
+                it("runs the first test", EMPTY_FUNCTION);
+            });
+        }
+
+        //When
+        Cuppa.runTests(reporter);
+
+        //Then
+        verify(reporter).testOutcome("afterEach", ERRORED);
+    }
+
+    @Test
+    public void shouldReturnErrorResultsIfBeforeEachAndAfterEachHookThrowsException() {
+
+        //Given
+        Reporter reporter = mock(Reporter.class);
+        Function beforeEachFunction = mock(Function.class, "beforeEachFunction");
+        doThrow(new RuntimeException("Before each failed")).when(beforeEachFunction).apply();
+        Function afterEachFunction = mock(Function.class, "afterEachFunction");
+        doThrow(new RuntimeException("After each failed")).when(afterEachFunction).apply();
+        {
+            describe("afterEach blocks", () -> {
+                beforeEach(beforeEachFunction);
+                afterEach(afterEachFunction);
+                it("runs the first test", EMPTY_FUNCTION);
+            });
+        }
+
+        //When
+        Cuppa.runTests(reporter);
+
+        //Then
+        verify(reporter).testOutcome("beforeEach", ERRORED);
+        verify(reporter).testOutcome("afterEach", ERRORED);
+        verify(reporter, times(2)).testOutcome(anyString(), any(Reporter.Outcome.class));
     }
 
     @Test
@@ -415,15 +542,15 @@ public class HookExceptionTests {
         doThrow(new RuntimeException("After each failed")).when(afterEachFunction).apply();
 
         {
-            describe("afterEach", () -> {
+            describe("afterEach blocks", () -> {
                 afterEach(afterEachFunction);
-                it("1", testFunction1);
-                it("2", testFunction2);
+                it("runs the first test", testFunction1);
+                it("doesn't run the second test", testFunction2);
             });
         }
 
         //When
-        Cuppa.runTests();
+        Cuppa.runTests(mock(Reporter.class));
 
         //Then
         verify(testFunction2, never()).apply();
@@ -440,19 +567,19 @@ public class HookExceptionTests {
         doThrow(new RuntimeException("After each failed")).when(afterEachFunction).apply();
 
         {
-            describe("afterEach", () -> {
+            describe("afterEach blocks", () -> {
                 afterEach(afterEachFunction);
-                when("nested", () -> {
-                    it("1", testFunction1);
+                when("nested when", () -> {
+                    it("runs the first test", testFunction1);
                 });
-                when("nested 2", () -> {
-                    it("2", testFunction2);
+                when("nested when", () -> {
+                    it("doesn't run the second test", testFunction2);
                 });
             });
         }
 
         //When
-        Cuppa.runTests();
+        Cuppa.runTests(mock(Reporter.class));
 
         //Then
         verify(testFunction2, never()).apply();
@@ -469,19 +596,19 @@ public class HookExceptionTests {
         doThrow(new RuntimeException("After each failed")).when(afterEachFunction).apply();
 
         {
-            describe("afterEach", () -> {
-                when("nested", () -> {
+            describe("afterEach blocks", () -> {
+                when("nested when", () -> {
                     afterEach(afterEachFunction);
-                    it("1", testFunction1);
+                    it("runs the first test", testFunction1);
                 });
-                when("nested 2", () -> {
-                    it("2", testFunction2);
+                when("nested when", () -> {
+                    it("runs the second test", testFunction2);
                 });
             });
         }
 
         //When
-        Cuppa.runTests();
+        Cuppa.runTests(mock(Reporter.class));
 
         //Then
         verify(testFunction2).apply();
@@ -498,21 +625,107 @@ public class HookExceptionTests {
         doThrow(new RuntimeException("After failed")).when(afterFunction).apply();
 
         {
-            describe("after", () -> {
-                when("nested", () -> {
+            describe("after blocks", () -> {
+                when("nested when", () -> {
                     after(afterFunction);
-                    it("1", testFunction1);
+                    it("runs the first test", testFunction1);
                 });
-                when("nested 2", () -> {
-                    it("2", testFunction2);
+                when("nested when", () -> {
+                    it("runs the second test", testFunction2);
                 });
             });
         }
 
         //When
-        Cuppa.runTests();
+        Cuppa.runTests(mock(Reporter.class));
 
         //Then
         verify(testFunction2).apply();
+    }
+
+    @DataProvider
+    private Iterator<Object[]> testInHooks() {
+        return ALL_HOOKS.stream()
+                .map(f -> (Function) () -> f.accept("", () -> it("", EMPTY_FUNCTION)))
+                .map(f -> new Object[]{f})
+                .iterator();
+    }
+
+    @Test(dataProvider = "testInHooks")
+    public void addingTestsInHookShouldThrowException(Function hookWithTest) {
+
+        //Given
+        Reporter reporter = mock(Reporter.class);
+        {
+            describe("", () -> {
+                hookWithTest.apply();
+                it("", EMPTY_FUNCTION);
+            });
+        }
+
+        //When
+        Cuppa.runTests(reporter);
+
+        //Then
+        verify(reporter).testOutcome(anyString(), eq(ERRORED));
+    }
+
+    @DataProvider
+    private Iterator<Object[]> hooks() {
+        return ALL_HOOKS.stream()
+                .map(f -> (Function) () -> f.accept("", EMPTY_FUNCTION))
+                .map(f -> new Object[]{f})
+                .iterator();
+    }
+
+    @Test(dataProvider = "hooks")
+    public void addingHookAtTopLevelShouldThrowException(Function hook) {
+        assertThatThrownBy(hook::apply).hasCauseInstanceOf(IllegalStateException.class);
+    }
+
+    @Test(dataProvider = "hooks")
+    public void addingHookInTestShouldThrowException(Function hook) {
+
+        //Given
+        Reporter reporter = mock(Reporter.class);
+        {
+            describe("", () -> {
+                it("", hook);
+            });
+        }
+
+        //When
+        Cuppa.runTests(reporter);
+
+        //Then
+        verify(reporter).testOutcome("", ERRORED);
+    }
+
+    @DataProvider
+    private Iterator<Object[]> hooksInHooks() {
+        return ALL_HOOKS.stream()
+                .flatMap(f ->
+                        ALL_HOOKS.stream().map(g -> (Function) () -> f.accept("", () -> g.accept("", EMPTY_FUNCTION))))
+                .map(f -> new Object[]{f})
+                .iterator();
+    }
+
+    @Test(dataProvider = "hooksInHooks")
+    public void addingNestedHookInHookShouldThrowException(Function nestedHook) {
+
+        //Given
+        Reporter reporter = mock(Reporter.class);
+        {
+            describe("", () -> {
+                nestedHook.apply();
+                it("", EMPTY_FUNCTION);
+            });
+        }
+
+        //When
+        Cuppa.runTests(reporter);
+
+        //Then
+        verify(reporter).testOutcome(anyString(), eq(ERRORED));
     }
 }

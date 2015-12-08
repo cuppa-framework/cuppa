@@ -8,7 +8,7 @@ import java.util.Objects;
  * <p>This is a functional interface whose functional method is {@link #apply()}.
  */
 @FunctionalInterface
-interface Function {
+public interface Function {
 
     /**
      * Runs this function.
