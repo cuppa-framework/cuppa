@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suppressions PUBLIC
+        "-//Puppy Crawl//DTD Suppressions 1.1//EN"
+        "http://www.puppycrawl.com/dtds/suppressions_1_1.dtd">
+
+<suppressions>
+    <suppress files="/src/main/java/" id="FileLengthTestRule"/>
+
+    <suppress files="/src/test/java/" checks="DesignForExtension"/>
+    <suppress files="/src/test/java/" id="FileLengthSourceRule"/>
+    <suppress files="/src/test/java/" checks="JavadocPackage"/>
+    <suppress files="/src/test/java/" checks="JavadocType"/>
+    <suppress files="/src/test/java/" checks="JavadocMethod"/>
+    <suppress files="/src/test/java/" checks="JavadocVariable"/>
+    <suppress files="/src/test/java/" checks="JavadocStyle"/>
+    <suppress files="/src/test/java/" checks="MagicNumber"/>
+    <suppress files="/src/test/java/" checks="MultipleStringLiterals"/>
+</suppressions>

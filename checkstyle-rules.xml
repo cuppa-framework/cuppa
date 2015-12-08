@@ -53,7 +53,12 @@
 
     <!-- CHECKSTYLE RULE -->
     <module name="FileLength">
+        <property name="id" value="FileLengthSourceRule"/>
         <property name="max" value="500"/>
+    </module>
+    <module name="FileLength">
+        <property name="id" value="FileLengthTestRule"/>
+        <property name="max" value="1000"/>
     </module>
     <module name="FileTabCharacter">
         <property name="eachLine" value="true"/>

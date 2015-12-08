@@ -78,7 +78,7 @@
                         <phase>prepare-package</phase>
                         <configuration>
                             <configLocation>checkstyle-rules.xml</configLocation>
-                            <suppressionsLocation>checkstyle-test-suppressions.xml</suppressionsLocation>
+                            <suppressionsLocation>checkstyle-suppressions.xml</suppressionsLocation>
                             <includeTestSourceDirectory>true</includeTestSourceDirectory>
                             <consoleOutput>true</consoleOutput>
                             <failsOnError>true</failsOnError>
