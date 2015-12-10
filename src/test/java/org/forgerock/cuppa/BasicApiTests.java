@@ -21,10 +21,10 @@ public class BasicApiTests {
     }
 
     @Test
-    public void basicApiUsageWithSingleTestBlock() {
+    public void basicApiUsageWithSingleTestBlock() throws Exception {
 
         //Given
-        Function testFunction = mock(Function.class);
+        TestFunction testFunction = mock(TestFunction.class);
         {
             describe("basic API usage", () -> {
                 when("the 'when' is run", () -> {
@@ -41,10 +41,13 @@ public class BasicApiTests {
     }
 
     @Test
-    public void basicApiUsageWithMultipleDescribeWhenAndTestBlocks() {
+    public void basicApiUsageWithMultipleDescribeWhenAndTestBlocks() throws Exception {
 
         //Given
-        Function[] testFunctions = Stream.generate(() -> mock(Function.class)).limit(8).toArray(Function[]::new);
+        TestFunction[] testFunctions = Stream.generate(() -> mock(TestFunction.class))
+                .limit(8)
+                .toArray(TestFunction[]::new);
+
         {
             describe("basic API usage with multiple blocks", () -> {
                 when("the first 'when' block is run", () -> {
@@ -72,14 +75,19 @@ public class BasicApiTests {
         Cuppa.runTests(mock(Reporter.class));
 
         //Then
-        Arrays.stream(testFunctions).forEach((f) -> verify(f).apply());
+        Arrays.stream(testFunctions).forEach((f) -> {
+            try {
+                verify(f).apply();
+            } catch (Exception ignored) {
+            }
+        });
     }
 
     @Test
-    public void basicApiUsageWithNestedDescribeBlock() {
+    public void basicApiUsageWithNestedDescribeBlock() throws Exception {
 
         //Given
-        Function testFunction = mock(Function.class);
+        TestFunction testFunction = mock(TestFunction.class);
         {
             describe("basic API usage", () -> {
                 describe("nested describe", () -> {
@@ -98,10 +106,10 @@ public class BasicApiTests {
     }
 
     @Test
-    public void basicApiUsageWithNestedDescribeInWhenBlock() {
+    public void basicApiUsageWithNestedDescribeInWhenBlock() throws Exception {
 
         //Given
-        Function testFunction = mock(Function.class);
+        TestFunction testFunction = mock(TestFunction.class);
         {
             describe("basic API usage", () -> {
                 when("the top level 'when' block is run", () -> {
@@ -120,10 +128,10 @@ public class BasicApiTests {
     }
 
     @Test
-    public void basicApiUsageShouldThrowErrorWithTopLevelWhenBlock() {
+    public void basicApiUsageShouldThrowErrorWithTopLevelWhenBlock() throws Exception {
 
         //Given
-        Function whenFunction = mock(Function.class);
+        TestDefinitionFunction whenFunction = mock(TestDefinitionFunction.class);
 
         //When/Then
         assertThatThrownBy(() -> when("basic API usage", whenFunction))
@@ -132,10 +140,10 @@ public class BasicApiTests {
     }
 
     @Test
-    public void basicApiUsageShouldThrowErrorWithTopLevelItBlock() {
+    public void basicApiUsageShouldThrowErrorWithTopLevelItBlock() throws Exception {
 
         //Given
-        Function testFunction = mock(Function.class);
+        TestFunction testFunction = mock(TestFunction.class);
 
         //When/Then
         assertThatThrownBy(() -> it("basic API usage", testFunction))
@@ -291,5 +299,27 @@ public class BasicApiTests {
         verify(reporter).testOutcome("runs the first test, which errors", ERRORED);
         verify(reporter).testOutcome("runs the second test, which fails", FAILED);
         verify(reporter).testOutcome("runs the third test, which passes", PASSED);
+    }
+
+    @Test
+    public void aTestShouldBeAbleToThrowACheckedException() {
+
+        //Given
+        Reporter reporter = mock(Reporter.class);
+        {
+            describe("basic API usage", () -> {
+                when("the 'when' is run", () -> {
+                    it("runs the test", () -> {
+                        throw new Exception();
+                    });
+                });
+            });
+        }
+
+        //When
+        Cuppa.runTests(reporter);
+
+        //Then
+        verify(reporter).testOutcome("runs the test", ERRORED);
     }
 }

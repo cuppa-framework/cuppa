@@ -34,7 +34,7 @@ public final class Cuppa {
      * @param description The description of the 'describe' block.
      * @param function The 'describe' block.
      */
-    public static void describe(String description, Function function) {
+    public static void describe(String description, TestDefinitionFunction function) {
         assertNotRunningTests("describe");
         DescribeBlock describeBlock = new DescribeBlock(description);
         getCurrentDescribeBlock().addDescribeBlock(describeBlock);
@@ -52,7 +52,7 @@ public final class Cuppa {
      * @param description The description of the 'when' block.
      * @param function The 'when' block.
      */
-    public static void when(String description, Function function) {
+    public static void when(String description, TestDefinitionFunction function) {
         assertNotRunningTests("when");
         assertNotRootDescribeBlock("when", "describe");
         describe(description, function);
@@ -63,7 +63,7 @@ public final class Cuppa {
      *
      * @param function The 'before' block.
      */
-    public static void before(Function function) {
+    public static void before(HookFunction function) {
         before(null, function);
     }
 
@@ -73,7 +73,7 @@ public final class Cuppa {
      * @param description The description of the 'before' block.
      * @param function The 'before' block.
      */
-    public static void before(String description, Function function) {
+    public static void before(String description, HookFunction function) {
         assertNotRunningTests("before");
         assertNotRootDescribeBlock("when", "describe");
         getCurrentDescribeBlock().addBefore(Optional.ofNullable(description), function);
@@ -84,7 +84,7 @@ public final class Cuppa {
      *
      * @param function The 'after' block.
      */
-    public static void after(Function function) {
+    public static void after(HookFunction function) {
         after(null, function);
     }
 
@@ -94,7 +94,7 @@ public final class Cuppa {
      * @param description The description of the 'after' block.
      * @param function The 'after' block.
      */
-    public static void after(String description, Function function) {
+    public static void after(String description, HookFunction function) {
         assertNotRunningTests("after");
         assertNotRootDescribeBlock("when", "describe");
         getCurrentDescribeBlock().addAfter(Optional.ofNullable(description), function);
@@ -105,7 +105,7 @@ public final class Cuppa {
      *
      * @param function The 'beforeEach' block.
      */
-    public static void beforeEach(Function function) {
+    public static void beforeEach(HookFunction function) {
         beforeEach(null, function);
     }
 
@@ -115,7 +115,7 @@ public final class Cuppa {
      * @param description The description of the 'beforeEach' block.
      * @param function The 'beforeEach' block.
      */
-    public static void beforeEach(String description, Function function) {
+    public static void beforeEach(String description, HookFunction function) {
         assertNotRunningTests("beforeEach");
         assertNotRootDescribeBlock("when", "describe");
         getCurrentDescribeBlock().addBeforeEach(Optional.ofNullable(description), function);
@@ -126,7 +126,7 @@ public final class Cuppa {
      *
      * @param function The 'afterEach' block.
      */
-    public static void afterEach(Function function) {
+    public static void afterEach(HookFunction function) {
         afterEach(null, function);
     }
 
@@ -136,7 +136,7 @@ public final class Cuppa {
      * @param description The description of the 'afterEach' block.
      * @param function The 'afterEach' block.
      */
-    public static void afterEach(String description, Function function) {
+    public static void afterEach(String description, HookFunction function) {
         assertNotRunningTests("afterEach");
         assertNotRootDescribeBlock("when", "describe");
         getCurrentDescribeBlock().addAfterEach(Optional.ofNullable(description), function);
@@ -148,7 +148,7 @@ public final class Cuppa {
      * @param description The description of the test function.
      * @param function The test function.
      */
-    public static void it(String description, Function function) {
+    public static void it(String description, TestFunction function) {
         assertNotRunningTests("it");
         assertNotRootDescribeBlock("it", "when", "describe");
         getCurrentDescribeBlock().addTest(new TestBlock(description, function));

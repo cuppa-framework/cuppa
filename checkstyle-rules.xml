@@ -122,7 +122,13 @@
         <module name="EmptyStatement"/>
         <module name="EqualsAvoidNull"/>
         <module name="EqualsHashCode"/>
-        <module name="ExecutableStatementCount"/>
+        <module name="ExecutableStatementCount">
+            <property name="id" value="ExecutableStatementCountSourceRule"/>
+        </module>
+        <module name="ExecutableStatementCount">
+            <property name="id" value="ExecutableStatementCountTestRule"/>
+            <property name="max" value="50"/>
+        </module>
         <module name="ExplicitInitialization"/>
         <module name="FallThrough">
             <property name="reliefPattern" value="falls? ?through"/>

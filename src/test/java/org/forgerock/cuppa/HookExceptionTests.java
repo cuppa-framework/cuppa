@@ -18,17 +18,15 @@ import org.testng.annotations.Test;
 
 public class HookExceptionTests {
 
-    private static final Function EMPTY_FUNCTION = () -> {
+    private static final List<BiConsumer<String, HookFunction>> ALL_HOOKS =
+            new ArrayList<BiConsumer<String, HookFunction>>() {
+        {
+            add(Cuppa::before);
+            add(Cuppa::after);
+            add(Cuppa::beforeEach);
+            add(Cuppa::afterEach);
+        }
     };
-    private static final List<BiConsumer<String, Function>> ALL_HOOKS =
-            new ArrayList<BiConsumer<String, Function>>() {
-                {
-                    add(Cuppa::before);
-                    add(Cuppa::after);
-                    add(Cuppa::beforeEach);
-                    add(Cuppa::afterEach);
-                }
-            };
 
     @BeforeMethod
     public void setup() {
@@ -36,11 +34,11 @@ public class HookExceptionTests {
     }
 
     @Test
-    public void shouldReturnSingleErrorResultIfBeforeHookThrowsException() {
+    public void shouldReturnSingleErrorResultIfBeforeHookThrowsException() throws Exception {
 
         //Given
         Reporter reporter = mock(Reporter.class);
-        Function beforeFunction = mock(Function.class, "beforeFunction");
+        HookFunction beforeFunction = mock(HookFunction.class, "beforeFunction");
         doThrow(new RuntimeException("Before failed")).when(beforeFunction).apply();
         {
             describe("before blocks", () -> {
@@ -60,11 +58,11 @@ public class HookExceptionTests {
     }
 
     @Test
-    public void shouldRunAfterHookIfBeforeHookThrowsException() {
+    public void shouldRunAfterHookIfBeforeHookThrowsException() throws Exception {
 
         //Given
-        Function beforeFunction = mock(Function.class, "beforeFunction");
-        Function afterFunction = mock(Function.class, "afterFunction");
+        HookFunction beforeFunction = mock(HookFunction.class, "beforeFunction");
+        HookFunction afterFunction = mock(HookFunction.class, "afterFunction");
 
         doThrow(new RuntimeException("Before failed")).when(beforeFunction).apply();
 
@@ -85,11 +83,11 @@ public class HookExceptionTests {
     }
 
     @Test
-    public void shouldSkipBeforeEachHookIfBeforeHookThrowsException() {
+    public void shouldSkipBeforeEachHookIfBeforeHookThrowsException() throws Exception {
 
         //Given
-        Function beforeFunction = mock(Function.class, "beforeFunction");
-        Function beforeEachFunction = mock(Function.class, "beforeEachFunction");
+        HookFunction beforeFunction = mock(HookFunction.class, "beforeFunction");
+        HookFunction beforeEachFunction = mock(HookFunction.class, "beforeEachFunction");
 
         doThrow(new RuntimeException("Before failed")).when(beforeFunction).apply();
 
@@ -110,11 +108,11 @@ public class HookExceptionTests {
     }
 
     @Test
-    public void shouldSkipAfterEachHookIfBeforeHookThrowsException() {
+    public void shouldSkipAfterEachHookIfBeforeHookThrowsException() throws Exception {
 
         //Given
-        Function beforeFunction = mock(Function.class, "beforeFunction");
-        Function afterEachFunction = mock(Function.class, "afterEachFunction");
+        HookFunction beforeFunction = mock(HookFunction.class, "beforeFunction");
+        HookFunction afterEachFunction = mock(HookFunction.class, "afterEachFunction");
 
         doThrow(new RuntimeException("Before failed")).when(beforeFunction).apply();
 
@@ -135,11 +133,11 @@ public class HookExceptionTests {
     }
 
     @Test
-    public void shouldSkipTestsIfBeforeHookThrowsException() {
+    public void shouldSkipTestsIfBeforeHookThrowsException() throws Exception {
 
         //Given
-        Function beforeFunction = mock(Function.class, "beforeFunction");
-        Function testFunction = mock(Function.class, "testFunction");
+        HookFunction beforeFunction = mock(HookFunction.class, "beforeFunction");
+        TestFunction testFunction = mock(TestFunction.class, "testFunction");
 
         doThrow(new RuntimeException("Before failed")).when(beforeFunction).apply();
 
@@ -158,15 +156,15 @@ public class HookExceptionTests {
     }
 
     @Test
-    public void shouldSkipNestedBlocksIfBeforeThrowsException() {
+    public void shouldSkipNestedBlocksIfBeforeThrowsException() throws Exception {
 
         //Given
-        Function topLevelBeforeFunction = mock(Function.class, "topLevelBeforeFunction");
-        Function nestedBeforeFunction = mock(Function.class, "nestedBeforeFunction");
-        Function nestedBeforeEachFunction = mock(Function.class, "nestedBeforeEachFunction");
-        Function nestedAfterEachFunction = mock(Function.class, "nestedAfterEachFunction");
-        Function nestedAfterFunction = mock(Function.class, "nestedAfterFunction");
-        Function nestedTestFunction = mock(Function.class, "nestedTestFunction");
+        HookFunction topLevelBeforeFunction = mock(HookFunction.class, "topLevelBeforeFunction");
+        HookFunction nestedBeforeFunction = mock(HookFunction.class, "nestedBeforeFunction");
+        HookFunction nestedBeforeEachFunction = mock(HookFunction.class, "nestedBeforeEachFunction");
+        HookFunction nestedAfterEachFunction = mock(HookFunction.class, "nestedAfterEachFunction");
+        HookFunction nestedAfterFunction = mock(HookFunction.class, "nestedAfterFunction");
+        TestFunction nestedTestFunction = mock(TestFunction.class, "nestedTestFunction");
 
         doThrow(new RuntimeException("Before failed")).when(topLevelBeforeFunction).apply();
 
@@ -195,11 +193,11 @@ public class HookExceptionTests {
     }
 
     @Test
-    public void shouldReturnSingleErrorResultIfBeforeEachHookThrowsException() {
+    public void shouldReturnSingleErrorResultIfBeforeEachHookThrowsException() throws Exception {
 
         //Given
         Reporter reporter = mock(Reporter.class);
-        Function beforeEachFunction = mock(Function.class, "beforeEachFunction");
+        HookFunction beforeEachFunction = mock(HookFunction.class, "beforeEachFunction");
         doThrow(new RuntimeException("Before each failed")).when(beforeEachFunction).apply();
         {
             describe("beforeEach blocks", () -> {
@@ -219,11 +217,11 @@ public class HookExceptionTests {
     }
 
     @Test
-    public void shouldRunAfterHookIfBeforeEachHookThrowsException() {
+    public void shouldRunAfterHookIfBeforeEachHookThrowsException() throws Exception {
 
         //Given
-        Function beforeEachFunction = mock(Function.class, "beforeEachFunction");
-        Function afterFunction = mock(Function.class, "afterFunction");
+        HookFunction beforeEachFunction = mock(HookFunction.class, "beforeEachFunction");
+        HookFunction afterFunction = mock(HookFunction.class, "afterFunction");
 
         doThrow(new RuntimeException("Before each failed")).when(beforeEachFunction).apply();
 
@@ -244,11 +242,11 @@ public class HookExceptionTests {
     }
 
     @Test
-    public void shouldSkipAfterEachRunIfBeforeEachHookThrowsException() {
+    public void shouldSkipAfterEachRunIfBeforeEachHookThrowsException() throws Exception {
 
         //Given
-        Function beforeEachFunction = mock(Function.class, "beforeEachFunction");
-        Function afterEachFunction = mock(Function.class, "afterEachFunction");
+        HookFunction beforeEachFunction = mock(HookFunction.class, "beforeEachFunction");
+        HookFunction afterEachFunction = mock(HookFunction.class, "afterEachFunction");
 
         doThrow(new RuntimeException("Before each failed")).when(beforeEachFunction).apply();
 
@@ -269,12 +267,12 @@ public class HookExceptionTests {
     }
 
     @Test
-    public void shouldSkipTestsIfBeforeEachHookThrowsException() {
+    public void shouldSkipTestsIfBeforeEachHookThrowsException() throws Exception {
 
         //Given
-        Function beforeEachFunction = mock(Function.class, "beforeEachFunction");
-        Function testFunction1 = mock(Function.class, "testFunction");
-        Function testFunction2 = mock(Function.class, "testFunction");
+        HookFunction beforeEachFunction = mock(HookFunction.class, "beforeEachFunction");
+        TestFunction testFunction1 = mock(TestFunction.class, "testFunction");
+        TestFunction testFunction2 = mock(TestFunction.class, "testFunction");
 
         doThrow(new RuntimeException("Before each failed")).when(beforeEachFunction).apply();
 
@@ -295,13 +293,13 @@ public class HookExceptionTests {
     }
 
     @Test
-    public void shouldSkipNestedBeforeEachAfterEachAndTestsIfBeforeEachThrowsException() {
+    public void shouldSkipNestedBeforeEachAfterEachAndTestsIfBeforeEachThrowsException() throws Exception {
 
         //Given
-        Function topLevelBeforeEachFunction = mock(Function.class, "topLevelBeforeEachFunction");
-        Function nestedBeforeEachFunction = mock(Function.class, "nestedBeforeEachFunction");
-        Function nestedAfterEachFunction = mock(Function.class, "nestedAfterEachFunction");
-        Function nestedTestFunction = mock(Function.class, "nestedTestFunction");
+        HookFunction topLevelBeforeEachFunction = mock(HookFunction.class, "topLevelBeforeEachFunction");
+        HookFunction nestedBeforeEachFunction = mock(HookFunction.class, "nestedBeforeEachFunction");
+        HookFunction nestedAfterEachFunction = mock(HookFunction.class, "nestedAfterEachFunction");
+        TestFunction nestedTestFunction = mock(TestFunction.class, "nestedTestFunction");
 
         doThrow(new RuntimeException("Before each failed")).when(topLevelBeforeEachFunction).apply();
 
@@ -326,12 +324,12 @@ public class HookExceptionTests {
     }
 
     @Test
-    public void shouldRunNestedBeforeAndAfterHooksIfBeforeEachThrowsException() {
+    public void shouldRunNestedBeforeAndAfterHooksIfBeforeEachThrowsException() throws Exception {
 
         //Given
-        Function topLevelBeforeEachFunction = mock(Function.class, "topLevelBeforeEachFunction");
-        Function nestedBeforeFunction = mock(Function.class, "nestedBeforeFunction");
-        Function nestedAfterFunction = mock(Function.class, "nestedAfterFunction");
+        HookFunction topLevelBeforeEachFunction = mock(HookFunction.class, "topLevelBeforeEachFunction");
+        HookFunction nestedBeforeFunction = mock(HookFunction.class, "nestedBeforeFunction");
+        HookFunction nestedAfterFunction = mock(HookFunction.class, "nestedAfterFunction");
 
         doThrow(new RuntimeException("Before each failed")).when(topLevelBeforeEachFunction).apply();
 
@@ -356,11 +354,11 @@ public class HookExceptionTests {
     }
 
     @Test
-    public void shouldSkipAllNestedBlocksIfTopLevelBeforeEachThrowsException() {
+    public void shouldSkipAllNestedBlocksIfTopLevelBeforeEachThrowsException() throws Exception {
 
         //Given
-        Function topLevelBeforeEachFunction = mock(Function.class, "topLevelBeforeEachFunction");
-        Function nestedBeforeFunction = mock(Function.class, "nestedBeforeFunction");
+        HookFunction topLevelBeforeEachFunction = mock(HookFunction.class, "topLevelBeforeEachFunction");
+        HookFunction nestedBeforeFunction = mock(HookFunction.class, "nestedBeforeFunction");
 
         doThrow(new RuntimeException("Before each failed")).when(topLevelBeforeEachFunction).apply();
 
@@ -387,11 +385,11 @@ public class HookExceptionTests {
     }
 
     @Test
-    public void shouldHandleDoubleNestedBlocksIfTopLevelBeforeEachThrowsException() {
+    public void shouldHandleDoubleNestedBlocksIfTopLevelBeforeEachThrowsException() throws Exception {
 
         //Given
-        Function topLevelBeforeEachFunction = mock(Function.class, "topLevelBeforeEachFunction");
-        Function nestedBeforeFunction = mock(Function.class, "nestedBeforeFunction");
+        HookFunction topLevelBeforeEachFunction = mock(HookFunction.class, "topLevelBeforeEachFunction");
+        HookFunction nestedBeforeFunction = mock(HookFunction.class, "nestedBeforeFunction");
 
         doThrow(new RuntimeException("Before each failed")).when(topLevelBeforeEachFunction).apply();
 
@@ -420,16 +418,16 @@ public class HookExceptionTests {
     }
 
     @Test
-    public void shouldReturnErrorResultInPlaceOfNestedBlocksIfBeforeHookThrowsException() {
+    public void shouldReturnErrorResultInPlaceOfNestedBlocksIfBeforeHookThrowsException() throws Exception {
 
         //Given
         Reporter reporter = mock(Reporter.class);
-        Function beforeFunction = mock(Function.class, "beforeFunction");
+        HookFunction beforeFunction = mock(HookFunction.class, "beforeFunction");
         doThrow(new RuntimeException("Before failed")).when(beforeFunction).apply();
         {
             describe("before blocks", () -> {
                 before(beforeFunction);
-                it("does not run the first test", EMPTY_FUNCTION);
+                it("does not run the first test", TestFunction.identity());
             });
         }
 
@@ -442,16 +440,16 @@ public class HookExceptionTests {
     }
 
     @Test
-    public void shouldReturnAdditionalErrorResultIfAfterHookThrowsException() {
+    public void shouldReturnAdditionalErrorResultIfAfterHookThrowsException() throws Exception {
 
         //Given
         Reporter reporter = mock(Reporter.class);
-        Function afterFunction = mock(Function.class, "afterFunction");
+        HookFunction afterFunction = mock(HookFunction.class, "afterFunction");
         doThrow(new RuntimeException("Before failed")).when(afterFunction).apply();
         {
             describe("after blocks", () -> {
                 after(afterFunction);
-                it("runs the first test", EMPTY_FUNCTION);
+                it("runs the first test", TestFunction.identity());
             });
         }
 
@@ -463,16 +461,16 @@ public class HookExceptionTests {
     }
 
     @Test
-    public void shouldReturnErrorResultInPlaceOfTestsIfBeforeEachHookThrowsException() {
+    public void shouldReturnErrorResultInPlaceOfTestsIfBeforeEachHookThrowsException() throws Exception {
 
         //Given
         Reporter reporter = mock(Reporter.class);
-        Function beforeEachFunction = mock(Function.class, "beforeEachFunction");
+        HookFunction beforeEachFunction = mock(HookFunction.class, "beforeEachFunction");
         doThrow(new RuntimeException("Before each failed")).when(beforeEachFunction).apply();
         {
             describe("beforeEach blocks", () -> {
                 beforeEach(beforeEachFunction);
-                it("does not run the test", EMPTY_FUNCTION);
+                it("does not run the test", TestFunction.identity());
             });
         }
 
@@ -485,16 +483,16 @@ public class HookExceptionTests {
     }
 
     @Test
-    public void shouldReturnAdditionalErrorResultIfAfterEachHookThrowsException() {
+    public void shouldReturnAdditionalErrorResultIfAfterEachHookThrowsException() throws Exception {
 
         //Given
         Reporter reporter = mock(Reporter.class);
-        Function afterEachFunction = mock(Function.class, "afterEachFunction");
+        HookFunction afterEachFunction = mock(HookFunction.class, "afterEachFunction");
         doThrow(new RuntimeException("After each failed")).when(afterEachFunction).apply();
         {
             describe("afterEach blocks", () -> {
                 afterEach(afterEachFunction);
-                it("runs the first test", EMPTY_FUNCTION);
+                it("runs the first test", TestFunction.identity());
             });
         }
 
@@ -506,19 +504,19 @@ public class HookExceptionTests {
     }
 
     @Test
-    public void shouldReturnErrorResultsIfBeforeEachAndAfterEachHookThrowsException() {
+    public void shouldReturnErrorResultsIfBeforeEachAndAfterEachHookThrowsException() throws Exception {
 
         //Given
         Reporter reporter = mock(Reporter.class);
-        Function beforeEachFunction = mock(Function.class, "beforeEachFunction");
+        HookFunction beforeEachFunction = mock(HookFunction.class, "beforeEachFunction");
         doThrow(new RuntimeException("Before each failed")).when(beforeEachFunction).apply();
-        Function afterEachFunction = mock(Function.class, "afterEachFunction");
+        HookFunction afterEachFunction = mock(HookFunction.class, "afterEachFunction");
         doThrow(new RuntimeException("After each failed")).when(afterEachFunction).apply();
         {
             describe("afterEach blocks", () -> {
                 beforeEach(beforeEachFunction);
                 afterEach(afterEachFunction);
-                it("runs the first test", EMPTY_FUNCTION);
+                it("runs the first test", TestFunction.identity());
             });
         }
 
@@ -532,12 +530,12 @@ public class HookExceptionTests {
     }
 
     @Test
-    public void shouldSkipRemainingTestsIfAfterEachThrowsException() {
+    public void shouldSkipRemainingTestsIfAfterEachThrowsException() throws Exception {
 
         // Given
-        Function afterEachFunction = mock(Function.class, "afterEachFunction");
-        Function testFunction1 = mock(Function.class, "testFunction1");
-        Function testFunction2 = mock(Function.class, "testFunction2");
+        HookFunction afterEachFunction = mock(HookFunction.class, "afterEachFunction");
+        TestFunction testFunction1 = mock(TestFunction.class, "testFunction1");
+        TestFunction testFunction2 = mock(TestFunction.class, "testFunction2");
 
         doThrow(new RuntimeException("After each failed")).when(afterEachFunction).apply();
 
@@ -557,12 +555,12 @@ public class HookExceptionTests {
     }
 
     @Test
-    public void shouldSkipRemainingBlocksIfAfterEachThrowsException() {
+    public void shouldSkipRemainingBlocksIfAfterEachThrowsException() throws Exception {
 
         // Given
-        Function afterEachFunction = mock(Function.class, "afterEachFunction");
-        Function testFunction1 = mock(Function.class, "testFunction1");
-        Function testFunction2 = mock(Function.class, "testFunction2");
+        HookFunction afterEachFunction = mock(HookFunction.class, "afterEachFunction");
+        TestFunction testFunction1 = mock(TestFunction.class, "testFunction1");
+        TestFunction testFunction2 = mock(TestFunction.class, "testFunction2");
 
         doThrow(new RuntimeException("After each failed")).when(afterEachFunction).apply();
 
@@ -586,12 +584,12 @@ public class HookExceptionTests {
     }
 
     @Test
-    public void shouldRunRemainingBlocksInOuterScopeIfNestedAfterEachThrowsException() {
+    public void shouldRunRemainingBlocksInOuterScopeIfNestedAfterEachThrowsException() throws Exception {
 
         // Given
-        Function afterEachFunction = mock(Function.class, "afterEachFunction");
-        Function testFunction1 = mock(Function.class, "testFunction1");
-        Function testFunction2 = mock(Function.class, "testFunction2");
+        HookFunction afterEachFunction = mock(HookFunction.class, "afterEachFunction");
+        TestFunction testFunction1 = mock(TestFunction.class, "testFunction1");
+        TestFunction testFunction2 = mock(TestFunction.class, "testFunction2");
 
         doThrow(new RuntimeException("After each failed")).when(afterEachFunction).apply();
 
@@ -615,12 +613,12 @@ public class HookExceptionTests {
     }
 
     @Test
-    public void shouldRunRemainingBlocksInOuterScopeIfNestedAfterThrowsException() {
+    public void shouldRunRemainingBlocksInOuterScopeIfNestedAfterThrowsException() throws Exception {
 
         // Given
-        Function afterFunction = mock(Function.class, "afterFunction");
-        Function testFunction1 = mock(Function.class, "testFunction1");
-        Function testFunction2 = mock(Function.class, "testFunction2");
+        HookFunction afterFunction = mock(HookFunction.class, "afterFunction");
+        TestFunction testFunction1 = mock(TestFunction.class, "testFunction1");
+        TestFunction testFunction2 = mock(TestFunction.class, "testFunction2");
 
         doThrow(new RuntimeException("After failed")).when(afterFunction).apply();
 
@@ -646,20 +644,20 @@ public class HookExceptionTests {
     @DataProvider
     private Iterator<Object[]> testInHooks() {
         return ALL_HOOKS.stream()
-                .map(f -> (Function) () -> f.accept("", () -> it("", EMPTY_FUNCTION)))
+                .map(f -> (TestDefinitionFunction) () -> f.accept("", () -> it("", TestFunction.identity())))
                 .map(f -> new Object[]{f})
                 .iterator();
     }
 
     @Test(dataProvider = "testInHooks")
-    public void addingTestsInHookShouldThrowException(Function hookWithTest) {
+    public void addingTestsInHookShouldThrowException(TestDefinitionFunction hookWithTest) {
 
         //Given
         Reporter reporter = mock(Reporter.class);
         {
             describe("", () -> {
                 hookWithTest.apply();
-                it("", EMPTY_FUNCTION);
+                it("", TestFunction.identity());
             });
         }
 
@@ -673,18 +671,18 @@ public class HookExceptionTests {
     @DataProvider
     private Iterator<Object[]> hooks() {
         return ALL_HOOKS.stream()
-                .map(f -> (Function) () -> f.accept("", EMPTY_FUNCTION))
+                .map(f -> (TestFunction) () -> f.accept("", HookFunction.identity()))
                 .map(f -> new Object[]{f})
                 .iterator();
     }
 
     @Test(dataProvider = "hooks")
-    public void addingHookAtTopLevelShouldThrowException(Function hook) {
+    public void addingHookAtTopLevelShouldThrowException(TestFunction hook) {
         assertThatThrownBy(hook::apply).hasCauseInstanceOf(IllegalStateException.class);
     }
 
     @Test(dataProvider = "hooks")
-    public void addingHookInTestShouldThrowException(Function hook) {
+    public void addingHookInTestShouldThrowException(TestFunction hook) {
 
         //Given
         Reporter reporter = mock(Reporter.class);
@@ -705,20 +703,22 @@ public class HookExceptionTests {
     private Iterator<Object[]> hooksInHooks() {
         return ALL_HOOKS.stream()
                 .flatMap(f ->
-                        ALL_HOOKS.stream().map(g -> (Function) () -> f.accept("", () -> g.accept("", EMPTY_FUNCTION))))
+                        ALL_HOOKS.stream().map(g ->
+                                (TestDefinitionFunction) () -> f.accept("", () ->
+                                        g.accept("", HookFunction.identity()))))
                 .map(f -> new Object[]{f})
                 .iterator();
     }
 
     @Test(dataProvider = "hooksInHooks")
-    public void addingNestedHookInHookShouldThrowException(Function nestedHook) {
+    public void addingNestedHookInHookShouldThrowException(TestDefinitionFunction nestedHook) {
 
         //Given
         Reporter reporter = mock(Reporter.class);
         {
             describe("", () -> {
                 nestedHook.apply();
-                it("", EMPTY_FUNCTION);
+                it("", TestFunction.identity());
             });
         }
 

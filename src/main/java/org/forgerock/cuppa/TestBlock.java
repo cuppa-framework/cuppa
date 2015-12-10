@@ -8,9 +8,9 @@ import static org.forgerock.cuppa.Reporter.Outcome.*;
 class TestBlock {
 
     private final String description;
-    private final Function function;
+    private final TestFunction function;
 
-    TestBlock(String description, Function function) {
+    TestBlock(String description, TestFunction function) {
         this.description = description;
         this.function = function;
     }

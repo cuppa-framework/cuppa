@@ -18,11 +18,11 @@ public class HookTests {
     }
 
     @Test
-    public void beforeShouldRunOnceBeforeTests() {
+    public void beforeShouldRunOnceBeforeTests() throws Exception {
 
         //Given
-        Function topLevelBeforeFunction = mock(Function.class);
-        Function nestedBeforeFunction = mock(Function.class);
+        HookFunction topLevelBeforeFunction = mock(HookFunction.class);
+        HookFunction nestedBeforeFunction = mock(HookFunction.class);
         {
             describe("before blocks", () -> {
                 before("running any tests", topLevelBeforeFunction);
@@ -52,8 +52,8 @@ public class HookTests {
     public void multipleBeforeHooksShouldRunInOrderOfDefinition() {
 
         //Given
-        Function firstBeforeFunction = mock(Function.class);
-        Function secondBeforeFunction = mock(Function.class);
+        HookFunction firstBeforeFunction = mock(HookFunction.class);
+        HookFunction secondBeforeFunction = mock(HookFunction.class);
         {
             describe("before blocks", () -> {
                 before(firstBeforeFunction);
@@ -71,11 +71,11 @@ public class HookTests {
     }
 
     @Test
-    public void afterShouldRunOnceAfterTests() {
+    public void afterShouldRunOnceAfterTests() throws Exception {
 
         //Given
-        Function topLevelAfterFunction = mock(Function.class);
-        Function nestedAfterFunction = mock(Function.class);
+        HookFunction topLevelAfterFunction = mock(HookFunction.class);
+        HookFunction nestedAfterFunction = mock(HookFunction.class);
         {
             describe("after blocks", () -> {
                 after("running any tests", topLevelAfterFunction);
@@ -105,8 +105,8 @@ public class HookTests {
     public void multipleAfterHooksShouldRunInOrderOfDefinition() {
 
         //Given
-        Function firstAfterFunction = mock(Function.class);
-        Function secondAfterFunction = mock(Function.class);
+        HookFunction firstAfterFunction = mock(HookFunction.class);
+        HookFunction secondAfterFunction = mock(HookFunction.class);
         {
             describe("before blocks", () -> {
                 after(firstAfterFunction);
@@ -124,11 +124,11 @@ public class HookTests {
     }
 
     @Test
-    public void beforeEachShouldRunBeforeEachTest() {
+    public void beforeEachShouldRunBeforeEachTest() throws Exception {
 
         //Given
-        Function topLevelBeforeEachFunction = mock(Function.class);
-        Function nestedBeforeEachFunction = mock(Function.class);
+        HookFunction topLevelBeforeEachFunction = mock(HookFunction.class);
+        HookFunction nestedBeforeEachFunction = mock(HookFunction.class);
         {
             describe("beforeEach blocks", () -> {
                 beforeEach("running each test", topLevelBeforeEachFunction);
@@ -158,8 +158,8 @@ public class HookTests {
     public void multipleBeforeEachHooksShouldRunInOrderOfDefinition() {
 
         //Given
-        Function firstBeforeEachFunction = mock(Function.class);
-        Function secondBeforeEachFunction = mock(Function.class);
+        HookFunction firstBeforeEachFunction = mock(HookFunction.class);
+        HookFunction secondBeforeEachFunction = mock(HookFunction.class);
         {
             describe("before blocks", () -> {
                 beforeEach(firstBeforeEachFunction);
@@ -177,11 +177,11 @@ public class HookTests {
     }
 
     @Test
-    public void afterEachShouldRunAfterEachTest() {
+    public void afterEachShouldRunAfterEachTest() throws Exception {
 
         //Given
-        Function topLevelAfterEachFunction = mock(Function.class);
-        Function nestedAfterEachFunction = mock(Function.class);
+        HookFunction topLevelAfterEachFunction = mock(HookFunction.class);
+        HookFunction nestedAfterEachFunction = mock(HookFunction.class);
         {
             describe("afterEach blocks", () -> {
                 afterEach("running each test", topLevelAfterEachFunction);
@@ -211,8 +211,8 @@ public class HookTests {
     public void multipleAfterEachHooksShouldRunInOrderOfDefinition() {
 
         //Given
-        Function firstAfterEachFunction = mock(Function.class);
-        Function secondAfterEachFunction = mock(Function.class);
+        HookFunction firstAfterEachFunction = mock(HookFunction.class);
+        HookFunction secondAfterEachFunction = mock(HookFunction.class);
         {
             describe("before blocks", () -> {
                 afterEach(firstAfterEachFunction);
@@ -230,19 +230,19 @@ public class HookTests {
     }
 
     @Test
-    public void shouldRunAllHooksInTheCorrectOrder() {
+    public void shouldRunAllHooksInTheCorrectOrder() throws Exception {
 
         //Given
-        Function topLevelBeforeFunction = mock(Function.class, "topLevelBeforeFunction");
-        Function topLevelBeforeEachFunction = mock(Function.class, "topLevelBeforeEachFunction");
-        Function topLevelAfterEachFunction = mock(Function.class, "topLevelAfterEachFunction");
-        Function topLevelAfterFunction = mock(Function.class, "topLevelAfterFunction");
-        Function nestedBeforeFunction = mock(Function.class, "nestedBeforeFunction");
-        Function nestedBeforeEachFunction = mock(Function.class, "nestedBeforeEachFunction");
-        Function nestedAfterEachFunction = mock(Function.class, "nestedAfterEachFunction");
-        Function nestedAfterFunction = mock(Function.class, "nestedAfterFunction");
-        Function testFunction = mock(Function.class, "testFunction");
-        Function nestedTestFunction = mock(Function.class, "nestedTestFunction");
+        HookFunction topLevelBeforeFunction = mock(HookFunction.class, "topLevelBeforeFunction");
+        HookFunction topLevelBeforeEachFunction = mock(HookFunction.class, "topLevelBeforeEachFunction");
+        HookFunction topLevelAfterEachFunction = mock(HookFunction.class, "topLevelAfterEachFunction");
+        HookFunction topLevelAfterFunction = mock(HookFunction.class, "topLevelAfterFunction");
+        HookFunction nestedBeforeFunction = mock(HookFunction.class, "nestedBeforeFunction");
+        HookFunction nestedBeforeEachFunction = mock(HookFunction.class, "nestedBeforeEachFunction");
+        HookFunction nestedAfterEachFunction = mock(HookFunction.class, "nestedAfterEachFunction");
+        HookFunction nestedAfterFunction = mock(HookFunction.class, "nestedAfterFunction");
+        TestFunction testFunction = mock(TestFunction.class, "testFunction");
+        TestFunction nestedTestFunction = mock(TestFunction.class, "nestedTestFunction");
 
         {
             describe("before blocks", () -> {
@@ -265,14 +265,31 @@ public class HookTests {
         Cuppa.runTests(mock(Reporter.class));
 
         //Then
-        verifiedCalledInOrder(topLevelBeforeFunction, topLevelBeforeEachFunction, testFunction,
-                topLevelAfterEachFunction, nestedBeforeFunction, topLevelBeforeEachFunction, nestedBeforeEachFunction,
-                nestedTestFunction, nestedAfterEachFunction, topLevelAfterEachFunction, nestedAfterFunction,
+        InOrder inOrder = inOrder(topLevelBeforeFunction, topLevelBeforeEachFunction, testFunction,
+                topLevelAfterEachFunction, nestedBeforeFunction, nestedBeforeEachFunction,
+                nestedTestFunction, nestedAfterEachFunction, nestedAfterFunction,
                 topLevelAfterFunction);
+        inOrder.verify(topLevelBeforeFunction).apply();
+        inOrder.verify(topLevelBeforeEachFunction).apply();
+        inOrder.verify(testFunction).apply();
+        inOrder.verify(topLevelAfterEachFunction).apply();
+        inOrder.verify(nestedBeforeFunction).apply();
+        inOrder.verify(topLevelBeforeEachFunction).apply();
+        inOrder.verify(nestedBeforeEachFunction).apply();
+        inOrder.verify(nestedTestFunction).apply();
+        inOrder.verify(nestedAfterEachFunction).apply();
+        inOrder.verify(topLevelAfterEachFunction).apply();
+        inOrder.verify(nestedAfterFunction).apply();
+        inOrder.verify(topLevelAfterFunction).apply();
     }
 
-    private void verifiedCalledInOrder(Function... functions) {
+    private void verifiedCalledInOrder(HookFunction... functions) {
         InOrder inOrder = inOrder(functions);
-        Arrays.stream(functions).forEach((f) -> inOrder.verify(f).apply());
+        Arrays.stream(functions).forEach((f) -> {
+            try {
+                inOrder.verify(f).apply();
+            } catch (Exception ignored) {
+            }
+        });
     }
 }

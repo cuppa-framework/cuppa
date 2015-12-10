@@ -5,9 +5,11 @@
 
 <suppressions>
     <suppress files="/src/main/java/" id="FileLengthTestRule"/>
+    <suppress files="/src/main/java/" id="ExecutableStatementCountTestRule"/>
 
     <suppress files="/src/test/java/" checks="DesignForExtension"/>
     <suppress files="/src/test/java/" id="FileLengthSourceRule"/>
+    <suppress files="/src/test/java/" id="ExecutableStatementCountSourceRule"/>
     <suppress files="/src/test/java/" checks="JavadocPackage"/>
     <suppress files="/src/test/java/" checks="JavadocType"/>
     <suppress files="/src/test/java/" checks="JavadocMethod"/>
