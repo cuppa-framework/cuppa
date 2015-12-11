@@ -11,6 +11,7 @@ import java.util.Optional;
  */
 class DescribeBlock {
 
+    private final Behaviour behaviour;
     private final String description;
     private final List<DescribeBlock> describeBlocks = new ArrayList<>();
     private final List<HookFunction> beforeFunctions = new ArrayList<>();
@@ -19,16 +20,19 @@ class DescribeBlock {
     private final List<HookFunction> afterEachFunctions = new ArrayList<>();
     private final List<TestBlock> testBlocks = new ArrayList<>();
 
-    DescribeBlock(String description) {
+    DescribeBlock(Behaviour behaviour, String description) {
+        Objects.requireNonNull(behaviour, "Block must have a behaviour");
         Objects.requireNonNull(description, "Block must have a description");
+        this.behaviour = behaviour;
         this.description = description;
     }
 
     void runTests(Reporter reporter) {
-        runTests(reporter, TestFunction::apply);
+        runTests(behaviour, reporter, TestFunction::apply);
     }
 
-    private void runTests(Reporter reporter, TestWrapper outerTestWrapper) {
+    private void runTests(Behaviour behaviour, Reporter reporter, TestWrapper outerTestWrapper) {
+        Behaviour combinedBehaviour = behaviour.combine(this.behaviour);
         TestWrapper testWrapper = createWrapper(outerTestWrapper, reporter);
         try {
             reporter.describeStart(description);
@@ -41,9 +45,9 @@ class DescribeBlock {
                 return;
             }
             for (TestBlock t : testBlocks) {
-                testWrapper.apply(() -> t.runTest(reporter));
+                testWrapper.apply(() -> t.runTest(combinedBehaviour, reporter));
             }
-            describeBlocks.stream().forEach((d) -> d.runTests(reporter, testWrapper));
+            describeBlocks.stream().forEach((d) -> d.runTests(combinedBehaviour, reporter, testWrapper));
         } catch (HookException e) {
             if (e.getDescribeBlock() != this) {
                 throw e;

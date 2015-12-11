@@ -58,4 +58,11 @@ public interface Reporter {
      * @param description The description of the test.
      */
     void testPending(String description);
+
+    /**
+     * Called when a test has been skipped.
+     *
+     * @param description The description of the test.
+     */
+    void testSkip(String description);
 }

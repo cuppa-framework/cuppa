@@ -1,5 +1,7 @@
 package org.forgerock.cuppa;
 
+import static org.forgerock.cuppa.Behaviour.NORMAL;
+
 import java.util.Optional;
 import java.util.Stack;
 
@@ -30,13 +32,24 @@ public final class Cuppa {
 
     /**
      * Registers a described suite of tests to be run.
-     *
+
      * @param description The description of the 'describe' block.
      * @param function The 'describe' block.
      */
     public static void describe(String description, TestDefinitionFunction function) {
+        describe(NORMAL, description, function);
+    }
+
+    /**
+     * Registers a described suite of tests to be run.
+     *
+     * @param behaviour if {@link Behaviour#SKIP} then this test will be skipped.
+     * @param description The description of the 'describe' block.
+     * @param function The 'describe' block.
+     */
+    public static void describe(Behaviour behaviour, String description, TestDefinitionFunction function) {
         assertNotRunningTests("describe");
-        DescribeBlock describeBlock = new DescribeBlock(description);
+        DescribeBlock describeBlock = new DescribeBlock(behaviour, description);
         getCurrentDescribeBlock().addDescribeBlock(describeBlock);
         stack.push(describeBlock);
         try {
@@ -53,9 +66,20 @@ public final class Cuppa {
      * @param function The 'when' block.
      */
     public static void when(String description, TestDefinitionFunction function) {
+        when(NORMAL, description, function);
+    }
+
+    /**
+     * Registers a 'when' block to be run.
+     *
+     * @param behaviour if {@link Behaviour#SKIP} then this test will be skipped.
+     * @param description The description of the 'when' block.
+     * @param function The 'when' block.
+     */
+    public static void when(Behaviour behaviour, String description, TestDefinitionFunction function) {
         assertNotRunningTests("when");
         assertNotRootDescribeBlock("when", "describe");
-        describe(description, function);
+        describe(behaviour, description, function);
     }
 
     /**
@@ -149,9 +173,20 @@ public final class Cuppa {
      * @param function The test function.
      */
     public static void it(String description, TestFunction function) {
+        it(NORMAL, description, function);
+    }
+
+    /**
+     * Registers a test function to be run.
+     *
+     * @param behaviour if {@link Behaviour#SKIP} then this test will be skipped.
+     * @param description The description of the test function.
+     * @param function The test function.
+     */
+    public static void it(Behaviour behaviour, String description, TestFunction function) {
         assertNotRunningTests("it");
         assertNotRootDescribeBlock("it", "when", "describe");
-        getCurrentDescribeBlock().addTest(new TestBlock(description, function));
+        getCurrentDescribeBlock().addTest(new TestBlock(behaviour, description, function));
     }
 
     /**
@@ -160,7 +195,7 @@ public final class Cuppa {
      * @param description The description of the test function.
      */
     public static void it(String description) {
-        getCurrentDescribeBlock().addTest(new TestBlock(description, () -> {
+        getCurrentDescribeBlock().addTest(new TestBlock(NORMAL, description, () -> {
             throw new PendingException();
         }));
     }
@@ -181,8 +216,10 @@ public final class Cuppa {
 
     /**
      * Runs all the tests that have been loaded into the test framework.
+     *
+     * @param reporter A reporter to apprise of test outcomes.
      */
-    static void runTests(Reporter reporter) {
+    public static void runTests(Reporter reporter) {
         if (stack.size() != 1) {
             throw new IllegalStateException("Invariant broken! The stack should never be empty.");
         }
@@ -199,7 +236,7 @@ public final class Cuppa {
      */
     static void reset() {
         runningTests = false;
-        root = new DescribeBlock("");
+        root = new DescribeBlock(NORMAL, "");
         stack = new Stack<DescribeBlock>() {
             { push(root); }
         };
