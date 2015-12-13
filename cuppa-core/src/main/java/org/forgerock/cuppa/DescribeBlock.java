@@ -1,7 +1,5 @@
 package org.forgerock.cuppa;
 
-import static org.forgerock.cuppa.Reporter.Outcome.ERRORED;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -39,7 +37,7 @@ class DescribeBlock {
                     f.apply();
                 }
             } catch (Exception e) {
-                reporter.testOutcome("before", ERRORED);
+                reporter.testError("before", e);
                 return;
             }
             for (TestBlock t : testBlocks) {
@@ -60,7 +58,7 @@ class DescribeBlock {
                     f.apply();
                 }
             } catch (Exception e) {
-                reporter.testOutcome("after", ERRORED);
+                reporter.testError("after", e);
             }
             reporter.describeEnd(description);
         }
@@ -74,7 +72,7 @@ class DescribeBlock {
                         g.apply();
                     }
                 } catch (Exception e) {
-                    reporter.testOutcome("beforeEach", ERRORED);
+                    reporter.testError("beforeEach", e);
                     throw new HookException(this, e);
                 }
                 f.apply();
@@ -84,7 +82,7 @@ class DescribeBlock {
                         g.apply();
                     }
                 } catch (Exception e) {
-                    reporter.testOutcome("afterEach", ERRORED);
+                    reporter.testError("afterEach", e);
                     throw new HookException(this, e);
                 }
             }

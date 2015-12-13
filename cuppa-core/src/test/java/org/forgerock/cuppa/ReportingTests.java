@@ -1,9 +1,6 @@
 package org.forgerock.cuppa;
 
 import static org.forgerock.cuppa.Cuppa.*;
-import static org.forgerock.cuppa.Reporter.Outcome.ERRORED;
-import static org.forgerock.cuppa.Reporter.Outcome.FAILED;
-import static org.forgerock.cuppa.Reporter.Outcome.PASSED;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -73,7 +70,7 @@ public class ReportingTests {
         Cuppa.runTests(reporter);
 
         //Then
-        verify(reporter).testOutcome("test", PASSED);
+        verify(reporter).testPass("test");
     }
 
     @Test
@@ -81,10 +78,11 @@ public class ReportingTests {
 
         //Given
         Reporter reporter = mock(Reporter.class);
+        AssertionError assertionError = new AssertionError();
         {
             describe("describe", () -> {
                 it("test", () -> {
-                    throw new AssertionError();
+                    throw assertionError;
                 });
             });
         }
@@ -93,7 +91,7 @@ public class ReportingTests {
         Cuppa.runTests(reporter);
 
         //Then
-        verify(reporter).testOutcome("test", FAILED);
+        verify(reporter).testFail("test", assertionError);
     }
 
     @Test
@@ -101,10 +99,11 @@ public class ReportingTests {
 
         //Given
         Reporter reporter = mock(Reporter.class);
+        IllegalStateException exception = new IllegalStateException();
         {
             describe("describe", () -> {
                 it("test", () -> {
-                    throw new IllegalStateException();
+                    throw exception;
                 });
             });
         }
@@ -113,7 +112,7 @@ public class ReportingTests {
         Cuppa.runTests(reporter);
 
         //Then
-        verify(reporter).testOutcome("test", ERRORED);
+        verify(reporter).testError("test", exception);
     }
 
     @Test
@@ -176,7 +175,7 @@ public class ReportingTests {
         inOrder.verify(reporter).start();
         inOrder.verify(reporter).describeStart("describe");
         inOrder.verify(reporter).describeStart("when");
-        inOrder.verify(reporter).testOutcome("test", PASSED);
+        inOrder.verify(reporter).testPass("test");
         inOrder.verify(reporter).describeEnd("when");
         inOrder.verify(reporter).describeEnd("describe");
         inOrder.verify(reporter).end();

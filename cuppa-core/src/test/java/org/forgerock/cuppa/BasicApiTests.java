@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.forgerock.cuppa.Cuppa.*;
 import static org.forgerock.cuppa.Cuppa.when;
-import static org.forgerock.cuppa.Reporter.Outcome.*;
 import static org.mockito.Mockito.*;
 
 import java.util.Arrays;
@@ -172,7 +171,7 @@ public class BasicApiTests {
         Cuppa.runTests(reporter);
 
         //Then
-        verify(reporter).testOutcome("runs the test, which errors", ERRORED);
+        verify(reporter).testError(eq("runs the test, which errors"), isA(CuppaException.class));
     }
 
     @Test
@@ -196,7 +195,7 @@ public class BasicApiTests {
         Cuppa.runTests(reporter);
 
         //Then
-        verify(reporter).testOutcome("runs the test, which errors", ERRORED);
+        verify(reporter).testError(eq("runs the test, which errors"), isA(CuppaException.class));
     }
 
     @Test
@@ -223,8 +222,8 @@ public class BasicApiTests {
         Cuppa.runTests(reporter);
 
         //Then
-        verify(reporter).testOutcome("runs the first test, which errors", ERRORED);
-        verify(reporter).testOutcome("runs the second test, which passes", PASSED);
+        verify(reporter).testError(eq("runs the first test, which errors"), isA(CuppaException.class));
+        verify(reporter).testPass("runs the second test, which passes");
     }
 
     @Test
@@ -246,7 +245,7 @@ public class BasicApiTests {
         Cuppa.runTests(reporter);
 
         //Then
-        verify(reporter).testOutcome("runs the test, which fails", FAILED);
+        verify(reporter).testFail(eq("runs the test, which fails"), any(AssertionError.class));
     }
 
     @Test
@@ -254,11 +253,12 @@ public class BasicApiTests {
 
         //Given
         Reporter reporter = mock(Reporter.class);
+        IllegalStateException exception = new IllegalStateException();
         {
             describe("basic API usage", () -> {
                 when("the 'when' block is run", () -> {
                     it("runs the test, which errors", () -> {
-                        throw new RuntimeException();
+                        throw exception;
                     });
                 });
             });
@@ -268,7 +268,7 @@ public class BasicApiTests {
         Cuppa.runTests(reporter);
 
         //Then
-        verify(reporter).testOutcome("runs the test, which errors", ERRORED);
+        verify(reporter).testError("runs the test, which errors", exception);
     }
 
     @Test
@@ -296,9 +296,9 @@ public class BasicApiTests {
         Cuppa.runTests(reporter);
 
         //Then
-        verify(reporter).testOutcome("runs the first test, which errors", ERRORED);
-        verify(reporter).testOutcome("runs the second test, which fails", FAILED);
-        verify(reporter).testOutcome("runs the third test, which passes", PASSED);
+        verify(reporter).testError(eq("runs the first test, which errors"), any(Throwable.class));
+        verify(reporter).testFail(eq("runs the second test, which fails"), any(AssertionError.class));
+        verify(reporter).testPass("runs the third test, which passes");
     }
 
     @Test
@@ -306,11 +306,12 @@ public class BasicApiTests {
 
         //Given
         Reporter reporter = mock(Reporter.class);
+        Exception exception = new Exception();
         {
             describe("basic API usage", () -> {
                 when("the 'when' is run", () -> {
                     it("runs the test", () -> {
-                        throw new Exception();
+                        throw exception;
                     });
                 });
             });
@@ -320,6 +321,6 @@ public class BasicApiTests {
         Cuppa.runTests(reporter);
 
         //Then
-        verify(reporter).testOutcome("runs the test", ERRORED);
+        verify(reporter).testError("runs the test", exception);
     }
 }

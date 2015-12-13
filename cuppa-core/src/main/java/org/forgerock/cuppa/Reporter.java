@@ -30,19 +30,25 @@ public interface Reporter {
     void describeEnd(String description);
 
     /**
-     * Records the outcome of a test.
+     * Called after a test has successfully executed without throwing an exception.
      *
      * @param description The description of the test.
-     * @param outcome The outcome of the test.
      */
-    void testOutcome(String description, Outcome outcome);
+    void testPass(String description);
 
     /**
-     * The possible outcomes of a test.
+     * Called after a test has failed due to throwing a assertion error.
+     *
+     * @param description The description of the test.
+     * @param cause The assertion error that the test threw.
      */
-    enum Outcome {
-        PASSED,
-        FAILED,
-        ERRORED
-    }
+    void testFail(String description, AssertionError cause);
+
+    /**
+     * Called after a test has failed due to throwing an exception that wasn't an assertion error.
+     *
+     * @param description The description of the test.
+     * @param cause The throwable that the test threw.
+     */
+    void testError(String description, Throwable cause);
 }
