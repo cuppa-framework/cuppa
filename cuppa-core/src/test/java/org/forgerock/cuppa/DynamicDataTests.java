@@ -1,0 +1,46 @@
+package org.forgerock.cuppa;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.forgerock.cuppa.Cuppa.*;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+
+import java.util.Arrays;
+
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
+
+public class DynamicDataTests {
+
+    @BeforeMethod
+    public void setup() {
+        Cuppa.reset();
+    }
+
+    @Test
+    public void canCreateTestsDynamically() {
+
+        //Given
+        Reporter reporter = mock(Reporter.class);
+        int[] testInputs = {1, 2, 3};
+        {
+            describe("dynamic data", () -> {
+                Arrays.stream(testInputs).forEach((i) -> {
+                    it("test " + i, () -> {
+                        assertThat(i).isLessThan(3);
+                    });
+                });
+            });
+        }
+
+        //When
+        runTests(reporter);
+
+        //Then
+        verify(reporter).testPass("test 1");
+        verify(reporter).testPass("test 2");
+        verify(reporter).testFail(eq("test 3"), any(AssertionError.class));
+    }
+}
