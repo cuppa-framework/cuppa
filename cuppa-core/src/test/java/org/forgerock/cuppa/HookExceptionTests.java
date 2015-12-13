@@ -9,7 +9,7 @@ import static org.mockito.Mockito.*;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
@@ -17,8 +17,8 @@ import org.testng.annotations.Test;
 
 public class HookExceptionTests {
 
-    private static final List<BiConsumer<String, HookFunction>> ALL_HOOKS =
-            new ArrayList<BiConsumer<String, HookFunction>>() {
+    private static final List<Consumer<HookFunction>> ALL_HOOKS =
+            new ArrayList<Consumer<HookFunction>>() {
         {
             add(Cuppa::before);
             add(Cuppa::after);
@@ -655,7 +655,7 @@ public class HookExceptionTests {
     @DataProvider
     private Iterator<Object[]> testInHooks() {
         return ALL_HOOKS.stream()
-                .map(f -> (TestDefinitionFunction) () -> f.accept("", () -> it("", TestFunction.identity())))
+                .map(f -> (TestDefinitionFunction) () -> f.accept(() -> it("", TestFunction.identity())))
                 .map(f -> new Object[]{f})
                 .iterator();
     }
@@ -682,7 +682,7 @@ public class HookExceptionTests {
     @DataProvider
     private Iterator<Object[]> hooks() {
         return ALL_HOOKS.stream()
-                .map(f -> (TestFunction) () -> f.accept("", HookFunction.identity()))
+                .map(f -> (TestFunction) () -> f.accept(HookFunction.identity()))
                 .map(f -> new Object[]{f})
                 .iterator();
     }
@@ -715,8 +715,7 @@ public class HookExceptionTests {
         return ALL_HOOKS.stream()
                 .flatMap(f ->
                         ALL_HOOKS.stream().map(g ->
-                                (TestDefinitionFunction) () -> f.accept("", () ->
-                                        g.accept("", HookFunction.identity()))))
+                                (TestDefinitionFunction) () -> f.accept(() -> g.accept(HookFunction.identity()))))
                 .map(f -> new Object[]{f})
                 .iterator();
     }
@@ -738,5 +737,34 @@ public class HookExceptionTests {
 
         //Then
         verify(reporter).testError(anyString(), isA(CuppaException.class));
+    }
+
+    @DataProvider
+    private Iterator<Object[]> hooksThrowExceptions() {
+        return ALL_HOOKS.stream()
+                .map(f -> (TestDefinitionFunction) () -> f.accept(() -> {
+                    throw new Exception();
+                }))
+                .map(f -> new Object[]{f})
+                .iterator();
+    }
+
+    @Test(dataProvider = "hooksThrowExceptions")
+    public void shouldAllowHookToThrowCheckedException(TestDefinitionFunction hook) throws Exception {
+
+        //Given
+        Reporter reporter = mock(Reporter.class);
+        {
+            describe("before blocks", () -> {
+                hook.apply();
+                it("a test", TestFunction.identity());
+            });
+        }
+
+        //When
+        Cuppa.runTests(reporter);
+
+        //Then
+        verify(reporter).testError(anyString(), isA(Exception.class));
     }
 }
