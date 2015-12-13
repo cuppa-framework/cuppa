@@ -32,7 +32,7 @@ public final class Cuppa {
 
     /**
      * Registers a described suite of tests to be run.
-
+     *
      * @param description The description of the 'describe' block.
      * @param function The 'describe' block.
      */
@@ -224,8 +224,9 @@ public final class Cuppa {
             throw new IllegalStateException("Invariant broken! The stack should never be empty.");
         }
         runningTests = true;
+        boolean hasOnlyTests = root.hasOnlyTests();
         reporter.start();
-        root.runTests(reporter);
+        root.runTests(hasOnlyTests, reporter);
         reporter.end();
     }
 

@@ -16,6 +16,10 @@ class TestBlock {
         this.function = function;
     }
 
+    Behaviour getBehaviour() {
+        return behaviour;
+    }
+
     void runTest(Behaviour behaviour, Reporter reporter) {
         if (behaviour.combine(this.behaviour) != SKIP) {
             try {

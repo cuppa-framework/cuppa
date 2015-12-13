@@ -11,7 +11,11 @@ public enum Behaviour {
     /**
      * Do not run the test(s). The test(s) may still be included in test reports, but marked as skipped.
      */
-    SKIP;
+    SKIP,
+    /**
+     * Run the test(s) and ignore all other tests not marked as ONLY.
+     */
+    ONLY;
 
     /**
      * Combine this behaviour with another behaviour.
@@ -19,9 +23,11 @@ public enum Behaviour {
      * @return The combined behaviour
      */
     Behaviour combine(Behaviour behaviour) {
-        if (this == SKIP) {
+        if (this == SKIP || behaviour == SKIP) {
             return SKIP;
+        } else if (this == ONLY || behaviour == ONLY) {
+            return ONLY;
         }
-        return behaviour;
+        return NORMAL;
     }
 }

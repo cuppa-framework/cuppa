@@ -1,12 +1,11 @@
 package org.forgerock.cuppa;
 
+import static org.forgerock.cuppa.Behaviour.ONLY;
 import static org.forgerock.cuppa.Behaviour.SKIP;
-import static org.forgerock.cuppa.Cuppa.describe;
-import static org.forgerock.cuppa.Cuppa.it;
+import static org.forgerock.cuppa.Cuppa.*;
 import static org.forgerock.cuppa.Cuppa.when;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.*;
 
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -104,5 +103,164 @@ public class SkipTests {
         //Then
         verify(reporter).testSkip("test1");
         verify(reporter).testSkip("test2");
+    }
+
+    @Test
+    public void shouldIgnoreTestsIfOtherTestIsMarkedOnly() throws Exception {
+
+        //Given
+        TestFunction testFunctionBefore = mock(TestFunction.class);
+        TestFunction testFunction = mock(TestFunction.class);
+        TestFunction testFunctionAfter = mock(TestFunction.class);
+        {
+            describe("basic API usage", () -> {
+                when("the 'when' is run", () -> {
+                    it("before test", testFunctionBefore);
+                    it(ONLY, "test", testFunction);
+                    it("after test", testFunctionAfter);
+                });
+            });
+        }
+
+        //When
+        Cuppa.runTests(mock(Reporter.class));
+
+        //Then
+        verify(testFunctionBefore, never()).apply();
+        verify(testFunction).apply();
+        verify(testFunctionAfter, never()).apply();
+    }
+
+    @Test
+    public void shouldNotReportTestsIfOtherTestIsMarkedOnly() throws Exception {
+
+        //Given
+        Reporter reporter = mock(Reporter.class);
+        {
+            describe("basic API usage", () -> {
+                when("the 'when' is run", () -> {
+                    it("before test", TestFunction.identity());
+                    it(ONLY, "test", TestFunction.identity());
+                    it("after test", TestFunction.identity());
+                });
+            });
+        }
+
+        //When
+        Cuppa.runTests(reporter);
+
+        //Then
+        verify(reporter).testPass(anyString());
+        verify(reporter).testPass("test");
+    }
+
+    @Test
+    public void shouldRunAllTestsMarkedOnly() throws Exception {
+
+        //Given
+        TestFunction testFunctionOnly1 = mock(TestFunction.class);
+        TestFunction testFunctionOnly2 = mock(TestFunction.class);
+        {
+            describe("basic API usage", () -> {
+                when("the 'when' is run", () -> {
+                    it("before test", TestFunction.identity());
+                    it(ONLY, "only test 1", testFunctionOnly1);
+                    it(ONLY, "only test 2", testFunctionOnly2);
+                });
+            });
+        }
+
+        //When
+        Cuppa.runTests(mock(Reporter.class));
+
+        //Then
+        verify(testFunctionOnly1).apply();
+        verify(testFunctionOnly2).apply();
+    }
+
+    @Test
+    public void shouldRunTestsInBlockMarkedOnly() throws Exception {
+
+        //Given
+        TestFunction testFunction = mock(TestFunction.class);
+        TestFunction testFunctionAfter = mock(TestFunction.class);
+        {
+            describe("basic API usage", () -> {
+                when(ONLY, "only when", () -> {
+                    it("test", testFunction);
+                });
+                when("after when", () -> {
+                    it("test", testFunctionAfter);
+                });
+            });
+        }
+
+        //When
+        Cuppa.runTests(mock(Reporter.class));
+
+        //Then
+        verify(testFunction).apply();
+        verify(testFunctionAfter, never()).apply();
+    }
+
+    @Test
+    public void shouldSkipTestsMarkedSkipInBlockMarkedOnly() throws Exception {
+
+        //Given
+        TestFunction testFunction = mock(TestFunction.class);
+        {
+            describe("basic API usage", () -> {
+                when(ONLY, "only when", () -> {
+                    it(SKIP, "test", testFunction);
+                });
+            });
+        }
+
+        //When
+        Cuppa.runTests(mock(Reporter.class));
+
+        //Then
+        verify(testFunction, never()).apply();
+    }
+
+    @Test
+    public void shouldSkipTestsMarkedOnlyInBlockMarkedSkip() throws Exception {
+
+        //Given
+        TestFunction testFunction = mock(TestFunction.class);
+        {
+            describe("basic API usage", () -> {
+                when(SKIP, "only when", () -> {
+                    it(ONLY, "test", testFunction);
+                });
+            });
+        }
+
+        //When
+        Cuppa.runTests(mock(Reporter.class));
+
+        //Then
+        verify(testFunction, never()).apply();
+    }
+
+    @Test
+    public void shouldIgnoreTestIfOtherTestIsMarkedOnlyInSkipBlock() throws Exception {
+
+        //Given
+        TestFunction testFunction = mock(TestFunction.class);
+        {
+            describe("basic API usage", () -> {
+                when(SKIP, "only when", () -> {
+                    it(ONLY, "test", TestFunction.identity());
+                });
+                it("test 2", testFunction);
+            });
+        }
+
+        //When
+        Cuppa.runTests(mock(Reporter.class));
+
+        //Then
+        verify(testFunction, never()).apply();
     }
 }
