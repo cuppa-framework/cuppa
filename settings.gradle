@@ -1,0 +1,4 @@
+rootProject.name = 'cuppa'
+include ':cuppa-core'
+
+project(':cuppa-core').projectDir = "$rootDir/cuppa-core" as File
