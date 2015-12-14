@@ -1,0 +1,38 @@
+allprojects  {
+  apply plugin: 'maven'
+
+  group = 'org.forgerock'
+  version = '1.0.0-SNAPSHOT'
+}
+
+subprojects {
+  apply plugin: 'java'
+  apply plugin: 'checkstyle'
+
+  sourceCompatibility = 1.8
+  targetCompatibility = 1.8
+  
+  repositories {
+    mavenLocal()
+    mavenCentral()  
+  }
+  
+  dependencies {
+    testCompile group: 'org.testng', name: 'testng', version:'6.9.9'
+    testCompile group: 'org.assertj', name: 'assertj-core', version:'3.2.0'
+    testCompile group: 'org.mockito', name: 'mockito-all', version:'1.10.19'
+
+    checkstyle 'com.puppycrawl.tools:checkstyle:6.13'
+  }
+
+  checkstyle {
+    configFile = new File(rootDir, "config/checkstyle/checkstyle.xml")
+    configProperties['samedir'] = new File(rootDir, "config/checkstyle")
+  }
+
+  test {
+    useTestNG()
+    includes = [ "**/*Test.java", "**/*Tests.java" ]
+  }
+
+}

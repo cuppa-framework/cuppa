@@ -5,6 +5,9 @@
 
 <module name="Checker">
     <!-- SUPPRESSION FILTERS -->
+    <module name="SuppressionFilter">
+        <property name="file" value="${samedir}/suppressions.xml"/>
+    </module>
     <!--
         Toggle Checkstyle on/off
 
