@@ -19,6 +19,8 @@ class TestBlock {
             reporter.testPass(description);
         } catch (AssertionError e) {
             reporter.testFail(description, e);
+        } catch (PendingException e) {
+            reporter.testPending(description);
         } catch (Exception e) {
             reporter.testError(description, e);
         }
