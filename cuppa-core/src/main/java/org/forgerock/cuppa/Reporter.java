@@ -51,4 +51,11 @@ public interface Reporter {
      * @param cause The throwable that the test threw.
      */
     void testError(String description, Throwable cause);
+
+    /**
+     * Called when a test cannot be run as it has not yet been implemented.
+     *
+     * @param description The description of the test.
+     */
+    void testPending(String description);
 }

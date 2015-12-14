@@ -154,6 +154,17 @@ public final class Cuppa {
         getCurrentDescribeBlock().addTest(new TestBlock(description, function));
     }
 
+    /**
+     * Registers a pending test function that has yet to be implemented.
+     *
+     * @param description The description of the test function.
+     */
+    public static void it(String description) {
+        getCurrentDescribeBlock().addTest(new TestBlock(description, () -> {
+            throw new PendingException();
+        }));
+    }
+
     private static void assertNotRunningTests(String blockType) {
         if (runningTests) {
             throw new CuppaException(new IllegalStateException("Cannot declare new '" + blockType
