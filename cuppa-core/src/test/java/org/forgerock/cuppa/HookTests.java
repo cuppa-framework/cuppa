@@ -284,7 +284,7 @@ public class HookTests {
     }
 
     private void verifiedCalledInOrder(HookFunction... functions) {
-        InOrder inOrder = inOrder(functions);
+        InOrder inOrder = inOrder((Object) functions);
         Arrays.stream(functions).forEach((f) -> {
             try {
                 inOrder.verify(f).apply();
