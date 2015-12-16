@@ -12,7 +12,9 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.forgerock.cuppa.Cuppa;
-import org.forgerock.cuppa.Reporter;
+import org.forgerock.cuppa.model.Hook;
+import org.forgerock.cuppa.model.Test;
+import org.forgerock.cuppa.model.TestBlock;
 
 /**
  * An RSpec-like reporter.
@@ -86,44 +88,49 @@ public final class DefaultReporter implements Reporter {
     }
 
     @Override
-    public void describeStart(String description) {
-        stream.println(getIndent() + description);
-        blockStack.addLast(description);
+    public void describeStart(TestBlock testBlock) {
+        stream.println(getIndent() + testBlock.description);
+        blockStack.addLast(testBlock.description);
     }
 
     @Override
-    public void describeEnd(String description) {
+    public void describeEnd(TestBlock testBlock) {
         blockStack.removeLast();
     }
 
     @Override
-    public void testPass(String description) {
+    public void hookError(Hook hook, Throwable cause) {
+
+    }
+
+    @Override
+    public void testPass(Test test) {
         passed++;
-        stream.println(getIndent() + "✓ " + description);
+        stream.println(getIndent() + "✓ " + test.description);
     }
 
     @Override
-    public void testError(String description, Throwable cause) {
+    public void testError(Test test, Throwable cause) {
         failed++;
-        failures.add(new TestFailure(String.join(" ", blockStack) + " " + description, cause));
-        stream.println(getIndent() + failures.size() + ") " + description);
+        failures.add(new TestFailure(String.join(" ", blockStack) + " " + test.description, cause));
+        stream.println(getIndent() + failures.size() + ") " + test.description);
     }
 
     @Override
-    public void testFail(String description, AssertionError cause) {
-        testError(description, cause);
+    public void testFail(Test test, AssertionError cause) {
+        testError(test, cause);
     }
 
     @Override
-    public void testPending(String description) {
+    public void testPending(Test test) {
         pending++;
-        stream.println(getIndent() + "- " + description);
+        stream.println(getIndent() + "- " + test.description);
     }
 
     @Override
-    public void testSkip(String description) {
+    public void testSkip(Test test) {
         skipped++;
-        stream.println(getIndent() + "- " + description);
+        stream.println(getIndent() + "- " + test.description);
     }
 
     private String getIndent() {

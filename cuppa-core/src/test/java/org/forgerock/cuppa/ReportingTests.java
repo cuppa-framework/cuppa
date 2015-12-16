@@ -1,10 +1,12 @@
 package org.forgerock.cuppa;
 
 import static org.forgerock.cuppa.Cuppa.*;
-import static org.mockito.Mockito.inOrder;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
+import static org.forgerock.cuppa.Cuppa.when;
+import static org.forgerock.cuppa.ModelFinder.findTest;
+import static org.forgerock.cuppa.ModelFinder.findTestBlock;
+import static org.mockito.Mockito.*;
 
+import org.forgerock.cuppa.reporters.Reporter;
 import org.mockito.InOrder;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -70,7 +72,7 @@ public class ReportingTests {
         Cuppa.runTests(reporter);
 
         //Then
-        verify(reporter).testPass("test");
+        verify(reporter).testPass(findTest("test"));
     }
 
     @Test
@@ -91,7 +93,7 @@ public class ReportingTests {
         Cuppa.runTests(reporter);
 
         //Then
-        verify(reporter).testFail("test", assertionError);
+        verify(reporter).testFail(findTest("test"), assertionError);
     }
 
     @Test
@@ -112,7 +114,7 @@ public class ReportingTests {
         Cuppa.runTests(reporter);
 
         //Then
-        verify(reporter).testError("test", exception);
+        verify(reporter).testError(findTest("test"), exception);
     }
 
     @Test
@@ -131,7 +133,7 @@ public class ReportingTests {
         Cuppa.runTests(reporter);
 
         //Then
-        verify(reporter).describeStart("describe");
+        verify(reporter).describeStart(findTestBlock("describe"));
     }
 
     @Test
@@ -150,7 +152,7 @@ public class ReportingTests {
         Cuppa.runTests(reporter);
 
         //Then
-        verify(reporter).describeEnd("describe");
+        verify(reporter).describeEnd(findTestBlock("describe"));
     }
 
     @Test
@@ -173,11 +175,11 @@ public class ReportingTests {
         //Then
         InOrder inOrder = inOrder(reporter);
         inOrder.verify(reporter).start();
-        inOrder.verify(reporter).describeStart("describe");
-        inOrder.verify(reporter).describeStart("when");
-        inOrder.verify(reporter).testPass("test");
-        inOrder.verify(reporter).describeEnd("when");
-        inOrder.verify(reporter).describeEnd("describe");
+        inOrder.verify(reporter).describeStart(findTestBlock("describe"));
+        inOrder.verify(reporter).describeStart(findTestBlock("when"));
+        inOrder.verify(reporter).testPass(findTest("test"));
+        inOrder.verify(reporter).describeEnd(findTestBlock("when"));
+        inOrder.verify(reporter).describeEnd(findTestBlock("describe"));
         inOrder.verify(reporter).end();
     }
 }

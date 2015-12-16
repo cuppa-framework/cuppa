@@ -1,15 +1,17 @@
 package org.forgerock.cuppa;
 
+import org.forgerock.cuppa.model.TestBlock;
+
 class HookException extends RuntimeException {
 
-    private final DescribeBlock describeBlock;
+    private final TestBlock testBlock;
 
-    HookException(DescribeBlock describeBlock, Throwable cause) {
+    HookException(TestBlock testBlock, Throwable cause) {
         super(cause);
-        this.describeBlock = describeBlock;
+        this.testBlock = testBlock;
     }
 
-    DescribeBlock getDescribeBlock() {
-        return describeBlock;
+    TestBlock getTestBlock() {
+        return testBlock;
     }
 }

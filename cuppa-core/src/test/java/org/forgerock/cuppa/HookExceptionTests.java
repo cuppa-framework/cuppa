@@ -4,21 +4,25 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.forgerock.cuppa.Cuppa.*;
 import static org.forgerock.cuppa.Cuppa.after;
 import static org.forgerock.cuppa.Cuppa.when;
+import static org.forgerock.cuppa.ModelFinder.findHook;
+import static org.forgerock.cuppa.ModelFinder.findTest;
 import static org.mockito.Mockito.*;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
+import org.forgerock.cuppa.reporters.Reporter;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 public class HookExceptionTests {
 
-    private static final List<Consumer<HookFunction>> ALL_HOOKS =
-            new ArrayList<Consumer<HookFunction>>() {
+    private static final List<BiConsumer<String, HookFunction>> ALL_HOOKS =
+            new ArrayList<BiConsumer<String, HookFunction>>() {
         {
             add(Cuppa::before);
             add(Cuppa::after);
@@ -42,7 +46,7 @@ public class HookExceptionTests {
         doThrow(exception).when(beforeFunction).apply();
         {
             describe("before blocks", () -> {
-                before(beforeFunction);
+                before("hook", beforeFunction);
                 it("a test", () -> {
                 });
                 it("a second test", () -> {
@@ -54,7 +58,7 @@ public class HookExceptionTests {
         Cuppa.runTests(reporter);
 
         //Then
-        verify(reporter).testError("before", exception);
+        verify(reporter).hookError(findHook("hook"), exception);
     }
 
     @Test
@@ -202,7 +206,7 @@ public class HookExceptionTests {
         doThrow(exception).when(beforeEachFunction).apply();
         {
             describe("beforeEach blocks", () -> {
-                beforeEach(beforeEachFunction);
+                beforeEach("hook", beforeEachFunction);
                 it("a test", () -> {
                 });
                 it("a second test", () -> {
@@ -214,7 +218,7 @@ public class HookExceptionTests {
         Cuppa.runTests(reporter);
 
         //Then
-        verify(reporter).testError("beforeEach", exception);
+        verify(reporter).hookError(findHook("hook"), exception);
     }
 
     @Test
@@ -428,7 +432,7 @@ public class HookExceptionTests {
         doThrow(exception).when(beforeFunction).apply();
         {
             describe("before blocks", () -> {
-                before(beforeFunction);
+                before("hook", beforeFunction);
                 it("does not run the first test", TestFunction.identity());
             });
         }
@@ -437,9 +441,9 @@ public class HookExceptionTests {
         Cuppa.runTests(reporter);
 
         //Then
-        verify(reporter).testError("before", exception);
-        verify(reporter, never()).testFail(anyString(), any());
-        verify(reporter, never()).testPass(anyString());
+        verify(reporter).hookError(findHook("hook"), exception);
+        verify(reporter, never()).testFail(any(), any());
+        verify(reporter, never()).testPass(any());
     }
 
     @Test
@@ -452,7 +456,7 @@ public class HookExceptionTests {
         doThrow(exception).when(afterFunction).apply();
         {
             describe("after blocks", () -> {
-                after(afterFunction);
+                after("hook", afterFunction);
                 it("runs the first test", TestFunction.identity());
             });
         }
@@ -461,7 +465,7 @@ public class HookExceptionTests {
         Cuppa.runTests(reporter);
 
         //Then
-        verify(reporter).testError("after", exception);
+        verify(reporter).hookError(findHook("hook"), exception);
     }
 
     @Test
@@ -474,7 +478,7 @@ public class HookExceptionTests {
         doThrow(exception).when(beforeEachFunction).apply();
         {
             describe("beforeEach blocks", () -> {
-                beforeEach(beforeEachFunction);
+                beforeEach("hook", beforeEachFunction);
                 it("does not run the test", TestFunction.identity());
             });
         }
@@ -483,9 +487,9 @@ public class HookExceptionTests {
         Cuppa.runTests(reporter);
 
         //Then
-        verify(reporter).testError("beforeEach", exception);
-        verify(reporter, never()).testFail(anyString(), any());
-        verify(reporter, never()).testPass(anyString());
+        verify(reporter).hookError(findHook("hook"), exception);
+        verify(reporter, never()).testFail(any(), any());
+        verify(reporter, never()).testPass(any());
     }
 
     @Test
@@ -498,7 +502,7 @@ public class HookExceptionTests {
         doThrow(exception).when(afterEachFunction).apply();
         {
             describe("afterEach blocks", () -> {
-                afterEach(afterEachFunction);
+                afterEach("hook", afterEachFunction);
                 it("runs the first test", TestFunction.identity());
             });
         }
@@ -507,7 +511,7 @@ public class HookExceptionTests {
         Cuppa.runTests(reporter);
 
         //Then
-        verify(reporter).testError("afterEach", exception);
+        verify(reporter).hookError(findHook("hook"), exception);
     }
 
     @Test
@@ -523,8 +527,8 @@ public class HookExceptionTests {
         doThrow(afterEachException).when(afterEachFunction).apply();
         {
             describe("afterEach blocks", () -> {
-                beforeEach(beforeEachFunction);
-                afterEach(afterEachFunction);
+                beforeEach("beforeEach", beforeEachFunction);
+                afterEach("afterEach", afterEachFunction);
                 it("runs the first test", TestFunction.identity());
             });
         }
@@ -533,11 +537,11 @@ public class HookExceptionTests {
         Cuppa.runTests(reporter);
 
         //Then
-        verify(reporter).testError("beforeEach", beforeEachException);
-        verify(reporter).testError("afterEach", afterEachException);
-        verify(reporter, times(2)).testError(anyString(), any());
-        verify(reporter, never()).testFail(anyString(), any());
-        verify(reporter, never()).testPass(anyString());
+        verify(reporter).hookError(findHook("beforeEach"), beforeEachException);
+        verify(reporter).hookError(findHook("afterEach"), afterEachException);
+        verify(reporter, times(2)).hookError(any(), any());
+        verify(reporter, never()).testFail(any(), any());
+        verify(reporter, never()).testPass(any());
     }
 
     @Test
@@ -655,7 +659,7 @@ public class HookExceptionTests {
     @DataProvider
     private Iterator<Object[]> testInHooks() {
         return ALL_HOOKS.stream()
-                .map(f -> (TestDefinitionFunction) () -> f.accept(() -> it("", TestFunction.identity())))
+                .map(f -> (TestDefinitionFunction) () -> f.accept("hook", () -> it("", TestFunction.identity())))
                 .map(f -> new Object[]{f})
                 .iterator();
     }
@@ -676,13 +680,13 @@ public class HookExceptionTests {
         Cuppa.runTests(reporter);
 
         //Then
-        verify(reporter).testError(anyString(), isA(CuppaException.class));
+        verify(reporter).hookError(eq(findHook("hook")), isA(CuppaException.class));
     }
 
     @DataProvider
     private Iterator<Object[]> hooks() {
         return ALL_HOOKS.stream()
-                .map(f -> (TestFunction) () -> f.accept(HookFunction.identity()))
+                .map(f -> (TestFunction) () -> f.accept("hook", HookFunction.identity()))
                 .map(f -> new Object[]{f})
                 .iterator();
     }
@@ -699,7 +703,7 @@ public class HookExceptionTests {
         Reporter reporter = mock(Reporter.class);
         {
             describe("", () -> {
-                it("", hook);
+                it("test", hook);
             });
         }
 
@@ -707,7 +711,7 @@ public class HookExceptionTests {
         Cuppa.runTests(reporter);
 
         //Then
-        verify(reporter).testError(eq(""), isA(CuppaException.class));
+        verify(reporter).testError(eq(findTest("test")), isA(CuppaException.class));
     }
 
     @DataProvider
@@ -715,7 +719,7 @@ public class HookExceptionTests {
         return ALL_HOOKS.stream()
                 .flatMap(f ->
                         ALL_HOOKS.stream().map(g ->
-                                (TestDefinitionFunction) () -> f.accept(() -> g.accept(HookFunction.identity()))))
+                                (TestDefinitionFunction) () -> f.accept("hook", () -> g.accept("", HookFunction.identity()))))
                 .map(f -> new Object[]{f})
                 .iterator();
     }
@@ -736,13 +740,13 @@ public class HookExceptionTests {
         Cuppa.runTests(reporter);
 
         //Then
-        verify(reporter).testError(anyString(), isA(CuppaException.class));
+        verify(reporter).hookError(eq(findHook("hook")), isA(CuppaException.class));
     }
 
     @DataProvider
     private Iterator<Object[]> hooksThrowExceptions() {
         return ALL_HOOKS.stream()
-                .map(f -> (TestDefinitionFunction) () -> f.accept(() -> {
+                .map(f -> (TestDefinitionFunction) () -> f.accept("hook", () -> {
                     throw new Exception();
                 }))
                 .map(f -> new Object[]{f})
@@ -765,6 +769,6 @@ public class HookExceptionTests {
         Cuppa.runTests(reporter);
 
         //Then
-        verify(reporter).testError(anyString(), isA(Exception.class));
+        verify(reporter).hookError(eq(findHook("hook")), isA(Exception.class));
     }
 }

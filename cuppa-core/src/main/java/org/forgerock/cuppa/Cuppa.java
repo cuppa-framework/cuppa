@@ -2,9 +2,14 @@ package org.forgerock.cuppa;
 
 import static org.forgerock.cuppa.Behaviour.NORMAL;
 
+import java.util.ArrayDeque;
 import java.util.Arrays;
+import java.util.Deque;
 import java.util.Optional;
-import java.util.Stack;
+
+import org.forgerock.cuppa.model.Test;
+import org.forgerock.cuppa.model.TestBlock;
+import org.forgerock.cuppa.reporters.Reporter;
 
 /**
  * Heart of the Cuppa test framework. Responsible for registering and maintaining the state of the
@@ -20,8 +25,8 @@ import java.util.Stack;
  */
 public final class Cuppa {
 
-    private static DescribeBlock root;
-    private static Stack<DescribeBlock> stack;
+    private static TestBlockBuilder rootBuilder;
+    private static Deque<TestBlockBuilder> stack;
     private static boolean runningTests;
 
     static {
@@ -50,13 +55,13 @@ public final class Cuppa {
      */
     public static void describe(Behaviour behaviour, String description, TestDefinitionFunction function) {
         assertNotRunningTests("describe");
-        DescribeBlock describeBlock = new DescribeBlock(behaviour, description);
-        getCurrentDescribeBlock().addDescribeBlock(describeBlock);
-        stack.push(describeBlock);
+        TestBlockBuilder testBlockBuilder = new TestBlockBuilder(behaviour, description);
+        stack.addLast(testBlockBuilder);
         try {
             function.apply();
         } finally {
-            stack.pop();
+            stack.removeLast();
+            getCurrentDescribeBlock().addTestBlock(testBlockBuilder.build());
         }
     }
 
@@ -187,7 +192,7 @@ public final class Cuppa {
     public static void it(Behaviour behaviour, String description, TestFunction function) {
         assertNotRunningTests("it");
         assertNotRootDescribeBlock("it", "when", "describe");
-        getCurrentDescribeBlock().addTest(new TestBlock(behaviour, description, function));
+        getCurrentDescribeBlock().addTest(new Test(behaviour, description, function));
     }
 
     /**
@@ -196,7 +201,7 @@ public final class Cuppa {
      * @param description The description of the test function.
      */
     public static void it(String description) {
-        getCurrentDescribeBlock().addTest(new TestBlock(NORMAL, description, () -> {
+        getCurrentDescribeBlock().addTest(new Test(NORMAL, description, () -> {
             throw new PendingException();
         }));
     }
@@ -209,7 +214,7 @@ public final class Cuppa {
     }
 
     private static void assertNotRootDescribeBlock(String blockType, String... allowedBlockTypes) {
-        if (getCurrentDescribeBlock().equals(root)) {
+        if (getCurrentDescribeBlock().equals(rootBuilder)) {
             throw new CuppaException(new IllegalStateException("A '" + blockType + "' must be nested within a "
                     + String.join(", ", allowedBlockTypes) + " function"));
         }
@@ -222,12 +227,12 @@ public final class Cuppa {
      */
     public static void runTests(Reporter reporter) {
         if (stack.size() != 1) {
-            throw new IllegalStateException("Invariant broken! The stack should never be empty.");
+            throw new IllegalStateException("runTests cannot be run from within a 'describe' or 'when'");
         }
         runningTests = true;
-        boolean hasOnlyTests = root.hasOnlyTests();
+        TestBlock rootBlock = rootBuilder.build();
         reporter.start();
-        root.runTests(hasOnlyTests, reporter);
+        new TestRunner().runTests(rootBlock, rootBlock.hasOnlyTests(), reporter);
         reporter.end();
     }
 
@@ -238,10 +243,9 @@ public final class Cuppa {
      */
     public static void reset() {
         runningTests = false;
-        root = new DescribeBlock(NORMAL, "");
-        stack = new Stack<DescribeBlock>() {
-            { push(root); }
-        };
+        rootBuilder = new TestBlockBuilder(NORMAL, "");
+        stack = new ArrayDeque<>();
+        stack.addLast(rootBuilder);
     }
 
     /**
@@ -268,7 +272,11 @@ public final class Cuppa {
         return stackTraceElements;
     }
 
-    private static DescribeBlock getCurrentDescribeBlock() {
-        return stack.peek();
+    private static TestBlockBuilder getCurrentDescribeBlock() {
+        return stack.getLast();
+    }
+
+    public static TestBlock getRootTestBlock() {
+        return rootBuilder.build();
     }
 }

@@ -4,9 +4,11 @@ import static org.forgerock.cuppa.Behaviour.ONLY;
 import static org.forgerock.cuppa.Behaviour.SKIP;
 import static org.forgerock.cuppa.Cuppa.*;
 import static org.forgerock.cuppa.Cuppa.when;
+import static org.forgerock.cuppa.ModelFinder.findTest;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.*;
 
+import org.forgerock.cuppa.reporters.Reporter;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
@@ -55,7 +57,7 @@ public class SkipTests {
         Cuppa.runTests(reporter);
 
         //Then
-        verify(reporter).testSkip("test");
+        verify(reporter).testSkip(findTest("test"));
     }
 
     @Test
@@ -101,8 +103,8 @@ public class SkipTests {
         Cuppa.runTests(reporter);
 
         //Then
-        verify(reporter).testSkip("test1");
-        verify(reporter).testSkip("test2");
+        verify(reporter).testSkip(findTest("test1"));
+        verify(reporter).testSkip(findTest("test2"));
     }
 
     @Test
@@ -150,8 +152,8 @@ public class SkipTests {
         Cuppa.runTests(reporter);
 
         //Then
-        verify(reporter).testPass(anyString());
-        verify(reporter).testPass("test");
+        verify(reporter).testPass(any());
+        verify(reporter).testPass(findTest("test"));
     }
 
     @Test

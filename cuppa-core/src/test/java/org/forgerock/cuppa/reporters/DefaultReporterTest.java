@@ -8,7 +8,6 @@ import static org.forgerock.cuppa.Cuppa.*;
 import java.io.ByteArrayOutputStream;
 
 import org.forgerock.cuppa.Cuppa;
-import org.forgerock.cuppa.Reporter;
 import org.forgerock.cuppa.TestFunction;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;

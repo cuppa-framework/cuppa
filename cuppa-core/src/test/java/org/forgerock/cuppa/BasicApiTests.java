@@ -4,11 +4,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.forgerock.cuppa.Cuppa.*;
 import static org.forgerock.cuppa.Cuppa.when;
+import static org.forgerock.cuppa.ModelFinder.findTest;
 import static org.mockito.Mockito.*;
 
 import java.util.Arrays;
+import java.util.Optional;
 import java.util.stream.Stream;
 
+import org.forgerock.cuppa.model.TestBlock;
+import org.forgerock.cuppa.reporters.Reporter;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
@@ -171,7 +175,7 @@ public class BasicApiTests {
         Cuppa.runTests(reporter);
 
         //Then
-        verify(reporter).testError(eq("runs the test, which errors"), isA(CuppaException.class));
+        verify(reporter).testError(eq(findTest("runs the test, which errors")), isA(CuppaException.class));
     }
 
     @Test
@@ -195,7 +199,7 @@ public class BasicApiTests {
         Cuppa.runTests(reporter);
 
         //Then
-        verify(reporter).testError(eq("runs the test, which errors"), isA(CuppaException.class));
+        verify(reporter).testError(eq(findTest("runs the test, which errors")), isA(CuppaException.class));
     }
 
     @Test
@@ -222,8 +226,8 @@ public class BasicApiTests {
         Cuppa.runTests(reporter);
 
         //Then
-        verify(reporter).testError(eq("runs the first test, which errors"), isA(CuppaException.class));
-        verify(reporter).testPass("runs the second test, which passes");
+        verify(reporter).testError(eq(findTest("runs the first test, which errors")), isA(CuppaException.class));
+        verify(reporter).testPass(findTest("runs the second test, which passes"));
     }
 
     @Test
@@ -245,7 +249,7 @@ public class BasicApiTests {
         Cuppa.runTests(reporter);
 
         //Then
-        verify(reporter).testFail(eq("runs the test, which fails"), any(AssertionError.class));
+        verify(reporter).testFail(eq(findTest("runs the test, which fails")), any(AssertionError.class));
     }
 
     @Test
@@ -268,7 +272,7 @@ public class BasicApiTests {
         Cuppa.runTests(reporter);
 
         //Then
-        verify(reporter).testError("runs the test, which errors", exception);
+        verify(reporter).testError(findTest("runs the test, which errors"), exception);
     }
 
     @Test
@@ -296,9 +300,9 @@ public class BasicApiTests {
         Cuppa.runTests(reporter);
 
         //Then
-        verify(reporter).testError(eq("runs the first test, which errors"), any(Throwable.class));
-        verify(reporter).testFail(eq("runs the second test, which fails"), any(AssertionError.class));
-        verify(reporter).testPass("runs the third test, which passes");
+        verify(reporter).testError(eq(findTest("runs the first test, which errors")), any(Throwable.class));
+        verify(reporter).testFail(eq(findTest("runs the second test, which fails")), any(AssertionError.class));
+        verify(reporter).testPass(findTest("runs the third test, which passes"));
     }
 
     @Test
@@ -321,6 +325,6 @@ public class BasicApiTests {
         Cuppa.runTests(reporter);
 
         //Then
-        verify(reporter).testError("runs the test", exception);
+        verify(reporter).testError(findTest("runs the test"), exception);
     }
 }
