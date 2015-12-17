@@ -32,7 +32,6 @@ subprojects {
 
   test {
     useTestNG()
-    includes = [ "**/*Test.java", "**/*Tests.java" ]
   }
 
 }
