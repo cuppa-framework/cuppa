@@ -1,8 +1,8 @@
-package org.forgerock.cuppa;
+package org.forgerock.cuppa.internal;
 
 import org.forgerock.cuppa.model.TestBlock;
 
-class HookException extends RuntimeException {
+final class HookException extends RuntimeException {
 
     private final TestBlock testBlock;
 

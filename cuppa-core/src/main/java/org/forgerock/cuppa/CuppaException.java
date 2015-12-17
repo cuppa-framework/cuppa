@@ -3,7 +3,7 @@ package org.forgerock.cuppa;
 /**
  * Thrown to indicate that a failure whilst running Cuppa tests.
  */
-public class CuppaException extends RuntimeException {
+public final class CuppaException extends RuntimeException {
 
     /**
      * Constructs a new Cuppa exception with the specified cause.
@@ -11,7 +11,7 @@ public class CuppaException extends RuntimeException {
      * @param cause The cause. (A {@code null} value is permitted, and indicates that the cause
      *         is nonexistent or unknown.)
      */
-    CuppaException(Throwable cause) {
+    public CuppaException(Throwable cause) {
         super(cause);
     }
 }

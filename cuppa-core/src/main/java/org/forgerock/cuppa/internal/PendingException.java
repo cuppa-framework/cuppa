@@ -1,7 +1,7 @@
-package org.forgerock.cuppa;
+package org.forgerock.cuppa.internal;
 
 /**
  * Thrown to indicate that a test implementation is pending and has yet to be completed.
  */
-public final class PendingException extends RuntimeException {
+final class PendingException extends RuntimeException {
 }

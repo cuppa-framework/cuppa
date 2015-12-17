@@ -1,61 +1,77 @@
 package org.forgerock.cuppa;
 
-import static org.forgerock.cuppa.Cuppa.getRootTestBlock;
+import static java.util.stream.Stream.concat;
+import static org.forgerock.cuppa.CuppaTestProvider.getRootTestBlock;
 
+import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import org.forgerock.cuppa.model.Hook;
 import org.forgerock.cuppa.model.Test;
 import org.forgerock.cuppa.model.TestBlock;
 
 /**
- *
+ * Provides useful methods for finding test blocks, tests and hooks from the Cuppa test structure.
  */
-public class ModelFinder {
+public final class ModelFinder {
+
+    private ModelFinder() {
+    }
+
+    /**
+     * Finds the first test with the given description.
+     *
+     * @param description The description.
+     * @return The test.
+     * @throws NoSuchElementException If no test was found with the given description.
+     */
     public static Test findTest(String description) {
-        return findTest(getRootTestBlock(), description).get();
+        return getTests(getRootTestBlock()).filter(t -> t.description.equals(description)).findFirst().get();
     }
 
-    private static Optional<Test> findTest(TestBlock block, String description) {
-        Optional<Test> test = block.tests.stream().filter(t -> t.description.equals(description)).findFirst();
-        if (test.isPresent()) {
-            return test;
-        }
-        return block.testBlocks.stream().map(b -> findTest(b, description)).filter(t -> t.isPresent()).map(t -> t.get()).findFirst();
+    private static Stream<Test> getTests(TestBlock block) {
+        return concat(block.tests.stream(), block.testBlocks.stream().flatMap(ModelFinder::getTests));
     }
 
+    /**
+     * Finds the first test block with the given description.
+     *
+     * @param description The description.
+     * @return The test block.
+     * @throws NoSuchElementException If no test block was found with the given description.
+     */
     public static TestBlock findTestBlock(String description) {
-        return findTestBlock(getRootTestBlock(), description).get();
+        return getTestBlocks(getRootTestBlock()).filter(b -> b.description.equals(description)).findFirst().get();
     }
 
-    private static Optional<TestBlock> findTestBlock(TestBlock block, String description) {
-        if (block.description.equals(description)) {
-            return Optional.of(block);
-        }
-        return block.testBlocks.stream().map(b -> findTestBlock(b, description)).filter(t -> t.isPresent()).map(t -> t.get()).findFirst();
+    private static Stream<TestBlock> getTestBlocks(TestBlock block) {
+        return concat(Stream.of(block), block.testBlocks.stream().flatMap(ModelFinder::getTestBlocks));
     }
 
+    /**
+     * Finds the first hook with the given description.
+     *
+     * <p>Hooks are searched breadth-first, i.e. going through a test block's before, after,
+     * beforeEach and afterEach hooks before searching in nested test blocks.</p>
+     *
+     * @param description The description.
+     * @return The hook.
+     * @throws NoSuchElementException If no hook was found with the given description.
+     */
     public static Hook findHook(String description) {
-        return findHook(getRootTestBlock(), Optional.of(description)).get();
+        return getHooks(getRootTestBlock())
+                .filter(h -> h.description.equals(Optional.of(description)))
+                .findFirst()
+                .get();
     }
 
-    private static Optional<Hook> findHook(TestBlock block, Optional<String> description) {
-        Optional<Hook> beforeHook = block.beforeHooks.stream().filter(h -> h.description.equals(description)).findFirst();
-        if (beforeHook.isPresent()) {
-            return beforeHook;
-        }
-        Optional<Hook> afterHook = block.afterHook.stream().filter(h -> h.description.equals(description)).findFirst();
-        if (afterHook.isPresent()) {
-            return afterHook;
-        }
-        Optional<Hook> beforeEachHook = block.beforeEachHooks.stream().filter(h -> h.description.equals(description)).findFirst();
-        if (beforeEachHook.isPresent()) {
-            return beforeEachHook;
-        }
-        Optional<Hook> afterEachHook = block.afterEachHooks.stream().filter(h -> h.description.equals(description)).findFirst();
-        if (afterEachHook.isPresent()) {
-            return afterEachHook;
-        }
-        return block.testBlocks.stream().map(b -> findHook(b, description)).filter(t -> t.isPresent()).map(t -> t.get()).findFirst();
+    private static Stream<Hook> getHooks(TestBlock block) {
+        Stream<Hook> hooks = concat(block.beforeHooks.stream(),
+                concat(block.afterHook.stream(),
+                concat(block.beforeEachHooks.stream(),
+                block.afterEachHooks.stream())));
+        Stream<Hook> nestedHooks = block.testBlocks.stream().flatMap(ModelFinder::getHooks);
+        return concat(hooks, nestedHooks);
     }
 }

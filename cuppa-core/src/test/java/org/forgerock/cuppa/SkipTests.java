@@ -1,13 +1,15 @@
 package org.forgerock.cuppa;
 
-import static org.forgerock.cuppa.Behaviour.ONLY;
-import static org.forgerock.cuppa.Behaviour.SKIP;
 import static org.forgerock.cuppa.Cuppa.*;
 import static org.forgerock.cuppa.Cuppa.when;
+import static org.forgerock.cuppa.CuppaTestProvider.runTests;
 import static org.forgerock.cuppa.ModelFinder.findTest;
-import static org.mockito.Matchers.anyString;
+import static org.forgerock.cuppa.model.Behaviour.ONLY;
+import static org.forgerock.cuppa.model.Behaviour.SKIP;
 import static org.mockito.Mockito.*;
 
+import org.forgerock.cuppa.functions.TestFunction;
+import org.forgerock.cuppa.internal.TestContainer;
 import org.forgerock.cuppa.reporters.Reporter;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -16,7 +18,7 @@ public class SkipTests {
 
     @BeforeMethod
     public void setup() {
-        Cuppa.reset();
+        TestContainer.INSTANCE.reset();
     }
 
     @Test
@@ -33,7 +35,7 @@ public class SkipTests {
         }
 
         //When
-        Cuppa.runTests(mock(Reporter.class));
+        runTests(mock(Reporter.class));
 
         //Then
         verify(testFunction, never()).apply();
@@ -54,7 +56,7 @@ public class SkipTests {
         }
 
         //When
-        Cuppa.runTests(reporter);
+        runTests(reporter);
 
         //Then
         verify(reporter).testSkip(findTest("test"));
@@ -76,7 +78,7 @@ public class SkipTests {
         }
 
         //When
-        Cuppa.runTests(mock(Reporter.class));
+        runTests(mock(Reporter.class));
 
         //Then
         verify(testFunction1, never()).apply();
@@ -100,7 +102,7 @@ public class SkipTests {
         }
 
         //When
-        Cuppa.runTests(reporter);
+        runTests(reporter);
 
         //Then
         verify(reporter).testSkip(findTest("test1"));
@@ -125,7 +127,7 @@ public class SkipTests {
         }
 
         //When
-        Cuppa.runTests(mock(Reporter.class));
+        runTests(mock(Reporter.class));
 
         //Then
         verify(testFunctionBefore, never()).apply();
@@ -149,7 +151,7 @@ public class SkipTests {
         }
 
         //When
-        Cuppa.runTests(reporter);
+        runTests(reporter);
 
         //Then
         verify(reporter).testPass(any());
@@ -173,7 +175,7 @@ public class SkipTests {
         }
 
         //When
-        Cuppa.runTests(mock(Reporter.class));
+        runTests(mock(Reporter.class));
 
         //Then
         verify(testFunctionOnly1).apply();
@@ -198,7 +200,7 @@ public class SkipTests {
         }
 
         //When
-        Cuppa.runTests(mock(Reporter.class));
+        runTests(mock(Reporter.class));
 
         //Then
         verify(testFunction).apply();
@@ -219,7 +221,7 @@ public class SkipTests {
         }
 
         //When
-        Cuppa.runTests(mock(Reporter.class));
+        runTests(mock(Reporter.class));
 
         //Then
         verify(testFunction, never()).apply();
@@ -239,7 +241,7 @@ public class SkipTests {
         }
 
         //When
-        Cuppa.runTests(mock(Reporter.class));
+        runTests(mock(Reporter.class));
 
         //Then
         verify(testFunction, never()).apply();
@@ -260,7 +262,7 @@ public class SkipTests {
         }
 
         //When
-        Cuppa.runTests(mock(Reporter.class));
+        runTests(mock(Reporter.class));
 
         //Then
         verify(testFunction, never()).apply();

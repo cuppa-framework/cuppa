@@ -1,7 +1,7 @@
-package org.forgerock.cuppa;
+package org.forgerock.cuppa.model;
 
 /**
- * Defines the behaviour of a test or collection of tests.
+ * Controls the behaviour of a test or collection of tests.
  */
 public enum Behaviour {
     /**
@@ -22,7 +22,7 @@ public enum Behaviour {
      * @param behaviour The other behaviour
      * @return The combined behaviour
      */
-    Behaviour combine(Behaviour behaviour) {
+    public Behaviour combine(Behaviour behaviour) {
         if (this == SKIP || behaviour == SKIP) {
             return SKIP;
         } else if (this == ONLY || behaviour == ONLY) {

@@ -2,13 +2,14 @@ package org.forgerock.cuppa.reporters;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.forgerock.cuppa.Behaviour.SKIP;
 import static org.forgerock.cuppa.Cuppa.*;
+import static org.forgerock.cuppa.CuppaTestProvider.runTests;
+import static org.forgerock.cuppa.model.Behaviour.SKIP;
 
 import java.io.ByteArrayOutputStream;
 
-import org.forgerock.cuppa.Cuppa;
-import org.forgerock.cuppa.TestFunction;
+import org.forgerock.cuppa.functions.TestFunction;
+import org.forgerock.cuppa.internal.TestContainer;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
@@ -16,7 +17,7 @@ public class DefaultReporterTest {
 
     @BeforeMethod
     public void setup() {
-        Cuppa.reset();
+        TestContainer.INSTANCE.reset();
     }
 
     @Test
@@ -34,7 +35,7 @@ public class DefaultReporterTest {
         }
 
         //When
-        Cuppa.runTests(reporter);
+        runTests(reporter);
 
         //Then
         String output = new String(outputStream.toByteArray(), UTF_8);
@@ -69,7 +70,7 @@ public class DefaultReporterTest {
         }
 
         //When
-        Cuppa.runTests(reporter);
+        runTests(reporter);
 
         //Then
         String output = new String(outputStream.toByteArray(), UTF_8);
@@ -108,7 +109,7 @@ public class DefaultReporterTest {
         }
 
         //When
-        Cuppa.runTests(reporter);
+        runTests(reporter);
 
         //Then
         String output = new String(outputStream.toByteArray(), UTF_8);
@@ -145,7 +146,7 @@ public class DefaultReporterTest {
         }
 
         //When
-        Cuppa.runTests(reporter);
+        runTests(reporter);
 
         //Then
         String output = new String(outputStream.toByteArray(), UTF_8);
@@ -179,7 +180,7 @@ public class DefaultReporterTest {
         }
 
         //When
-        Cuppa.runTests(reporter);
+        runTests(reporter);
 
         //Then
         String output = new String(outputStream.toByteArray(), UTF_8);
@@ -212,7 +213,7 @@ public class DefaultReporterTest {
         }
 
         //When
-        Cuppa.runTests(reporter);
+        runTests(reporter);
 
         //Then
         String output = new String(outputStream.toByteArray(), UTF_8);
@@ -252,7 +253,7 @@ public class DefaultReporterTest {
         }
 
         //When
-        Cuppa.runTests(reporter);
+        runTests(reporter);
 
         //Then
         String output = new String(outputStream.toByteArray(), UTF_8);

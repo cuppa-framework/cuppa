@@ -1,17 +1,17 @@
-package org.forgerock.cuppa;
+package org.forgerock.cuppa.functions;
 
 /**
- * Implement this interface to define a test hook. Hooks are used to setup and teardown state for tests.
+ * Implement this interface to define a test.
  *
  * <p>This is a functional interface whose functional method is {@link #apply()}.
  */
 @FunctionalInterface
-public interface HookFunction {
+public interface TestFunction {
 
     /**
-     * Defines the behaviour of a test hook.
+     * Defines the behaviour of the test.
      *
-     * @throws Exception To allow tests and hooks to throw checked exceptions.
+     * @throws Exception A test may throw any exception, which will result in a test error.
      */
     void apply() throws Exception;
 
@@ -20,7 +20,7 @@ public interface HookFunction {
      *
      * @return a function that does nothing
      */
-    static HookFunction identity() {
+    static TestFunction identity() {
         return () -> {
         };
     }

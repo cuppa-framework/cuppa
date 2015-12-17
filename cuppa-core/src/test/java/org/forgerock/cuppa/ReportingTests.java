@@ -2,10 +2,12 @@ package org.forgerock.cuppa;
 
 import static org.forgerock.cuppa.Cuppa.*;
 import static org.forgerock.cuppa.Cuppa.when;
+import static org.forgerock.cuppa.CuppaTestProvider.runTests;
 import static org.forgerock.cuppa.ModelFinder.findTest;
 import static org.forgerock.cuppa.ModelFinder.findTestBlock;
 import static org.mockito.Mockito.*;
 
+import org.forgerock.cuppa.internal.TestContainer;
 import org.forgerock.cuppa.reporters.Reporter;
 import org.mockito.InOrder;
 import org.testng.annotations.BeforeMethod;
@@ -15,7 +17,7 @@ public class ReportingTests {
 
     @BeforeMethod
     public void setup() {
-        Cuppa.reset();
+        TestContainer.INSTANCE.reset();
     }
 
     @Test
@@ -31,7 +33,7 @@ public class ReportingTests {
         }
 
         //When
-        Cuppa.runTests(reporter);
+        runTests(reporter);
 
         //Then
         verify(reporter).start();
@@ -50,7 +52,7 @@ public class ReportingTests {
         }
 
         //When
-        Cuppa.runTests(reporter);
+        runTests(reporter);
 
         //Then
         verify(reporter).end();
@@ -69,7 +71,7 @@ public class ReportingTests {
         }
 
         //When
-        Cuppa.runTests(reporter);
+        runTests(reporter);
 
         //Then
         verify(reporter).testPass(findTest("test"));
@@ -90,7 +92,7 @@ public class ReportingTests {
         }
 
         //When
-        Cuppa.runTests(reporter);
+        runTests(reporter);
 
         //Then
         verify(reporter).testFail(findTest("test"), assertionError);
@@ -111,7 +113,7 @@ public class ReportingTests {
         }
 
         //When
-        Cuppa.runTests(reporter);
+        runTests(reporter);
 
         //Then
         verify(reporter).testError(findTest("test"), exception);
@@ -130,7 +132,7 @@ public class ReportingTests {
         }
 
         //When
-        Cuppa.runTests(reporter);
+        runTests(reporter);
 
         //Then
         verify(reporter).describeStart(findTestBlock("describe"));
@@ -149,7 +151,7 @@ public class ReportingTests {
         }
 
         //When
-        Cuppa.runTests(reporter);
+        runTests(reporter);
 
         //Then
         verify(reporter).describeEnd(findTestBlock("describe"));
@@ -170,7 +172,7 @@ public class ReportingTests {
         }
 
         //When
-        Cuppa.runTests(reporter);
+        runTests(reporter);
 
         //Then
         InOrder inOrder = inOrder(reporter);

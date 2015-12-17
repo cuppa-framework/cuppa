@@ -4,14 +4,16 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.forgerock.cuppa.Cuppa.*;
 import static org.forgerock.cuppa.Cuppa.when;
+import static org.forgerock.cuppa.CuppaTestProvider.runTests;
 import static org.forgerock.cuppa.ModelFinder.findTest;
 import static org.mockito.Mockito.*;
 
 import java.util.Arrays;
-import java.util.Optional;
 import java.util.stream.Stream;
 
-import org.forgerock.cuppa.model.TestBlock;
+import org.forgerock.cuppa.functions.TestBlockFunction;
+import org.forgerock.cuppa.functions.TestFunction;
+import org.forgerock.cuppa.internal.TestContainer;
 import org.forgerock.cuppa.reporters.Reporter;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -20,7 +22,7 @@ public class BasicApiTests {
 
     @BeforeMethod
     public void setup() {
-        Cuppa.reset();
+        TestContainer.INSTANCE.reset();
     }
 
     @Test
@@ -37,7 +39,7 @@ public class BasicApiTests {
         }
 
         //When
-        Cuppa.runTests(mock(Reporter.class));
+        runTests(mock(Reporter.class));
 
         //Then
         verify(testFunction).apply();
@@ -75,7 +77,7 @@ public class BasicApiTests {
         }
 
         //When
-        Cuppa.runTests(mock(Reporter.class));
+        runTests(mock(Reporter.class));
 
         //Then
         Arrays.stream(testFunctions).forEach((f) -> {
@@ -102,7 +104,7 @@ public class BasicApiTests {
         }
 
         //When
-        Cuppa.runTests(mock(Reporter.class));
+        runTests(mock(Reporter.class));
 
         //Then
         verify(testFunction).apply();
@@ -124,7 +126,7 @@ public class BasicApiTests {
         }
 
         //When
-        Cuppa.runTests(mock(Reporter.class));
+        runTests(mock(Reporter.class));
 
         //Then
         verify(testFunction).apply();
@@ -134,7 +136,7 @@ public class BasicApiTests {
     public void basicApiUsageShouldThrowErrorWithTopLevelWhenBlock() throws Exception {
 
         //Given
-        TestDefinitionFunction whenFunction = mock(TestDefinitionFunction.class);
+        TestBlockFunction whenFunction = mock(TestBlockFunction.class);
 
         //When/Then
         assertThatThrownBy(() -> when("basic API usage", whenFunction))
@@ -172,7 +174,7 @@ public class BasicApiTests {
         }
 
         //When
-        Cuppa.runTests(reporter);
+        runTests(reporter);
 
         //Then
         verify(reporter).testError(eq(findTest("runs the test, which errors")), isA(CuppaException.class));
@@ -196,7 +198,7 @@ public class BasicApiTests {
         }
 
         //When
-        Cuppa.runTests(reporter);
+        runTests(reporter);
 
         //Then
         verify(reporter).testError(eq(findTest("runs the test, which errors")), isA(CuppaException.class));
@@ -223,7 +225,7 @@ public class BasicApiTests {
         }
 
         //When
-        Cuppa.runTests(reporter);
+        runTests(reporter);
 
         //Then
         verify(reporter).testError(eq(findTest("runs the first test, which errors")), isA(CuppaException.class));
@@ -246,7 +248,7 @@ public class BasicApiTests {
         }
 
         //When
-        Cuppa.runTests(reporter);
+        runTests(reporter);
 
         //Then
         verify(reporter).testFail(eq(findTest("runs the test, which fails")), any(AssertionError.class));
@@ -269,7 +271,7 @@ public class BasicApiTests {
         }
 
         //When
-        Cuppa.runTests(reporter);
+        runTests(reporter);
 
         //Then
         verify(reporter).testError(findTest("runs the test, which errors"), exception);
@@ -297,7 +299,7 @@ public class BasicApiTests {
         }
 
         //When
-        Cuppa.runTests(reporter);
+        runTests(reporter);
 
         //Then
         verify(reporter).testError(eq(findTest("runs the first test, which errors")), any(Throwable.class));
@@ -322,7 +324,7 @@ public class BasicApiTests {
         }
 
         //When
-        Cuppa.runTests(reporter);
+        runTests(reporter);
 
         //Then
         verify(reporter).testError(findTest("runs the test"), exception);

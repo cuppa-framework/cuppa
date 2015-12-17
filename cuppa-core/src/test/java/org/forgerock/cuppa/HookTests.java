@@ -1,10 +1,14 @@
 package org.forgerock.cuppa;
 
 import static org.forgerock.cuppa.Cuppa.*;
+import static org.forgerock.cuppa.CuppaTestProvider.runTests;
 import static org.mockito.Mockito.*;
 
 import java.util.Arrays;
 
+import org.forgerock.cuppa.functions.HookFunction;
+import org.forgerock.cuppa.functions.TestFunction;
+import org.forgerock.cuppa.internal.TestContainer;
 import org.forgerock.cuppa.reporters.Reporter;
 import org.mockito.InOrder;
 import org.testng.annotations.BeforeMethod;
@@ -15,7 +19,7 @@ public class HookTests {
 
     @BeforeMethod
     public void setup() {
-        Cuppa.reset();
+        TestContainer.INSTANCE.reset();
     }
 
     @Test
@@ -42,7 +46,7 @@ public class HookTests {
         }
 
         //When
-        Cuppa.runTests(mock(Reporter.class));
+        runTests(mock(Reporter.class));
 
         //Then
         verify(topLevelBeforeFunction).apply();
@@ -65,7 +69,7 @@ public class HookTests {
         }
 
         //When
-        Cuppa.runTests(mock(Reporter.class));
+        runTests(mock(Reporter.class));
 
         //Then
         verifiedCalledInOrder(firstBeforeFunction, secondBeforeFunction);
@@ -95,7 +99,7 @@ public class HookTests {
         }
 
         //When
-        Cuppa.runTests(mock(Reporter.class));
+        runTests(mock(Reporter.class));
 
         //Then
         verify(topLevelAfterFunction).apply();
@@ -118,7 +122,7 @@ public class HookTests {
         }
 
         //When
-        Cuppa.runTests(mock(Reporter.class));
+        runTests(mock(Reporter.class));
 
         //Then
         verifiedCalledInOrder(firstAfterFunction, secondAfterFunction);
@@ -148,7 +152,7 @@ public class HookTests {
         }
 
         //When
-        Cuppa.runTests(mock(Reporter.class));
+        runTests(mock(Reporter.class));
 
         //Then
         verify(topLevelBeforeEachFunction, times(3)).apply();
@@ -171,7 +175,7 @@ public class HookTests {
         }
 
         //When
-        Cuppa.runTests(mock(Reporter.class));
+        runTests(mock(Reporter.class));
 
         //Then
         verifiedCalledInOrder(firstBeforeEachFunction, secondBeforeEachFunction);
@@ -201,7 +205,7 @@ public class HookTests {
         }
 
         //When
-        Cuppa.runTests(mock(Reporter.class));
+        runTests(mock(Reporter.class));
 
         //Then
         verify(topLevelAfterEachFunction, times(3)).apply();
@@ -224,7 +228,7 @@ public class HookTests {
         }
 
         //When
-        Cuppa.runTests(mock(Reporter.class));
+        runTests(mock(Reporter.class));
 
         //Then
         verifiedCalledInOrder(firstAfterEachFunction, secondAfterEachFunction);
@@ -263,7 +267,7 @@ public class HookTests {
         }
 
         //When
-        Cuppa.runTests(mock(Reporter.class));
+        runTests(mock(Reporter.class));
 
         //Then
         InOrder inOrder = inOrder(topLevelBeforeFunction, topLevelBeforeEachFunction, testFunction,

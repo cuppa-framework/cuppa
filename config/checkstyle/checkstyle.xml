@@ -111,7 +111,9 @@
             <property name="customImportOrderRules" value="STATIC###STANDARD_JAVA_PACKAGE###SPECIAL_IMPORTS"/>
             <property name="sortImportsInGroupAlphabetically" value="true"/>
         </module>
-        <module name="CyclomaticComplexity"/>
+        <module name="CyclomaticComplexity">
+            <property name="max" value="11"/>
+        </module>
         <module name="DeclarationOrder"/>
         <module name="DefaultComesLast"/>
         <module name="DesignForExtension"/>
@@ -221,7 +223,9 @@
         <module name="PackageName"/>
         <module name="ParameterAssignment"/>
         <module name="ParameterName"/>
-        <module name="ParameterNumber"/>
+        <module name="ParameterNumber">
+            <property name="max" value="8"/>
+        </module>
         <module name="ParenPad"/>
         <module name="RedundantImport"/>
         <module name="RedundantModifier"/>
@@ -258,7 +262,6 @@
         <module name="UnnecessaryParentheses"/>
         <module name="UnusedImports"/>
         <module name="UpperEll"/>
-        <module name="VisibilityModifier"/>
         <module name="WhitespaceAfter"/>
         <module name="WhitespaceAround"/>
         <!--  Javadoc should not contain author annotations -->

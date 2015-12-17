@@ -1,19 +1,21 @@
-package org.forgerock.cuppa;
+package org.forgerock.cuppa.internal;
 
-import static org.forgerock.cuppa.Behaviour.ONLY;
-import static org.forgerock.cuppa.Behaviour.SKIP;
+import static org.forgerock.cuppa.model.Behaviour.ONLY;
+import static org.forgerock.cuppa.model.Behaviour.SKIP;
 
+import org.forgerock.cuppa.functions.TestFunction;
+import org.forgerock.cuppa.model.Behaviour;
 import org.forgerock.cuppa.model.Hook;
 import org.forgerock.cuppa.model.Test;
 import org.forgerock.cuppa.model.TestBlock;
 import org.forgerock.cuppa.reporters.Reporter;
 
 /**
- *
+ * Encapsulates the logic for running a tree of tests.
  */
-public class TestRunner {
+final class TestRunner {
 
-    public void runTests(TestBlock testBlock, boolean ignoreTestsNotMarkedAsOnly, Reporter reporter) {
+    void runTests(TestBlock testBlock, boolean ignoreTestsNotMarkedAsOnly, Reporter reporter) {
         runTests(testBlock, ignoreTestsNotMarkedAsOnly, testBlock.behaviour, reporter, TestFunction::apply);
     }
 
@@ -45,8 +47,8 @@ public class TestRunner {
                 throw e;
             }
         } catch (Exception e) {
-            // This should never happen if the test framework is correct because all exceptions from user code should've
-            // been caught by now.
+            // This should never happen if the test framework is correct because
+            // all exceptions from user code should've been caught by now.
             throw new RuntimeException(e);
         } finally {
             runAfterHooks(testBlock, reporter);
