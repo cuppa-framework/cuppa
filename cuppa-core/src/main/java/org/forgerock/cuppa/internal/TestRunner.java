@@ -39,9 +39,8 @@ final class TestRunner {
                     testWrapper.apply(() -> runTest(t, combinedBehaviour, reporter));
                 }
             }
-            testBlock.testBlocks.stream().forEach((d) -> {
-                runTests(d, ignoreTestsNotMarkedAsOnly, combinedBehaviour, reporter, testWrapper);
-            });
+            testBlock.testBlocks.stream()
+                    .forEach((d) -> runTests(d, ignoreTestsNotMarkedAsOnly, combinedBehaviour, reporter, testWrapper));
         } catch (HookException e) {
             if (e.getTestBlock() != testBlock) {
                 throw e;
@@ -57,14 +56,14 @@ final class TestRunner {
     }
 
     private void runTest(Test test, Behaviour behaviour, Reporter reporter) {
-        if (behaviour.combine(test.behaviour) != SKIP) {
+        if (!test.function.isPresent()) {
+            reporter.testPending(test);
+        } else if (behaviour.combine(test.behaviour) != SKIP) {
             try {
-                test.function.apply();
+                test.function.get().apply();
                 reporter.testPass(test);
             } catch (AssertionError e) {
                 reporter.testFail(test, e);
-            } catch (PendingException e) {
-                reporter.testPending(test);
             } catch (Exception e) {
                 reporter.testError(test, e);
             }

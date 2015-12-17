@@ -188,7 +188,7 @@ public enum TestContainer {
     public void it(Behaviour behaviour, String description, TestFunction function) {
         assertNotRunningTests("it");
         assertNotRootDescribeBlock("it", "when", "describe");
-        getCurrentDescribeBlock().addTest(new Test(behaviour, description, function));
+        getCurrentDescribeBlock().addTest(new Test(behaviour, description, Optional.of(function)));
     }
 
     /**
@@ -197,9 +197,7 @@ public enum TestContainer {
      * @param description The description of the test function.
      */
     public void it(String description) {
-        getCurrentDescribeBlock().addTest(new Test(NORMAL, description, () -> {
-            throw new PendingException();
-        }));
+        getCurrentDescribeBlock().addTest(new Test(NORMAL, description, Optional.empty()));
     }
 
     /**
