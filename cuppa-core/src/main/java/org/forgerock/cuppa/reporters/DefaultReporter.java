@@ -2,6 +2,8 @@ package org.forgerock.cuppa.reporters;
 
 import java.io.OutputStream;
 import java.io.PrintStream;
+import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
@@ -32,12 +34,27 @@ public final class DefaultReporter implements Reporter {
     }
 
     /**
-     * Constructs a reporter that writes to the specified stream.
+     * Constructs a reporter that writes to the specified stream, using the JVM's default charset.
      *
      * @param stream A stream to write to.
      */
     public DefaultReporter(OutputStream stream) {
-        this.stream = new PrintStream(stream);
+        try {
+            this.stream = new PrintStream(stream, false, Charset.defaultCharset().toString());
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException("The JVM default charset is not supported!");
+        }
+    }
+
+    /**
+     * Constructs a reporter that writes to the specified stream.
+     *
+     * @param stream A stream to write to.
+     * @param charset The charset to convert the output to.
+     * @throws UnsupportedEncodingException If the charset is not supported by the JVM.
+     */
+    public DefaultReporter(OutputStream stream, Charset charset) throws UnsupportedEncodingException {
+        this.stream = new PrintStream(stream, false, charset.toString());
     }
 
     @Override

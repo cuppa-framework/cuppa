@@ -8,6 +8,7 @@ allprojects  {
 subprojects {
   apply plugin: 'java'
   apply plugin: 'checkstyle'
+  apply plugin: 'findbugs'
 
   sourceCompatibility = 1.8
   targetCompatibility = 1.8

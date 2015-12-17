@@ -48,7 +48,7 @@ class DescribeBlock {
                 return;
             }
             for (TestBlock t : testBlocks) {
-                if ((ignoreTestsNotMarkedAsOnly && combinedBehaviour.combine(t.getBehaviour()) == ONLY)
+                if (ignoreTestsNotMarkedAsOnly && combinedBehaviour.combine(t.getBehaviour()) == ONLY
                         || !ignoreTestsNotMarkedAsOnly) {
                     testWrapper.apply(() -> t.runTest(combinedBehaviour, reporter));
                 }
