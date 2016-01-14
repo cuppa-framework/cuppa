@@ -80,7 +80,7 @@ public enum TestContainer {
      */
     public void when(Behaviour behaviour, String description, TestBlockFunction function) {
         assertNotRunningTests("when");
-        assertNotRootDescribeBlock("when", "describe");
+        assertNotRootDescribeBlock("when", "when", "describe");
         describe(behaviour, description, function);
     }
 

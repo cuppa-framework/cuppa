@@ -42,6 +42,20 @@ public interface Reporter {
     void hookError(Hook hook, Throwable cause);
 
     /**
+     * Called before a test is run.
+     *
+     * @param test The test that is being run.
+     */
+    void testStart(Test test);
+
+    /**
+     * Called after a test is run.
+     *
+     * @param test The test that has been run.
+     */
+    void testEnd(Test test);
+
+    /**
      * Called after a test has successfully executed without throwing an exception.
      *
      * @param test The test that passed.

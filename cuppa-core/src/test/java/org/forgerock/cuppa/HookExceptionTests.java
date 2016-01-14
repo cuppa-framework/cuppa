@@ -672,9 +672,9 @@ public class HookExceptionTests {
         //Given
         Reporter reporter = mock(Reporter.class);
         {
-            describe("", () -> {
+            describe("tests in hook", () -> {
                 hookWithTest.apply();
-                it("", TestFunction.identity());
+                it("does not run the test", TestFunction.identity());
             });
         }
 
@@ -704,8 +704,8 @@ public class HookExceptionTests {
         //Given
         Reporter reporter = mock(Reporter.class);
         {
-            describe("", () -> {
-                it("test", hook);
+            describe("hook in test", () -> {
+                it("will cause the test to throw an error", hook);
             });
         }
 
@@ -713,7 +713,7 @@ public class HookExceptionTests {
         runTests(reporter);
 
         //Then
-        verify(reporter).testError(eq(findTest("test")), isA(CuppaException.class));
+        verify(reporter).testError(eq(findTest("will cause the test to throw an error")), isA(CuppaException.class));
     }
 
     @DataProvider
@@ -733,9 +733,9 @@ public class HookExceptionTests {
         //Given
         Reporter reporter = mock(Reporter.class);
         {
-            describe("", () -> {
+            describe("nested hook in hook", () -> {
                 nestedHook.apply();
-                it("", TestFunction.identity());
+                it("does not run the test", TestFunction.identity());
             });
         }
 

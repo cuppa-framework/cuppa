@@ -166,7 +166,6 @@ public class BasicApiTests {
                 when("the 'when' block is run", () -> {
                     it("runs the test, which errors", () -> {
                         describe("invalid use of 'describe'", () -> {
-
                         });
                     });
                 });
@@ -190,7 +189,6 @@ public class BasicApiTests {
                 when("the 'when' block is run", () -> {
                     it("runs the test, which errors", () -> {
                         when("invalid use of 'when'", () -> {
-
                         });
                     });
                 });
@@ -213,9 +211,7 @@ public class BasicApiTests {
             describe("basic API usage", () -> {
                 when("the 'when' is run", () -> {
                     it("runs the first test, which errors", () -> {
-                        describe("invalid use of 'describe'", () -> {
-
-                        });
+                        throw new RuntimeException();
                     });
                     it("runs the second test, which passes", () -> {
                         assertThat(true).isTrue();
@@ -228,7 +224,7 @@ public class BasicApiTests {
         runTests(reporter);
 
         //Then
-        verify(reporter).testError(eq(findTest("runs the first test, which errors")), isA(CuppaException.class));
+        verify(reporter).testError(eq(findTest("runs the first test, which errors")), isA(Throwable.class));
         verify(reporter).testPass(findTest("runs the second test, which passes"));
     }
 
@@ -237,11 +233,12 @@ public class BasicApiTests {
 
         //Given
         Reporter reporter = mock(Reporter.class);
+        AssertionError assertionError = new AssertionError();
         {
             describe("basic API usage", () -> {
                 when("the 'when' block is run", () -> {
                     it("runs the test, which fails", () -> {
-                        assertThat(true).isFalse();
+                        throw assertionError;
                     });
                 });
             });
@@ -282,18 +279,18 @@ public class BasicApiTests {
 
         //Given
         Reporter reporter = mock(Reporter.class);
+        RuntimeException exception = new RuntimeException();
+        AssertionError assertionError = new AssertionError();
         {
             describe("basic API usage", () -> {
                 when("the 'when' block is run", () -> {
                     it("runs the first test, which errors", () -> {
-                        throw new RuntimeException();
+                        throw exception;
                     });
                     it("runs the second test, which fails", () -> {
-                        assertThat(true).isFalse();
+                        throw assertionError;
                     });
-                    it("runs the third test, which passes", () -> {
-                        assertThat(true).isTrue();
-                    });
+                    it("runs the third test, which passes", TestFunction.identity());
                 });
             });
         }

@@ -60,12 +60,15 @@ final class TestRunner {
             reporter.testPending(test);
         } else if (behaviour.combine(test.behaviour) != SKIP) {
             try {
+                reporter.testStart(test);
                 test.function.get().apply();
                 reporter.testPass(test);
             } catch (AssertionError e) {
                 reporter.testFail(test, e);
             } catch (Exception e) {
                 reporter.testError(test, e);
+            } finally {
+                reporter.testEnd(test);
             }
         } else {
             reporter.testSkip(test);

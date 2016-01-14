@@ -100,7 +100,14 @@ public final class DefaultReporter implements Reporter {
 
     @Override
     public void hookError(Hook hook, Throwable cause) {
+    }
 
+    @Override
+    public void testStart(Test test) {
+    }
+
+    @Override
+    public void testEnd(Test test) {
     }
 
     @Override

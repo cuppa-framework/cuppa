@@ -86,7 +86,7 @@ public class DefaultReporterTest {
                 "  1 failing",
                 "",
                 "  1) describe when failing test:",
-                "     org.junit.ComparisonFailure: expected:<[tru]e> but was:<[fals]e>",
+                "     java.lang.AssertionError:",
         };
         String expectedOutput = String.join(System.lineSeparator(), expectedLines);
         assertThat(output).startsWith(expectedOutput);
@@ -274,7 +274,7 @@ public class DefaultReporterTest {
                 "  2 pending",
                 "",
                 "  1) describe when failing test:",
-                "     org.junit.ComparisonFailure: expected:<[tru]e> but was:<[fals]e>",
+                "     java.lang.AssertionError:",
         };
         String expectedOutput = String.join(System.lineSeparator(), expectedLines);
         assertThat(output).startsWith(expectedOutput);
