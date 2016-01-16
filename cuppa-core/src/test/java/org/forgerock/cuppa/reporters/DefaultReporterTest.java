@@ -34,6 +34,7 @@ public class DefaultReporterTest {
     @BeforeMethod
     public void setup() {
         TestContainer.INSTANCE.reset();
+        TestContainer.INSTANCE.setTestClass(DefaultReporterTest.class);
     }
 
     @Test

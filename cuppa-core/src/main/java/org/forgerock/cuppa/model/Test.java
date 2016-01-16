@@ -32,6 +32,11 @@ public final class Test {
     public final Behaviour behaviour;
 
     /**
+     * The class that the test was defined in.
+     */
+    public final Class<?> testClass;
+
+    /**
      * The description of the test. Will be used for reporting.
      */
     public final String description;
@@ -45,15 +50,18 @@ public final class Test {
      * Constructs a new test.
      *
      * @param behaviour The behaviour of the test.
+     * @param testClass The class that the test was defined in.
      * @param description The description of the test. Will be used for reporting.
      * @param function The body of the test. If the {@link Optional} is empty the test is
      *     classified as pending.
      */
-    public Test(Behaviour behaviour, String description, Optional<TestFunction> function) {
+    public Test(Behaviour behaviour, Class<?> testClass, String description, Optional<TestFunction> function) {
         Objects.requireNonNull(behaviour, "Test must have a behaviour");
+        Objects.requireNonNull(testClass, "Test must have a testClass");
         Objects.requireNonNull(description, "Test must have a description");
         Objects.requireNonNull(function, "Test must have a function");
         this.behaviour = behaviour;
+        this.testClass = testClass;
         this.description = description;
         this.function = function;
     }

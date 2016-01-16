@@ -22,6 +22,7 @@ import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.Optional;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.forgerock.cuppa.CuppaException;
 import org.forgerock.cuppa.functions.HookFunction;
 import org.forgerock.cuppa.functions.TestBlockFunction;
@@ -43,6 +44,7 @@ public enum TestContainer {
     private TestBlockBuilder rootBuilder;
     private Deque<TestBlockBuilder> stack;
     private boolean runningTests;
+    private Class<?> testClass;
 
     TestContainer() {
         reset();
@@ -204,7 +206,7 @@ public enum TestContainer {
     public void it(Behaviour behaviour, String description, TestFunction function) {
         assertNotRunningTests("it");
         assertNotRootDescribeBlock("it", "when", "describe");
-        getCurrentDescribeBlock().addTest(new Test(behaviour, description, Optional.of(function)));
+        getCurrentDescribeBlock().addTest(new Test(behaviour, testClass, description, Optional.of(function)));
     }
 
     /**
@@ -213,7 +215,18 @@ public enum TestContainer {
      * @param description The description of the test function.
      */
     public void it(String description) {
-        getCurrentDescribeBlock().addTest(new Test(NORMAL, description, Optional.empty()));
+        getCurrentDescribeBlock().addTest(new Test(NORMAL, testClass, description, Optional.empty()));
+    }
+
+    /**
+     * Sets the class from which tests are being loaded.
+     *
+     * @param testClass The test class.
+     */
+    @SuppressFBWarnings(value = "ME_ENUM_FIELD_SETTER",
+            justification = "Need to be able to set the class in which the tests are defined when they are registered.")
+    public void setTestClass(Class<?> testClass) {
+        this.testClass = testClass;
     }
 
     /**
@@ -251,6 +264,7 @@ public enum TestContainer {
         rootBuilder = new TestBlockBuilder(NORMAL, "");
         stack = new ArrayDeque<>();
         stack.addLast(rootBuilder);
+        testClass = null;
     }
 
     private void assertNotRunningTests(String blockType) {

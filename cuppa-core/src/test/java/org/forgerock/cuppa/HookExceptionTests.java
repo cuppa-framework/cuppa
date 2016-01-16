@@ -52,6 +52,7 @@ public class HookExceptionTests {
     @BeforeMethod
     public void setup() {
         TestContainer.INSTANCE.reset();
+        TestContainer.INSTANCE.setTestClass(HookExceptionTests.class);
     }
 
     @Test

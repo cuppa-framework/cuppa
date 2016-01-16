@@ -35,6 +35,7 @@ public class SkipTests {
     @BeforeMethod
     public void setup() {
         TestContainer.INSTANCE.reset();
+        TestContainer.INSTANCE.setTestClass(SkipTests.class);
     }
 
     @Test

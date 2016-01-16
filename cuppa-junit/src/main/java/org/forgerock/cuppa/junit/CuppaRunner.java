@@ -40,6 +40,7 @@ public final class CuppaRunner extends Runner {
     public CuppaRunner(Class<?> annotatedClass) {
         this.testClass = annotatedClass;
         try {
+            CuppaTestProvider.setTestClass(annotatedClass);
             testClass.newInstance();
         } catch (InstantiationException | IllegalAccessException e) {
             e.printStackTrace();

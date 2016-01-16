@@ -36,6 +36,7 @@ public class HookTests {
     @BeforeMethod
     public void setup() {
         TestContainer.INSTANCE.reset();
+        TestContainer.INSTANCE.setTestClass(HookTests.class);
     }
 
     @Test

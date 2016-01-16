@@ -39,6 +39,7 @@ public class BasicApiTests {
     @BeforeMethod
     public void setup() {
         TestContainer.INSTANCE.reset();
+        TestContainer.INSTANCE.setTestClass(BasicApiTests.class);
     }
 
     @Test

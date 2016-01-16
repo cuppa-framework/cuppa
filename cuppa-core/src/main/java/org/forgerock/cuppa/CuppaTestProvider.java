@@ -64,6 +64,22 @@ public final class CuppaTestProvider {
     }
 
     private static StackTraceElement[] filterStackTrace(StackTraceElement[] stackTraceElements) {
+        StackTraceElement[] newStackTraceElements = getStackTraceUpToCuppaElements(stackTraceElements);
+        if (newStackTraceElements.length > 0
+                && isStackTraceElementUseless(newStackTraceElements[newStackTraceElements.length - 1])) {
+            newStackTraceElements = Arrays.copyOf(newStackTraceElements, newStackTraceElements.length - 1);
+        }
+        if (newStackTraceElements.length > 0
+                && isStackTraceElementForLambda(newStackTraceElements[newStackTraceElements.length - 1])) {
+            StackTraceElement oldElement = newStackTraceElements[newStackTraceElements.length - 1];
+            newStackTraceElements[newStackTraceElements.length - 1] =
+                    new StackTraceElement(oldElement.getClassName(), "<cuppa test>", oldElement.getFileName(),
+                            oldElement.getLineNumber());
+        }
+        return newStackTraceElements;
+    }
+
+    private static StackTraceElement[] getStackTraceUpToCuppaElements(StackTraceElement[] stackTraceElements) {
         Optional<StackTraceElement> first = Arrays.stream(stackTraceElements)
                 .filter(s -> s.getClassName().startsWith(Cuppa.class.getPackage().getName()))
                 .findFirst();
@@ -72,5 +88,22 @@ public final class CuppaTestProvider {
             return Arrays.copyOf(stackTraceElements, index);
         }
         return stackTraceElements;
+    }
+
+    private static boolean isStackTraceElementUseless(StackTraceElement element) {
+        return element.getFileName() == null;
+    }
+
+    private static boolean isStackTraceElementForLambda(StackTraceElement element) {
+        return element.getMethodName().startsWith("lambda$");
+    }
+
+    /**
+     * Sets the class from which tests are being loaded.
+     *
+     * @param testClass The test class.
+     */
+    public static void setTestClass(Class testClass) {
+        TestContainer.INSTANCE.setTestClass(testClass);
     }
 }

@@ -34,6 +34,7 @@ public class ReportingTests {
     @BeforeMethod
     public void setup() {
         TestContainer.INSTANCE.reset();
+        TestContainer.INSTANCE.setTestClass(ReportingTests.class);
     }
 
     @Test

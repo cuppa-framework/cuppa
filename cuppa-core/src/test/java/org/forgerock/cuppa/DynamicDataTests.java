@@ -38,6 +38,7 @@ public class DynamicDataTests {
     @BeforeMethod
     public void setup() {
         TestContainer.INSTANCE.reset();
+        TestContainer.INSTANCE.setTestClass(DynamicDataTests.class);
     }
 
     @Test

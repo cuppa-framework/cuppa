@@ -35,6 +35,7 @@ public class CuppaRunnerTest {
     @BeforeMethod
     public void setup() {
         TestContainer.INSTANCE.reset();
+        TestContainer.INSTANCE.setTestClass(CuppaRunnerTest.class);
     }
 
     @Test

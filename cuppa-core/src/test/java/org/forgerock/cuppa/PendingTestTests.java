@@ -33,6 +33,7 @@ public class PendingTestTests {
     @BeforeMethod
     public void setup() {
         TestContainer.INSTANCE.reset();
+        TestContainer.INSTANCE.setTestClass(PendingTestTests.class);
     }
 
     @Test
