@@ -1,8 +1,10 @@
-Cuppa
+# Cuppa [![Build Status](https://travis-ci.org/phillcunnington/cuppa.svg?branch=master)](https://travis-ci.org/phillcunnington/cuppa)
 
-BDD-style test framework inspired by <a href="https://mochajs.org">Mocha</a>
+Cuppa is a BDD-style test framework for Java 8. It makes writing tests productive and fun.
 
-How does it work?
+It is inspired by the wonderful <a href="https://mochajs.org">Mocha</a>.
+
+### Example
 
 ```java
 import static org.assertj.core.api.Assertions.assertThat;
@@ -26,3 +28,7 @@ public class ListTest {
     }
 }
 ```
+
+### Status
+
+Cuppa is still in active development and hasn't reached a stable state yet.
