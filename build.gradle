@@ -1,7 +1,7 @@
 allprojects  {
   apply plugin: 'maven'
 
-  group = 'org.forgerock'
+  group = 'org.forgerock.cuppa'
   version = '1.0.0-SNAPSHOT'
 }
 
