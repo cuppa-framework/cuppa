@@ -1,0 +1,15 @@
+---
+layout: default
+sectionid: blog
+---
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-3">
+{% include nav_blog.html %}
+        </div>
+        <div class="col-md-9">
+{% include blog_post.html isPermalink="true" page=page content=content %}
+        </div>
+    </div>
+</div>

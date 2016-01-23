@@ -1,0 +1,36 @@
+---
+name: Cuppa
+description: A test framework for Java 8
+url: https://phillcunnington.github.io
+baseurl: "/cuppa"
+collections:
+  docs:
+    output: true
+defaults:
+- scope:
+    path: ""
+    type: posts
+  values:
+    layout: blog
+    sectionid: blog
+- scope:
+    path: "docs"
+    type: docs
+  values:
+    layout: docs
+    sectionid: docs
+permalink: "/blog/:year/:month/:day/:title.html"
+paginate: 5
+paginate_path: "/blog/page:num/"
+exclude:
+- Gemfile
+- Gemfile.lock
+- README.md
+- vendor/bundle
+kramdown:
+  input: GFM
+  hard_wrap: false
+gems:
+- jekyll-paginate
+cuppa_version: 1.0.0
+github_url: https://github.com/phillcunnington/cuppa

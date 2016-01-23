@@ -1,0 +1,56 @@
+---
+layout: default
+---
+<div class="container">
+    <div class="row">
+        <div class="alert alert-danger" role="alert"><strong>Cuppa has not been released yet.</strong> This
+        documentation is subject to change without notice.</div>
+        <div class="col-md-3">
+{% for section in site.data.docs %}
+            <h3>{{ section.title }}</h3>
+            <ul>
+    {% for item in section.docs %}
+        {% assign item_id = item | prepend:"/docs/" %}
+        {% assign doc = site.docs | where: "id", item_id | first %}
+                <li>
+                    <a href="{{ site.baseurl }}{{ doc.url }}">{{ doc.title }}</a>
+                </li>
+    {% endfor %}
+            </ul>
+{% endfor %}
+        </div>
+        <div class="col-md-9">
+            <h1>{{ page.title }}</h1>
+            <a href="{{ site.github_url }}/blob/master/docs/{{ page.path }}" class="pull-right">Edit on GitHub</a>
+{{ content }}
+{% assign docs = site.data.docs | map: 'docs' | join: ',' | split: ',' %}
+{% for document in docs %}
+{% assign document_url = document | prepend:"/docs/" %}
+{% if document_url == page.id %}
+            <nav>
+                <ul class="pager">
+        {% unless forloop.first %}
+        {% assign previous = forloop.index0 | minus: 1 %}
+        {% assign previous_id = docs[previous] | prepend:"/docs/" %}
+        {% assign previous_doc = site.docs | where: "id", previous_id | first %}
+                    <li class="previous">
+                        <a href="{{ site.baseurl }}{{ previous_doc.url }}" class="prev">Back</a>
+                    </li>
+        {% endunless %}
+        {% unless forloop.last %}
+        {% assign next = forloop.index0 | plus: 1 %}
+        {% assign next_id = docs[next] | prepend:"/docs/" %}
+        {% assign next_doc = site.docs | where: "id", next_id | first %}
+                    <li class="next">
+                        <a href="{{ site.baseurl }}{{ next_doc.url }}" class="next">Next</a>
+        {% endunless %}
+                    </li>
+                </ul>
+            </nav>
+            <div class="clear"></div>
+{% break %}
+{% endif %}
+{% endfor %}
+        </div>
+    </div>
+</div>
