@@ -1,0 +1,25 @@
+{% assign page = include.page %}
+
+<h1>
+{% if include.isPermalink %}
+    {{ page.title }}
+{% else %}
+    <a href="{{ site.baseurl }}{{ page.url }}">{{ page.title }}</a>
+{% endif %}
+</h1>
+<p class="meta">
+    {{ page.date | date: "%B %e, %Y" }}
+    by
+    {% assign author = site.data.authors | where: "id", page.author | first %}
+    {% if author.url %}
+    <a href="{{ author.url }}">{{ author.name }}</a>
+    {% else %}
+    {{ author.name }}
+    {% endif %}
+    {% if author.email %}
+    <img src="{{ author.email | to_gravatar }}" />
+    {% endif %}
+</p>
+
+<hr>
+{{ page.content }}

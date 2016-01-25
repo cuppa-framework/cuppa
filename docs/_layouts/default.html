@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>{{ page.title }} | Cuppa</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="{{ site.baseurl }}/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="{{ site.baseurl }}/css/styles.css" />
+</head>
+<body>
+    <nav class="navbar navbar-default">
+        <div class="container">
+            <div class="navbar-header">
+                <a href="{{ site.baseurl }}/" class="navbar-brand">Cuppa</a>
+            </div>
+            <ul class="nav navbar-nav">
+                <li{% if page.sectionid == 'docs' %} class="active"{% endif %}><a href="{{ site.baseurl }}/docs/getting-started">Docs</a></li>
+                <li{% if page.sectionid == 'blog' %} class="active"{% endif %}><a href="{{ site.baseurl }}/blog/">Blog</a></li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                <li><a href="{{ site.github_url }}">GitHub</a></li>
+            </ul>
+        </div>
+    </nav>
+    {{ content }}
+    <div class="container">
+        <footer class="text-right">
+            © 2015–2016 ForgeRock AS.<br>
+            Documentation licensed under <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>.
+        </footer>
+    </div>
+    <script>
+        (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+                    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+                m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+        })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+        ga('create', 'UA-72837005-1', 'auto');
+        ga('send', 'pageview');
+
+    </script>
+</body>
+</html>

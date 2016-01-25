@@ -1,0 +1,28 @@
+---
+layout: default
+title: Blog
+sectionid: blog
+---
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-3">
+{% include nav_blog.html %}
+        </div>
+        <div class="col-md-9">
+{% for page in paginator.posts %}
+            <div class="post-list-item">
+    {% include blog_post.html page=page content=page.content %}
+            </div>
+{% endfor %}
+            <div class="pagination">
+{% if paginator.previous_page %}
+                <a href="{{ site.baseurl }}{{ paginator.previous_page_path }}" class="previous">&laquo; Previous Page</a>
+{% endif %}
+{% if paginator.next_page %}
+                <a href="{{ site.baseurl }}{{ paginator.next_page_path }}" class="next">Next Page &raquo;</a>
+{% endif %}
+            </div>
+        </div>
+    </div>
+</div>

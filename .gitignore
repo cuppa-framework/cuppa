@@ -1,2 +1,5 @@
 .gradle/
 build/
+docs/.bundle
+docs/_site
+docs/vendor/bundle
