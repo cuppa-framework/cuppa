@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Skipping Tests | Cuppa</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="/cuppa/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="/cuppa/css/styles.css" />
+</head>
+<body>
+    <nav class="navbar navbar-default">
+        <div class="container">
+            <div class="navbar-header">
+                <a href="/cuppa/" class="navbar-brand">Cuppa</a>
+            </div>
+            <ul class="nav navbar-nav">
+                <li class="active"><a href="/cuppa/docs/getting-started">Docs</a></li>
+                <li><a href="/cuppa/blog/">Blog</a></li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                <li><a href="https://github.com/phillcunnington/cuppa">GitHub</a></li>
+            </ul>
+        </div>
+    </nav>
+    <div class="container">
+    <div class="row">
+        <div class="alert alert-danger" role="alert"><strong>Cuppa has not been released yet.</strong> This
+        documentation is subject to change without notice.</div>
+        <div class="col-md-3">
+
+            <h3>Quick Start</h3>
+            <ul>
+    
+        
+        
+                <li>
+                    <a href="/cuppa/docs/getting-started">Getting Started</a>
+                </li>
+    
+        
+        
+                <li>
+                    <a href="/cuppa/docs/tutorial">Tutorial</a>
+                </li>
+    
+            </ul>
+
+            <h3>Guides</h3>
+            <ul>
+    
+        
+        
+                <li>
+                    <a href="/cuppa/docs/parameterised-tests">Parameterised Tests</a>
+                </li>
+    
+        
+        
+                <li>
+                    <a href="/cuppa/docs/skipping-tests">Skipping Tests</a>
+                </li>
+    
+        
+        
+                <li>
+                    <a href="/cuppa/docs/exceptions">Handling Exceptions</a>
+                </li>
+    
+        
+        
+                <li>
+                    <a href="/cuppa/docs/timeouts">Timeouts</a>
+                </li>
+    
+        
+        
+                <li>
+                    <a href="/cuppa/docs/reporters">Reporters</a>
+                </li>
+    
+        
+        
+                <li>
+                    <a href="/cuppa/docs/integrating-with-existing-tests">Integrating with Existing Tests</a>
+                </li>
+    
+        
+        
+                <li>
+                    <a href="/cuppa/docs/writing-a-reporter">Writing a Reporter</a>
+                </li>
+    
+            </ul>
+
+            <h3>Reference</h3>
+            <ul>
+    
+        
+        
+                <li>
+                    <a href="/cuppa/docs/testing-api">Testing API</a>
+                </li>
+    
+        
+        
+                <li>
+                    <a href="/cuppa/docs/integration-api">Integration API</a>
+                </li>
+    
+            </ul>
+
+        </div>
+        <div class="col-md-9">
+            <h1>Skipping Tests</h1>
+            <a href="https://github.com/phillcunnington/cuppa/blob/master/docs/_docs/skipping-tests.md" class="pull-right">Edit on GitHub</a>
+<h2 id="skipping-a-single-test">Skipping a Single Test</h2>
+
+<p>During development, you may want to temporarily turn off a test. Rather than commenting it out, we recommend passing the
+<code class="highlighter-rouge">SKIP</code> argument to mark the test as skipped.</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="n">it</span><span class="o">(</span><span class="n">SKIP</span><span class="o">,</span> <span class="s">"returns -1"</span><span class="o">,</span> <span class="o">()</span> <span class="o">-&gt;</span> <span class="o">{</span>
+    <span class="c1">// ...</span>
+<span class="o">);</span>
+</code></pre>
+</div>
+
+<p>Skipped tests will be reported to remind you to restore the test before committing the code.</p>
+
+<p>You can also skip entire <code class="highlighter-rouge">describe</code> or <code class="highlighter-rouge">when</code> blocks:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="n">when</span><span class="o">(</span><span class="n">SKIP</span><span class="o">,</span> <span class="s">"it is empty"</span><span class="o">,</span> <span class="o">()</span> <span class="o">-&gt;</span> <span class="o">{</span>
+    <span class="n">it</span><span class="o">(</span><span class="s">"returns -1"</span><span class="o">,</span> <span class="o">()</span> <span class="o">-&gt;</span> <span class="o">{</span>
+        <span class="c1">// ...</span>
+    <span class="o">});</span>
+<span class="o">});</span>
+</code></pre>
+</div>
+
+<h2 id="running-a-single-test">Running a Single Test</h2>
+
+<p>If you’d like to run a single test to debug a problem, just add the <code class="highlighter-rouge">ONLY</code> argument.</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="n">it</span><span class="o">(</span><span class="n">ONLY</span><span class="o">,</span> <span class="s">"returns -1"</span><span class="o">,</span> <span class="o">()</span> <span class="o">-&gt;</span> <span class="o">{</span>
+    <span class="c1">// ...</span>
+<span class="o">);</span>
+</code></pre>
+</div>
+
+<p>Likewise, this can be applied to <code class="highlighter-rouge">describe</code> and <code class="highlighter-rouge">when</code> blocks.</p>
+
+<h2 id="writing-a-pending-test">Writing a Pending Test</h2>
+
+<p>If you’d like to remind yourself to come back and write a test later, just omit the lambda expression to define a
+pending test.</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="n">it</span><span class="o">(</span><span class="s">"returns -1"</span><span class="o">);</span>
+</code></pre>
+</div>
+
+<p>Pending tests will be reported to remind you to come back and fill in the implementations.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            <nav>
+                <ul class="pager">
+        
+        
+        
+        
+                    <li class="previous">
+                        <a href="/cuppa/docs/parameterised-tests" class="prev">Back</a>
+                    </li>
+        
+        
+        
+        
+        
+                    <li class="next">
+                        <a href="/cuppa/docs/exceptions" class="next">Next</a>
+        
+                    </li>
+                </ul>
+            </nav>
+            <div class="clear"></div>
+
+        </div>
+    </div>
+</div>
+    <div class="container">
+        <footer class="text-right">
+            © 2015–2016 ForgeRock AS.<br>
+            Documentation licensed under <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>.
+        </footer>
+    </div>
+    <script>
+        (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+                    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+                m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+        })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+        ga('create', 'UA-72837005-1', 'auto');
+        ga('send', 'pageview');
+
+    </script>
+</body>
+</html>

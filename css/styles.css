@@ -1,0 +1,28 @@
+.jumbotron {
+    margin-top: -20px;
+}
+
+/* syntax highlighting */
+
+/* string literal */
+.highlight .s,
+.highlight .s1 {
+    color: #268c19;
+}
+
+/* keyword */
+.highlight .kd,
+.highlight .k,
+.highlight .kt {
+    color: #CC7832;
+}
+
+/* number literal */
+.highlight .mi {
+    color: #6897BB;
+}
+
+/* xml element */
+.highlight .nt {
+    color: #353da7;
+}
