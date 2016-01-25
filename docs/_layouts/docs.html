@@ -5,23 +5,34 @@ layout: default
     <div class="row">
         <div class="alert alert-danger" role="alert"><strong>Cuppa has not been released yet.</strong> This
         documentation is subject to change without notice.</div>
-        <div class="col-md-3">
+        <nav class="col-md-3 sidebar">
 {% for section in site.data.docs %}
             <h3>{{ section.title }}</h3>
             <ul>
     {% for item in section.docs %}
+        {% if item.title %}
+                <li>
+                    <a href="{{ site.baseurl }}{{ item.url }}"><code>{{ item.title }}</code></a>
+                </li>
+        {% else %}
         {% assign item_id = item | prepend:"/docs/" %}
         {% assign doc = site.docs | where: "id", item_id | first %}
                 <li>
-                    <a href="{{ site.baseurl }}{{ doc.url }}">{{ doc.title }}</a>
+                    <a href="{{ site.baseurl }}{{ doc.url }}"{% if page.url == doc.url %} class="active"{% endif %}>{{ doc.title }}</a>
                 </li>
+        {% endif %}
     {% endfor %}
             </ul>
+    {% unless forloop.last %}
+            <hr>
+    {% endunless %}
 {% endfor %}
-        </div>
+        </nav>
         <div class="col-md-9">
-            <h1>{{ page.title }}</h1>
-            <a href="{{ site.github_url }}/blob/master/docs/{{ page.path }}" class="pull-right">Edit on GitHub</a>
+            <h1>
+                {{ page.title }}
+                <a href="{{ site.github_url }}/blob/master/docs/{{ page.path }}" class="edit-page">Edit on GitHub</a>
+            </h1>
 {{ content }}
 {% assign docs = site.data.docs | map: 'docs' | join: ',' | split: ',' %}
 {% for document in docs %}

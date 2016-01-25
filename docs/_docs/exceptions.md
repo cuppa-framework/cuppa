@@ -12,7 +12,7 @@ it("throws a checked exception", () -> {
 });
 ```
 
-## Excepted Exceptions
+## Expected Exceptions
 
 Cuppa doesn't include built-in support for expected exceptions (like JUnit's `@Test(expected=Exception.class)`). You
 should use the features of your chosen assertion library instead. For example, AssertJ provides the `assertThatThrownBy`

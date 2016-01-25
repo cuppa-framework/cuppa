@@ -21,9 +21,14 @@ public class ListTest {
 We define a test by calling `it`, a static method from the `Cuppa` class. We pass it a description of the behaviour we
 expect and a lambda expression that asserts the behaviour.
 
+{::options parse_block_html="true" /}
+<div class="alert alert-info" role="alert">
+#### Lambda Expressions
+
 Cuppa makes extensive use of lambda expressions - a feature introduced in Java 8. They're just like anonymous classes
 but their syntax is much more compact. If you've never used them before, don't worry, there's not much more you need
-to know about them to use Cuppa.
+to know in order to use Cuppa.
+</div>
 
 ### Why `it`?
 
@@ -157,6 +162,5 @@ It is also executed for any test that is in a nested `describe` or `when` block.
 
 ## Well Done
 
-We've explored the basic features of Cuppa. You now know enough to start writing tests with Cuppa. If you'd like
-to learn more then check out some of the guides, starting with
-[parameterised tests]({{ site.baseurl }}/docs/parameterised-tests.html).
+You now know enough to start writing tests. We've explored the basic features of Cuppa, but if you'd like to learn more
+then check out some of the guides, starting with [parameterised tests]({{ site.baseurl }}/docs/parameterised-tests.html).

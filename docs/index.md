@@ -7,7 +7,7 @@ title: A test framework for Java 8
     <div class="container">
         <h1>Cuppa</h1>
         <p>A test framework for Java 8</p>
-        <a href="{{ site.baseurl }}/docs/getting-started" class="btn btn-primary">Get Started</a>
+        <a href="{{ site.baseurl }}/docs/getting-started" class="btn btn-lg btn-primary">Get Started</a>
     </div>
 </div>
 <div class="container">
@@ -29,6 +29,7 @@ title: A test framework for Java 8
         </div>
     </div>
 </div>
+<hr class="mini-hr">
 {::options parse_block_html="true" /}
 <div class="container">
 
@@ -55,6 +56,7 @@ public class ListTest {
 
 </div>
 {::options parse_block_html="false" /}
+<hr class="mini-hr">
 <div class="text-center">
     <a href="{{ site.baseurl }}/docs/getting-started" class="btn btn-primary">Get Started</a>
 </div>

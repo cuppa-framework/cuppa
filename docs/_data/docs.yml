@@ -11,7 +11,9 @@
   - reporters
   - integrating-with-existing-tests
   - writing-a-reporter
-- title: Reference
+- title: Javadoc
   docs:
-  - testing-api
-  - integration-api
+  - title: cuppa
+    url: /javadoc/cuppa/
+  - title: cuppa-junit
+    url: /javadoc/cuppa-junit/

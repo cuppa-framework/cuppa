@@ -33,9 +33,9 @@ Alternatively, you can download binaries for the [latest release]({{ site.github
 
 {::options parse_block_html="true" /}
 <div class="alert alert-info" role="alert">
-#### Integrations
+#### Already got tests?
 
-If your project already contains tests that were written with another testing framework, we offer
+If your project already contains tests that were written with another testing framework, there are
 [several methods]({{ site.baseurl }}/docs/integrating-with-existing-tests) to integrate Cuppa.
 </div>
 

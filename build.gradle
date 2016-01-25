@@ -17,6 +17,10 @@ subprojects {
     mavenLocal()
     mavenCentral()  
   }
+
+  javadoc {
+    options.stylesheetFile = new File(rootDir, "docs/css/javadoc.css")
+  }
   
   dependencies {
     testCompile (group: 'org.testng', name: 'testng', version:'6.9.9') {

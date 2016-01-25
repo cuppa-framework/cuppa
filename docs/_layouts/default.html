@@ -5,11 +5,12 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <title>{{ page.title }} | Cuppa</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="{{ site.baseurl }}/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="{{ site.baseurl }}/css/styles.css" />
+    <link rel="stylesheet" href="{{ site.baseurl }}/css/bootstrap.min.css" type="text/css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:400,700,300" type="text/css">
+    <link rel="stylesheet" href="{{ site.baseurl }}/css/styles.css" type="text/css">
 </head>
 <body>
-    <nav class="navbar navbar-default">
+    <nav class="navbar navbar-inverse navbar-static-top">
         <div class="container">
             <div class="navbar-header">
                 <a href="{{ site.baseurl }}/" class="navbar-brand">Cuppa</a>
@@ -19,7 +20,7 @@
                 <li{% if page.sectionid == 'blog' %} class="active"{% endif %}><a href="{{ site.baseurl }}/blog/">Blog</a></li>
             </ul>
             <ul class="nav navbar-nav navbar-right">
-                <li><a href="{{ site.github_url }}">GitHub</a></li>
+                <li><a href="{{ site.github_url }}">GitHub <img src="{{ site.baseurl }}/img/GitHub-Mark-Light-32px.png" width="20" height="20" class="github-logo"></a></li>
             </ul>
         </div>
     </nav>
@@ -38,7 +39,6 @@
 
         ga('create', 'UA-72837005-1', 'auto');
         ga('send', 'pageview');
-
     </script>
 </body>
 </html>

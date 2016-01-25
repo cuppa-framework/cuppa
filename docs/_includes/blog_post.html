@@ -8,17 +8,19 @@
 {% endif %}
 </h1>
 <p class="meta">
-    {{ page.date | date: "%B %e, %Y" }}
-    by
     {% assign author = site.data.authors | where: "id", page.author | first %}
     {% if author.url %}
-    <a href="{{ author.url }}">{{ author.name }}</a>
+    <a href="{{ author.url }}">{{ author.name }}
+    {% if author.email %}
+    <img src="{{ author.email | to_gravatar }}" class="blog-thumb" />
+    {% endif %}
+    </a>
     {% else %}
     {{ author.name }}
     {% endif %}
-    {% if author.email %}
-    <img src="{{ author.email | to_gravatar }}" />
-    {% endif %}
+    <div class="blog-date">
+    {{ page.date | date: "%B %e, %Y" }}
+    </div>
 </p>
 
 <hr>

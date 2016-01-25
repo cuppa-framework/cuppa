@@ -15,6 +15,6 @@
  */
 
 /**
- * BDD-style test framework inspired by <a href="https://mochajs.org">Mocha</a>.
+ * A test framework for Java 8.
  */
 package org.forgerock.cuppa;
