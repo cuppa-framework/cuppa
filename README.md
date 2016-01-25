@@ -1,4 +1,4 @@
-# [Cuppa](https://phillcunnington.github.io/cuppa/) [![Build Status](https://travis-ci.org/phillcunnington/cuppa.svg?branch=master)](https://travis-ci.org/phillcunnington/cuppa)
+# [Cuppa](https://cuppa-framework.github.io/cuppa/) [![Build Status](https://travis-ci.org/cuppa-framework/cuppa.svg?branch=master)](https://travis-ci.org/cuppa-framework/cuppa)
 
 Cuppa is a test framework for Java 8. It makes writing tests productive and fun.
 
@@ -27,11 +27,11 @@ public class ListTest {
 }
 ```
 
-Check out [the website](https://phillcunnington.github.io/cuppa/) for more examples.
+Check out [the website](https://cuppa-framework.github.io/cuppa/) for more examples.
 
 ## Getting Started
 
-For full details see [the getting started guide](https://phillcunnington.github.io/cuppa/docs/getting-started) on the
+For full details see [the getting started guide](https://cuppa-framework.github.io/cuppa/docs/getting-started) on the
 website.
 
 #### Maven
@@ -60,7 +60,7 @@ dependencies {
 ### Plain Old Jar File
 
 Alternatively, you can download binaries for the
-[latest release](https://github.com/phillcunnington/cuppa/releases/latest).
+[latest release](https://github.com/cuppa-framework/cuppa/releases/latest).
 
 ## Contribute
 

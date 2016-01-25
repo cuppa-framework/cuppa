@@ -1,7 +1,7 @@
 ---
 name: Cuppa
 description: A test framework for Java 8
-url: https://phillcunnington.github.io
+url: https://cuppa-framework.github.io
 baseurl: "/cuppa"
 collections:
   docs:
@@ -33,4 +33,4 @@ kramdown:
 gems:
 - jekyll-paginate
 cuppa_version: 1.0.0
-github_url: https://github.com/phillcunnington/cuppa
+github_url: https://github.com/cuppa-framework/cuppa
