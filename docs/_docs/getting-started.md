@@ -2,6 +2,8 @@
 title: Getting Started
 ---
 
+{::options parse_block_html="true" /}
+
 ## Installation
 
 ### Maven
@@ -31,7 +33,6 @@ dependencies {
 
 Alternatively, you can download binaries for the [latest release]({{ site.github_url }}/releases/latest).
 
-{::options parse_block_html="true" /}
 <div class="alert alert-info" role="alert">
 #### Already got tests?
 
