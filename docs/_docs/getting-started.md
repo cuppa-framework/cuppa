@@ -19,6 +19,28 @@ Add a test dependency for Cuppa in your project's POM:
 </dependency>
 ```
 
+To get Surefire (the Maven plugin that runs unit tests) to run Cuppa tests, you'll need some additional configuration:
+
+```xml
+<plugins>
+    <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>2.19.1</version>
+        <dependencies>
+            <dependency>
+                <groupId>org.forgerock.cuppa</groupId>
+                <artifactId>cuppa-surefire</artifactId>
+                <version>{{ site.cuppa_version }}</version>
+            </dependency>
+        </dependencies>
+    </plugin>
+</plugins>
+```
+
+If you want to use Cuppa to write integration tests, you'll need to do the same thing for Failsafe.
+Add `cuppa-surefire` as a dependency of the `maven-failsafe-plugin` plugin.
+
 ### Gradle
 
 Add a test dependency for Cuppa in your project's build file:
