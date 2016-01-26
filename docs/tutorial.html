@@ -142,24 +142,32 @@
                 Tutorial
                 <a href="https://github.com/cuppa-framework/cuppa/blob/master/docs/_docs/tutorial.md" class="edit-page">Edit on GitHub</a>
             </h1>
+
 <h2 id="our-first-test">Our First Test</h2>
 
-<p>Cuppa tests are defined at runtime. Tests are often written in a class’s initialiser block.</p>
+<p>Cuppa tests are defined at runtime, often in a class’s initialiser block.</p>
 
 <div class="highlighter-rouge"><pre class="highlight"><code><span class="nd">@Test</span>
 <span class="kd">public</span> <span class="kd">class</span> <span class="nc">ListTest</span> <span class="o">{</span>
     <span class="o">{</span>
-        <span class="n">it</span><span class="o">(</span><span class="s">"returns -1 when the value is not present"</span><span class="o">,</span> <span class="o">()</span> <span class="o">-&gt;</span> <span class="o">{</span>
-            <span class="n">List</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;</span> <span class="n">list</span> <span class="o">=</span> <span class="n">Arrays</span><span class="o">.</span><span class="na">asList</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span> <span class="mi">2</span><span class="o">,</span> <span class="mi">3</span><span class="o">);</span>
-            <span class="n">assertThat</span><span class="o">(</span><span class="n">list</span><span class="o">.</span><span class="na">indexOf</span><span class="o">(</span><span class="mi">5</span><span class="o">)).</span><span class="na">isEqualTo</span><span class="o">(-</span><span class="mi">1</span><span class="o">);</span>
+        <span class="n">describe</span><span class="o">(</span><span class="s">"List#indexOf"</span><span class="o">,</span> <span class="o">()</span> <span class="o">-&gt;</span> <span class="o">{</span>
+            <span class="n">it</span><span class="o">(</span><span class="s">"returns -1 when the value is not present"</span><span class="o">,</span> <span class="o">()</span> <span class="o">-&gt;</span> <span class="o">{</span>
+                <span class="n">List</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;</span> <span class="n">list</span> <span class="o">=</span> <span class="n">Arrays</span><span class="o">.</span><span class="na">asList</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span> <span class="mi">2</span><span class="o">,</span> <span class="mi">3</span><span class="o">);</span>
+                <span class="n">assertThat</span><span class="o">(</span><span class="n">list</span><span class="o">.</span><span class="na">indexOf</span><span class="o">(</span><span class="mi">5</span><span class="o">)).</span><span class="na">isEqualTo</span><span class="o">(-</span><span class="mi">1</span><span class="o">);</span>
+            <span class="o">});</span>
         <span class="o">});</span>
     <span class="o">}</span>
 <span class="o">}</span>
 </code></pre>
 </div>
 
-<p>We define a test by calling <code class="highlighter-rouge">it</code>, a static method from the <code class="highlighter-rouge">Cuppa</code> class. We pass it a description of the behaviour we
-expect and a lambda expression that asserts the behaviour.</p>
+<p>We use the <code class="highlighter-rouge">@Test</code> annotation so Cuppa can find our class when running the tests.</p>
+
+<p>We start by calling <code class="highlighter-rouge">describe</code>, a static method of the <code class="highlighter-rouge">Cuppa</code> class, to tell Cuppa what we’re testing.
+Cuppa doesn’t care what string you pass to <code class="highlighter-rouge">describe</code> so you should use something that makes sense to you.
+The string is only used when generating reports.</p>
+
+<p>We also pass a lambda-expression, where all the tests related to <code class="highlighter-rouge">List#indexOf</code> are defined.</p>
 
 <div class="alert alert-info" role="alert">
   <h4 id="lambda-expressions">Lambda Expressions</h4>
@@ -169,30 +177,71 @@ but their syntax is much more compact. If you’ve never used them before, don�
 to know in order to use Cuppa.</p>
 </div>
 
-<h3 id="why-it">Why <code class="highlighter-rouge">it</code>?</h3>
+<p>Finally, we define a test by calling another static method <code class="highlighter-rouge">it</code>.
+We pass it a description of the behaviour we want to test and a lambda expression that asserts that behaviour.</p>
 
-<p>The method is called <code class="highlighter-rouge">it</code> to remind us to describe the <em>behaviour</em> we are testing, helping to keep our test names
+<div class="alert alert-info" role="alert">
+  <h4 id="why-it">Why <code class="highlighter-rouge">it</code>?</h4>
+
+  <p>The method is called <code class="highlighter-rouge">it</code> to remind us to describe the <em>behaviour</em> we are testing, helping to keep our test names
 consistent and readable.</p>
+</div>
 
-<h3 id="running-the-test">Running the Test</h3>
+<h3 id="running-it">Running it</h3>
+
+<p>Use Maven to run the test:</p>
 
 <div class="highlighter-rouge"><pre class="highlight"><code><span class="gp">$ </span>mvn <span class="nb">test</span>
 </code></pre>
 </div>
 
-<p>This is what Cuppa outputs:</p>
+<p>Cuppa will print out a report:</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code>  ✓ returns -1 when the value is not present
+<div class="highlighter-rouge"><pre class="highlight"><code>  List#indexOf
+    ✓ returns -1 when the value is not present
 
 
   1 passing
 </code></pre>
 </div>
 
-<h2 id="grouping-tests">Grouping Tests</h2>
+<h2 id="the-next-test">The Next Test</h2>
 
-<p>We’ve explained that our tests describe behaviour, so it makes sense to document what it is that we are describing the
-behaviour of.</p>
+<p>Now we can add another test right beside the first:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="nd">@Test</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">ListTest</span> <span class="o">{</span>
+    <span class="o">{</span>
+        <span class="n">describe</span><span class="o">(</span><span class="s">"List#indexOf"</span><span class="o">,</span> <span class="o">()</span> <span class="o">-&gt;</span> <span class="o">{</span>
+            <span class="n">it</span><span class="o">(</span><span class="s">"returns -1 when the value is not present"</span><span class="o">,</span> <span class="o">()</span> <span class="o">-&gt;</span> <span class="o">{</span>
+                <span class="n">List</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;</span> <span class="n">list</span> <span class="o">=</span> <span class="n">Arrays</span><span class="o">.</span><span class="na">asList</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span> <span class="mi">2</span><span class="o">,</span> <span class="mi">3</span><span class="o">);</span>
+                <span class="n">assertThat</span><span class="o">(</span><span class="n">list</span><span class="o">.</span><span class="na">indexOf</span><span class="o">(</span><span class="mi">5</span><span class="o">)).</span><span class="na">isEqualTo</span><span class="o">(-</span><span class="mi">1</span><span class="o">);</span>
+            <span class="o">});</span>
+            <span class="n">it</span><span class="o">(</span><span class="s">"returns 0-based index of value when the value is present"</span><span class="o">,</span> <span class="o">()</span> <span class="o">-&gt;</span> <span class="o">{</span>
+                <span class="n">List</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;</span> <span class="n">list</span> <span class="o">=</span> <span class="n">Arrays</span><span class="o">.</span><span class="na">asList</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span> <span class="mi">2</span><span class="o">,</span> <span class="mi">3</span><span class="o">);</span>
+                <span class="n">assertThat</span><span class="o">(</span><span class="n">list</span><span class="o">.</span><span class="na">indexOf</span><span class="o">(</span><span class="mi">2</span><span class="o">)).</span><span class="na">isEqualTo</span><span class="o">(</span><span class="mi">1</span><span class="o">);</span>
+            <span class="o">});</span>
+        <span class="o">});</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre>
+</div>
+
+<p>Running the tests prints:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>  List#indexOf
+    ✓ returns -1 when the value is not present
+    ✓ returns 0-based index of value when the value is present
+
+
+  2 passing
+</code></pre>
+</div>
+
+<h2 id="further-grouping-of-tests">Further Grouping of Tests</h2>
+
+<p>So far we’ve only written tests for a single method, <code class="highlighter-rouge">indexOf</code>. If we want to test more methods, it makes sense to nest a second
+level of <code class="highlighter-rouge">describe</code> blocks.</p>
 
 <div class="highlighter-rouge"><pre class="highlight"><code><span class="nd">@Test</span>
 <span class="kd">public</span> <span class="kd">class</span> <span class="nc">ListTest</span> <span class="o">{</span>
@@ -203,6 +252,20 @@ behaviour of.</p>
                     <span class="n">List</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;</span> <span class="n">list</span> <span class="o">=</span> <span class="n">Arrays</span><span class="o">.</span><span class="na">asList</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span> <span class="mi">2</span><span class="o">,</span> <span class="mi">3</span><span class="o">);</span>
                     <span class="n">assertThat</span><span class="o">(</span><span class="n">list</span><span class="o">.</span><span class="na">indexOf</span><span class="o">(</span><span class="mi">5</span><span class="o">)).</span><span class="na">isEqualTo</span><span class="o">(-</span><span class="mi">1</span><span class="o">);</span>
                 <span class="o">});</span>
+                <span class="n">it</span><span class="o">(</span><span class="s">"returns 0-based index of value when the value is present"</span><span class="o">,</span> <span class="o">()</span> <span class="o">-&gt;</span> <span class="o">{</span>
+                    <span class="n">List</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;</span> <span class="n">list</span> <span class="o">=</span> <span class="n">Arrays</span><span class="o">.</span><span class="na">asList</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span> <span class="mi">2</span><span class="o">,</span> <span class="mi">3</span><span class="o">);</span>
+                    <span class="n">assertThat</span><span class="o">(</span><span class="n">list</span><span class="o">.</span><span class="na">indexOf</span><span class="o">(</span><span class="mi">2</span><span class="o">)).</span><span class="na">isEqualTo</span><span class="o">(</span><span class="mi">1</span><span class="o">);</span>
+                <span class="o">});</span>
+            <span class="o">});</span>
+            <span class="n">describe</span><span class="o">(</span><span class="s">"#isEmpty"</span><span class="o">,</span> <span class="o">()</span> <span class="o">-&gt;</span> <span class="o">{</span>
+                <span class="n">it</span><span class="o">(</span><span class="s">"returns true when the list is empty"</span><span class="o">,</span> <span class="o">()</span> <span class="o">-&gt;</span> <span class="o">{</span>
+                    <span class="n">List</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;</span> <span class="n">list</span> <span class="o">=</span> <span class="n">Arrays</span><span class="o">.</span><span class="na">asList</span><span class="o">();</span>
+                    <span class="n">assertThat</span><span class="o">(</span><span class="n">list</span><span class="o">.</span><span class="na">isEmpty</span><span class="o">()).</span><span class="na">isTrue</span><span class="o">();</span>
+                <span class="o">});</span>
+                <span class="n">it</span><span class="o">(</span><span class="s">"returns false when the list has a single element"</span><span class="o">,</span> <span class="o">()</span> <span class="o">-&gt;</span> <span class="o">{</span>
+                    <span class="n">List</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;</span> <span class="n">list</span> <span class="o">=</span> <span class="n">Arrays</span><span class="o">.</span><span class="na">asList</span><span class="o">(</span><span class="mi">1</span><span class="o">);</span>
+                    <span class="n">assertThat</span><span class="o">(</span><span class="n">list</span><span class="o">.</span><span class="na">isEmpty</span><span class="o">()).</span><span class="na">isFalse</span><span class="o">();</span>
+                <span class="o">});</span>
             <span class="o">});</span>
         <span class="o">});</span>
     <span class="o">}</span>
@@ -210,23 +273,27 @@ behaviour of.</p>
 </code></pre>
 </div>
 
-<p>We’ve wrapped our test in two nested “describe” blocks. The <code class="highlighter-rouge">describe</code> method allows us to group tests together
-that describe the same thing, further aiding readability.</p>
-
-<p>Running Cuppa we see that the test is now nicely nested under the thing it describes:</p>
+<p>Running the tests prints:</p>
 
 <div class="highlighter-rouge"><pre class="highlight"><code>  List
     #indexOf
       ✓ returns -1 when the value is not present
+      ✓ returns 0-based index of value when the value is present
+    #isEmpty
+      ✓ returns true when the list is empty
+      ✓ returns false when the list has a single element
 
 
-  1 passing
+  4 passing
 </code></pre>
 </div>
 
+<p>Structuring the tests like this makes it easy to see which tests relate to which method. Cuppa imposes no constraints
+on how you use <code class="highlighter-rouge">describe</code> blocks to add structure to your tests.</p>
+
 <h2 id="when">When</h2>
 
-<p>It is often the case when we want to group tests together because they share state. For example,</p>
+<p>It is often the case when we want to group tests together because they share the same setup. For example,</p>
 
 <div class="highlighter-rouge"><pre class="highlight"><code><span class="nd">@Test</span>
 <span class="kd">public</span> <span class="kd">class</span> <span class="nc">ListTest</span> <span class="o">{</span>
@@ -252,6 +319,11 @@ that describe the same thing, further aiding readability.</p>
 </code></pre>
 </div>
 
+<p>In this example, we have grouped together tests for an empty list.</p>
+
+<p><code class="highlighter-rouge">when</code> blocks are very similar to <code class="highlighter-rouge">describe</code> blocks and can be used interchangeable. The only difference is that Cuppa
+adds the word “when” in reports:</p>
+
 <div class="highlighter-rouge"><pre class="highlight"><code>  List
     when it is empty
       #indexOf
@@ -264,7 +336,9 @@ that describe the same thing, further aiding readability.</p>
 </code></pre>
 </div>
 
-<h2 id="before-and-after">Before and After</h2>
+<p>Using <code class="highlighter-rouge">when</code> helps us better convey the structure of the behaviour we’re testing.</p>
+
+<h2 id="hooks">Hooks</h2>
 
 <p>In the previous example, we created the empty list twice. Let’s remove this repetition by using the <code class="highlighter-rouge">beforeEach</code> method.</p>
 
@@ -289,6 +363,16 @@ that describe the same thing, further aiding readability.</p>
                     <span class="o">});</span>
                 <span class="o">});</span>
             <span class="o">});</span>
+            <span class="n">when</span><span class="o">(</span><span class="s">"it is not empty"</span><span class="o">,</span> <span class="o">()</span> <span class="o">-&gt;</span> <span class="o">{</span>
+                <span class="n">beforeEach</span><span class="o">(()</span> <span class="o">-&gt;</span> <span class="o">{</span>
+                    <span class="n">list</span> <span class="o">=</span> <span class="n">Arrays</span><span class="o">.</span><span class="na">asList</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span> <span class="mi">2</span><span class="o">,</span> <span class="mi">3</span><span class="o">);</span>
+                <span class="o">});</span>
+                <span class="n">describe</span><span class="o">(</span><span class="s">"#isEmpty"</span><span class="o">,</span> <span class="o">()</span> <span class="o">-&gt;</span> <span class="o">{</span>
+                    <span class="n">it</span><span class="o">(</span><span class="s">"returns false"</span><span class="o">,</span> <span class="o">()</span> <span class="o">-&gt;</span> <span class="o">{</span>
+                        <span class="n">assertThat</span><span class="o">(</span><span class="n">list</span><span class="o">.</span><span class="na">isEmpty</span><span class="o">()).</span><span class="na">isFalse</span><span class="o">();</span>
+                    <span class="o">});</span>
+                <span class="o">});</span>
+            <span class="o">});</span>
         <span class="o">});</span>
     <span class="o">}</span>
 <span class="o">}</span>
@@ -297,6 +381,15 @@ that describe the same thing, further aiding readability.</p>
 
 <p>The lambda expression we pass to <code class="highlighter-rouge">beforeEach</code> is executed once before each test in the same <code class="highlighter-rouge">describe</code> or <code class="highlighter-rouge">when</code> block.
 It is also executed for any test that is in a nested <code class="highlighter-rouge">describe</code> or <code class="highlighter-rouge">when</code> block.</p>
+
+<p>The available hooks are:</p>
+
+<ul>
+  <li><code class="highlighter-rouge">before</code> - Runs once before any tests in the same or nested blocks.</li>
+  <li><code class="highlighter-rouge">beforeEach</code> - Runs for each test in the same or nested blocks.</li>
+  <li><code class="highlighter-rouge">after</code> - Runs once after all tests in the same or nested blocks.</li>
+  <li><code class="highlighter-rouge">afterEach</code> - Runs once after each test in the same or nested blocks.</li>
+</ul>
 
 <h2 id="well-done">Well Done</h2>
 
