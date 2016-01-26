@@ -1,5 +1,99 @@
+body {
+    font-family: 'Open Sans', sans-serif;
+}
+
 .jumbotron {
     margin-top: -20px;
+    /* Background pattern from subtlepatterns.com */
+    background: #555 url("/cuppa/img/hero.png");
+    color: #ddd;
+    border-top: 1px solid #FE6A00;
+}
+
+.jumbotron h1 {
+    color: #fff;
+    font-weight: 300;
+    line-height: 1;
+}
+
+.jumbotron p {
+    line-height: 2;
+}
+
+.github-logo {
+    float: right;
+    vertical-align: middle;
+    margin-left: 10px;
+}
+
+.navbar {
+    border: none;
+}
+
+.navbar-inverse .navbar-brand {
+    color: #FF9A52;
+    font-weight: 300;
+}
+
+.edit-page {
+    float: right;
+    font-size: 16px;
+    margin-top: 17px;
+}
+
+.mini-hr {
+    max-width: 400px;
+    margin: 40px auto;
+}
+
+footer {
+    font-size: 12px;
+    font-weight: bold;
+    color: #555;
+    margin: 20px 0;
+}
+
+pre {
+    border-radius: 0;
+    margin: 20px 0;
+}
+
+.sidebar h3 {
+    text-transform: uppercase;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.sidebar ul {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 30px 0;
+    line-height: 1.7;
+}
+
+.sidebar a {
+    color: #777;
+}
+
+.sidebar a.active {
+    color: #2492E4;
+}
+
+.alert {
+    border-right: none;
+    border-top: none;
+    border-bottom: none;
+    border-left-width: 5px;
+    border-radius: 0;
+}
+
+.blog-thumb {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    float: left;
+    margin-right: 10px;
+    border: 1px solid #fe6a00;
 }
 
 /* syntax highlighting */
@@ -25,4 +119,9 @@
 /* xml element */
 .highlight .nt {
     color: #353da7;
+}
+
+/* annotation */
+.highlight .nd {
+    color: #314e97;
 }

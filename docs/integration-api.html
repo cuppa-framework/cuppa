@@ -5,11 +5,12 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <title>Integration API | Cuppa</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="/cuppa/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="/cuppa/css/styles.css" />
+    <link rel="stylesheet" href="/cuppa/css/bootstrap.min.css" type="text/css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:400,700,300" type="text/css">
+    <link rel="stylesheet" href="/cuppa/css/styles.css" type="text/css">
 </head>
 <body>
-    <nav class="navbar navbar-default">
+    <nav class="navbar navbar-inverse navbar-static-top">
         <div class="container">
             <div class="navbar-header">
                 <a href="/cuppa/" class="navbar-brand">Cuppa</a>
@@ -19,7 +20,7 @@
                 <li><a href="/cuppa/blog/">Blog</a></li>
             </ul>
             <ul class="nav navbar-nav navbar-right">
-                <li><a href="https://github.com/phillcunnington/cuppa">GitHub</a></li>
+                <li><a href="https://github.com/cuppa-framework/cuppa">GitHub <img src="/cuppa/img/GitHub-Mark-Light-32px.png" width="20" height="20" class="github-logo"></a></li>
             </ul>
         </div>
     </nav>
@@ -27,93 +28,120 @@
     <div class="row">
         <div class="alert alert-danger" role="alert"><strong>Cuppa has not been released yet.</strong> This
         documentation is subject to change without notice.</div>
-        <div class="col-md-3">
+        <nav class="col-md-3 sidebar">
 
             <h3>Quick Start</h3>
             <ul>
     
         
         
+        
                 <li>
                     <a href="/cuppa/docs/getting-started">Getting Started</a>
                 </li>
+        
     
+        
         
         
                 <li>
                     <a href="/cuppa/docs/tutorial">Tutorial</a>
                 </li>
+        
     
             </ul>
+    
+            <hr>
+    
 
             <h3>Guides</h3>
             <ul>
     
         
         
+        
                 <li>
                     <a href="/cuppa/docs/parameterised-tests">Parameterised Tests</a>
                 </li>
+        
     
+        
         
         
                 <li>
                     <a href="/cuppa/docs/skipping-tests">Skipping Tests</a>
                 </li>
+        
     
+        
         
         
                 <li>
                     <a href="/cuppa/docs/exceptions">Handling Exceptions</a>
                 </li>
+        
     
+        
         
         
                 <li>
                     <a href="/cuppa/docs/timeouts">Timeouts</a>
                 </li>
+        
     
+        
         
         
                 <li>
                     <a href="/cuppa/docs/reporters">Reporters</a>
                 </li>
+        
     
+        
         
         
                 <li>
                     <a href="/cuppa/docs/integrating-with-existing-tests">Integrating with Existing Tests</a>
                 </li>
+        
     
+        
         
         
                 <li>
                     <a href="/cuppa/docs/writing-a-reporter">Writing a Reporter</a>
                 </li>
+        
     
             </ul>
+    
+            <hr>
+    
 
-            <h3>Reference</h3>
+            <h3>Javadoc</h3>
             <ul>
     
         
-        
                 <li>
-                    <a href="/cuppa/docs/testing-api">Testing API</a>
+                    <a href="/cuppa/javadoc/cuppa/"><code>cuppa</code></a>
                 </li>
+        
     
         
-        
                 <li>
-                    <a href="/cuppa/docs/integration-api">Integration API</a>
+                    <a href="/cuppa/javadoc/cuppa-junit/"><code>cuppa-junit</code></a>
                 </li>
+        
     
             </ul>
+    
 
-        </div>
+        </nav>
         <div class="col-md-9">
-            <h1>Integration API</h1>
-            <a href="https://github.com/phillcunnington/cuppa/blob/master/docs/_docs/integration-api.md" class="pull-right">Edit on GitHub</a>
+            <h1>
+                Integration API
+                <a href="https://github.com/cuppa-framework/cuppa/blob/master/docs/_docs/integration-api.md" class="edit-page">Edit on GitHub</a>
+            </h1>
 
 
 
@@ -150,21 +178,12 @@
 
 
 
-            <nav>
-                <ul class="pager">
-        
-        
-        
-        
-                    <li class="previous">
-                        <a href="/cuppa/docs/testing-api" class="prev">Back</a>
-                    </li>
-        
-        
-                    </li>
-                </ul>
-            </nav>
-            <div class="clear"></div>
+
+
+
+
+
+
 
         </div>
     </div>
@@ -183,7 +202,6 @@
 
         ga('create', 'UA-72837005-1', 'auto');
         ga('send', 'pageview');
-
     </script>
 </body>
 </html>
