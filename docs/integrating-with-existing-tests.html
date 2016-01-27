@@ -143,6 +143,41 @@
                 <a href="https://github.com/cuppa-framework/cuppa/blob/master/docs/_docs/integrating-with-existing-tests.md" class="edit-page">Edit on GitHub</a>
             </h1>
 
+<h2 id="maven">Maven</h2>
+
+<p>If you’re using Maven, then Surefire/Failsafe will handle running Cuppa along side other test frameworks and aggregating
+the results automatically.</p>
+
+<h2 id="junit">JUnit</h2>
+
+<p>If you’re not using Maven and are using JUnit, then Cuppa provides a JUnit runner that allows Cuppa tests to be included
+when running JUnit.</p>
+
+<p>To use the runner, your project will need to depend on <code class="highlighter-rouge">org.forgerock.cuppa:cuppa-junit</code>
+(<a href="https://github.com/cuppa-framework/cuppa/releases/latest">download it here</a>).
+Simply annotate your class with JUnit’s <code class="highlighter-rouge">@RunWith</code> annotation instead of Cuppa’s <code class="highlighter-rouge">@Test</code> annotation:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="nd">@RunWith</span><span class="o">(</span><span class="n">CuppaTestRunner</span><span class="o">.</span><span class="na">class</span><span class="o">)</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">MyCuppaTests</span> <span class="o">{</span>
+    <span class="o">{</span>
+        <span class="n">describe</span><span class="o">(</span><span class="s">"something"</span><span class="o">,</span> <span class="o">()</span> <span class="o">-&gt;</span> <span class="o">{</span>
+            <span class="c1">// ...</span>
+        <span class="o">});</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre>
+</div>
+
+<div class="alert alert-info" role="alert">
+  <h4 id="note">Note</h4>
+
+  <p>You cannot mix JUnit and Cuppa tests in a class.</p>
+</div>
+
+<h2 id="testng">TestNG</h2>
+
+<p>Currently, Cuppa offers no way to integrate with TestNG without Maven. If you want to work on this, let us know
+your thoughts on <a href="https://github.com/cuppa-framework/cuppa/issues/30">the issue</a>.</p>
 
 
 

@@ -142,6 +142,7 @@
                 Getting Started
                 <a href="https://github.com/cuppa-framework/cuppa/blob/master/docs/_docs/getting-started.md" class="edit-page">Edit on GitHub</a>
             </h1>
+
 <h2 id="installation">Installation</h2>
 
 <h3 id="maven">Maven</h3>
@@ -156,6 +157,28 @@
 <span class="nt">&lt;/dependency&gt;</span>
 </code></pre>
 </div>
+
+<p>To get Surefire (the Maven plugin that runs unit tests) to run Cuppa tests, you’ll need some additional configuration:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="nt">&lt;plugins&gt;</span>
+    <span class="nt">&lt;plugin&gt;</span>
+        <span class="nt">&lt;groupId&gt;</span>org.apache.maven.plugins<span class="nt">&lt;/groupId&gt;</span>
+        <span class="nt">&lt;artifactId&gt;</span>maven-surefire-plugin<span class="nt">&lt;/artifactId&gt;</span>
+        <span class="nt">&lt;version&gt;</span>2.19.1<span class="nt">&lt;/version&gt;</span>
+        <span class="nt">&lt;dependencies&gt;</span>
+            <span class="nt">&lt;dependency&gt;</span>
+                <span class="nt">&lt;groupId&gt;</span>org.forgerock.cuppa<span class="nt">&lt;/groupId&gt;</span>
+                <span class="nt">&lt;artifactId&gt;</span>cuppa-surefire<span class="nt">&lt;/artifactId&gt;</span>
+                <span class="nt">&lt;version&gt;</span>1.0.0<span class="nt">&lt;/version&gt;</span>
+            <span class="nt">&lt;/dependency&gt;</span>
+        <span class="nt">&lt;/dependencies&gt;</span>
+    <span class="nt">&lt;/plugin&gt;</span>
+<span class="nt">&lt;/plugins&gt;</span>
+</code></pre>
+</div>
+
+<p>If you want to use Cuppa to write integration tests, you’ll need to do the same thing for Failsafe.
+Add <code class="highlighter-rouge">cuppa-surefire</code> as a dependency of the <code class="highlighter-rouge">maven-failsafe-plugin</code> plugin.</p>
 
 <h3 id="gradle">Gradle</h3>
 
