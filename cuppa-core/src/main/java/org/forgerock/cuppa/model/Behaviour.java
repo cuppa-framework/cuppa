@@ -27,60 +27,15 @@ public enum Behaviour {
     /**
      * Run the test(s).
      */
-    NORMAL {
-        @Override
-        public void describe(String description, TestBlockFunction function) {
-            TestContainer.INSTANCE.describe(NORMAL, description, function);
-        }
-
-        @Override
-        public void when(String description, TestBlockFunction function) {
-            TestContainer.INSTANCE.when(NORMAL, description, function);
-        }
-
-        @Override
-        public void it(String description, TestFunction function) {
-            TestContainer.INSTANCE.it(NORMAL, description, function);
-        }
-    },
+    NORMAL,
     /**
      * Do not run the test(s). The test(s) may still be included in test reports, but marked as skipped.
      */
-    skip {
-        @Override
-        public void describe(String description, TestBlockFunction function) {
-            TestContainer.INSTANCE.describe(skip, description, function);
-        }
-
-        @Override
-        public void when(String description, TestBlockFunction function) {
-            TestContainer.INSTANCE.when(skip, description, function);
-        }
-
-        @Override
-        public void it(String description, TestFunction function) {
-            TestContainer.INSTANCE.it(skip, description, function);
-        }
-    },
+    skip,
     /**
      * Run the test(s) and ignore all other tests not marked as ONLY.
      */
-    only {
-        @Override
-        public void describe(String description, TestBlockFunction function) {
-            TestContainer.INSTANCE.describe(only, description, function);
-        }
-
-        @Override
-        public void when(String description, TestBlockFunction function) {
-            TestContainer.INSTANCE.when(only, description, function);
-        }
-
-        @Override
-        public void it(String description, TestFunction function) {
-            TestContainer.INSTANCE.it(only, description, function);
-        }
-    };
+    only;
 
     /**
      * Registers a described suite of tests to be run.
@@ -89,7 +44,9 @@ public enum Behaviour {
      * @param description The description of the 'describe' block.
      * @param function The 'describe' block.
      */
-    public abstract void describe(String description, TestBlockFunction function);
+    public void describe(String description, TestBlockFunction function) {
+        TestContainer.INSTANCE.describe(this, description, function);
+    }
 
     /**
      * Registers a 'when' block to be run.
@@ -98,7 +55,9 @@ public enum Behaviour {
      * @param description The description of the 'when' block.
      * @param function The 'when' block.
      */
-    public abstract void when(String description, TestBlockFunction function);
+    public void when(String description, TestBlockFunction function) {
+        TestContainer.INSTANCE.when(this, description, function);
+    }
 
     /**
      * Registers a test function to be run.
@@ -107,7 +66,9 @@ public enum Behaviour {
      * @param description The description of the test function.
      * @param function The test function.
      */
-    public abstract void it(String description, TestFunction function);
+    public void it(String description, TestFunction function) {
+        TestContainer.INSTANCE.it(this, description, function);
+    }
 
     /**
      * Registers a pending test function that has yet to be implemented.
