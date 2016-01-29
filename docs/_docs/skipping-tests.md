@@ -4,11 +4,11 @@ title: Skipping Tests
 
 ## Skipping a Single Test
 
-During development, you may want to temporarily turn off a test. Rather than commenting it out, we recommend passing the
-`SKIP` argument to mark the test as skipped.
+During development, you may want to temporarily turn off a test. Rather than commenting it out, we recommend using the 
+following syntax to mark the test as skipped.
 
 ```java
-it(SKIP, "returns -1", () -> {
+skip.it("returns -1", () -> {
     // ...
 );
 ```
@@ -18,7 +18,7 @@ Skipped tests will be reported to remind you to restore the test before committi
 You can also skip entire `describe` or `when` blocks:
 
 ```java
-when(SKIP, "it is empty", () -> {
+skip.when("it is empty", () -> {
     it("returns -1", () -> {
         // ...
     });
@@ -27,10 +27,10 @@ when(SKIP, "it is empty", () -> {
 
 ## Running a Single Test
 
-If you'd like to run a single test to debug a problem, just add the `ONLY` argument.
+If you'd like to run a single test to debug a problem, just use the following syntax.
 
 ```java
-it(ONLY, "returns -1", () -> {
+only.it("returns -1", () -> {
     // ...
 );
 ```

@@ -16,6 +16,10 @@
 
 package org.forgerock.cuppa.model;
 
+import org.forgerock.cuppa.functions.TestBlockFunction;
+import org.forgerock.cuppa.functions.TestFunction;
+import org.forgerock.cuppa.internal.TestContainer;
+
 /**
  * Controls the behaviour of a test or collection of tests.
  */
@@ -23,15 +27,96 @@ public enum Behaviour {
     /**
      * Run the test(s).
      */
-    NORMAL,
+    NORMAL {
+        @Override
+        public void describe(String description, TestBlockFunction function) {
+            TestContainer.INSTANCE.describe(NORMAL, description, function);
+        }
+
+        @Override
+        public void when(String description, TestBlockFunction function) {
+            TestContainer.INSTANCE.when(NORMAL, description, function);
+        }
+
+        @Override
+        public void it(String description, TestFunction function) {
+            TestContainer.INSTANCE.it(NORMAL, description, function);
+        }
+    },
     /**
      * Do not run the test(s). The test(s) may still be included in test reports, but marked as skipped.
      */
-    SKIP,
+    skip {
+        @Override
+        public void describe(String description, TestBlockFunction function) {
+            TestContainer.INSTANCE.describe(skip, description, function);
+        }
+
+        @Override
+        public void when(String description, TestBlockFunction function) {
+            TestContainer.INSTANCE.when(skip, description, function);
+        }
+
+        @Override
+        public void it(String description, TestFunction function) {
+            TestContainer.INSTANCE.it(skip, description, function);
+        }
+    },
     /**
      * Run the test(s) and ignore all other tests not marked as ONLY.
      */
-    ONLY;
+    only {
+        @Override
+        public void describe(String description, TestBlockFunction function) {
+            TestContainer.INSTANCE.describe(only, description, function);
+        }
+
+        @Override
+        public void when(String description, TestBlockFunction function) {
+            TestContainer.INSTANCE.when(only, description, function);
+        }
+
+        @Override
+        public void it(String description, TestFunction function) {
+            TestContainer.INSTANCE.it(only, description, function);
+        }
+    };
+
+    /**
+     * Registers a described suite of tests to be run.
+     * <p>If {@link Behaviour#skip} then this test will be skipped.</p>
+     *
+     * @param description The description of the 'describe' block.
+     * @param function The 'describe' block.
+     */
+    public abstract void describe(String description, TestBlockFunction function);
+
+    /**
+     * Registers a 'when' block to be run.
+     * <p>If {@link Behaviour#skip} then this test will be skipped.</p>
+     *
+     * @param description The description of the 'when' block.
+     * @param function The 'when' block.
+     */
+    public abstract void when(String description, TestBlockFunction function);
+
+    /**
+     * Registers a test function to be run.
+     * <p>If {@link Behaviour#skip} then this test will be skipped.</p>
+     *
+     * @param description The description of the test function.
+     * @param function The test function.
+     */
+    public abstract void it(String description, TestFunction function);
+
+    /**
+     * Registers a pending test function that has yet to be implemented.
+     *
+     * @param description The description of the test function.
+     */
+    public void it(String description) {
+        TestContainer.INSTANCE.it(description);
+    }
 
     /**
      * Combine this behaviour with another behaviour.
@@ -39,10 +124,10 @@ public enum Behaviour {
      * @return The combined behaviour
      */
     public Behaviour combine(Behaviour behaviour) {
-        if (this == SKIP || behaviour == SKIP) {
-            return SKIP;
-        } else if (this == ONLY || behaviour == ONLY) {
-            return ONLY;
+        if (this == skip || behaviour == skip) {
+            return skip;
+        } else if (this == only || behaviour == only) {
+            return only;
         }
         return NORMAL;
     }

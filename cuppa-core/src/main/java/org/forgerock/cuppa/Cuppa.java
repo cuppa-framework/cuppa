@@ -20,7 +20,6 @@ import org.forgerock.cuppa.functions.HookFunction;
 import org.forgerock.cuppa.functions.TestBlockFunction;
 import org.forgerock.cuppa.functions.TestFunction;
 import org.forgerock.cuppa.internal.TestContainer;
-import org.forgerock.cuppa.model.Behaviour;
 
 /**
  * Use the methods of this class to define your tests.
@@ -41,17 +40,6 @@ public final class Cuppa {
     }
 
     /**
-     * Registers a described suite of tests to be run.
-     *
-     * @param behaviour If {@link Behaviour#SKIP} then this test will be skipped.
-     * @param description The description of the 'describe' block.
-     * @param function The 'describe' block.
-     */
-    public static void describe(Behaviour behaviour, String description, TestBlockFunction function) {
-        TestContainer.INSTANCE.describe(behaviour, description, function);
-    }
-
-    /**
      * Registers a 'when' block to be run.
      *
      * @param description The description of the 'when' block.
@@ -59,17 +47,6 @@ public final class Cuppa {
      */
     public static void when(String description, TestBlockFunction function) {
         TestContainer.INSTANCE.when(description, function);
-    }
-
-    /**
-     * Registers a 'when' block to be run.
-     *
-     * @param behaviour If {@link Behaviour#SKIP} then this test will be skipped.
-     * @param description The description of the 'when' block.
-     * @param function The 'when' block.
-     */
-    public static void when(Behaviour behaviour, String description, TestBlockFunction function) {
-        TestContainer.INSTANCE.when(behaviour, description, function);
     }
 
     /**
@@ -156,17 +133,6 @@ public final class Cuppa {
      */
     public static void it(String description, TestFunction function) {
         TestContainer.INSTANCE.it(description, function);
-    }
-
-    /**
-     * Registers a test function to be run.
-     *
-     * @param behaviour If {@link Behaviour#SKIP} then this test will be skipped.
-     * @param description The description of the test function.
-     * @param function The test function.
-     */
-    public static void it(Behaviour behaviour, String description, TestFunction function) {
-        TestContainer.INSTANCE.it(behaviour, description, function);
     }
 
     /**

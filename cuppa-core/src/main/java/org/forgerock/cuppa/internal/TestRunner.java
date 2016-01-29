@@ -16,8 +16,8 @@
 
 package org.forgerock.cuppa.internal;
 
-import static org.forgerock.cuppa.model.Behaviour.ONLY;
-import static org.forgerock.cuppa.model.Behaviour.SKIP;
+import static org.forgerock.cuppa.model.Behaviour.only;
+import static org.forgerock.cuppa.model.Behaviour.skip;
 
 import org.forgerock.cuppa.functions.TestFunction;
 import org.forgerock.cuppa.model.Behaviour;
@@ -50,7 +50,7 @@ final class TestRunner {
                 }
             }
             for (Test t : testBlock.tests) {
-                if (ignoreTestsNotMarkedAsOnly && combinedBehaviour.combine(t.behaviour) == ONLY
+                if (ignoreTestsNotMarkedAsOnly && combinedBehaviour.combine(t.behaviour) == only
                         || !ignoreTestsNotMarkedAsOnly) {
                     testWrapper.apply(() -> runTest(t, combinedBehaviour, reporter));
                 }
@@ -74,7 +74,7 @@ final class TestRunner {
     private void runTest(Test test, Behaviour behaviour, Reporter reporter) {
         if (!test.function.isPresent()) {
             reporter.testPending(test);
-        } else if (behaviour.combine(test.behaviour) != SKIP) {
+        } else if (behaviour.combine(test.behaviour) != skip) {
             try {
                 reporter.testStart(test);
                 test.function.get().apply();

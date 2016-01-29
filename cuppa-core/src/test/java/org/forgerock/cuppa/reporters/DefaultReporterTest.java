@@ -20,7 +20,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.forgerock.cuppa.Cuppa.*;
 import static org.forgerock.cuppa.CuppaTestProvider.runTests;
-import static org.forgerock.cuppa.model.Behaviour.SKIP;
+import static org.forgerock.cuppa.model.Behaviour.skip;
 
 import java.io.ByteArrayOutputStream;
 
@@ -191,7 +191,7 @@ public class DefaultReporterTest {
         {
             describe("describe", () -> {
                 when("when", () -> {
-                    it(SKIP, "skipped test", TestFunction.identity());
+                    skip.it("skipped test", TestFunction.identity());
                 });
             });
         }
@@ -264,7 +264,7 @@ public class DefaultReporterTest {
                         throw new IllegalStateException();
                     });
                     it("pending test");
-                    it(SKIP, "skipped test", TestFunction.identity());
+                    skip.it("skipped test", TestFunction.identity());
                 });
             });
         }

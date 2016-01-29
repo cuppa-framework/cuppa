@@ -20,8 +20,7 @@ import static org.forgerock.cuppa.Cuppa.*;
 import static org.forgerock.cuppa.Cuppa.when;
 import static org.forgerock.cuppa.CuppaTestProvider.runTests;
 import static org.forgerock.cuppa.ModelFinder.findTest;
-import static org.forgerock.cuppa.model.Behaviour.ONLY;
-import static org.forgerock.cuppa.model.Behaviour.SKIP;
+import static org.forgerock.cuppa.model.Behaviour.*;
 import static org.mockito.Mockito.*;
 
 import org.forgerock.cuppa.functions.TestFunction;
@@ -46,7 +45,7 @@ public class SkipTests {
         {
             describe("basic API usage", () -> {
                 when("the 'when' is run", () -> {
-                    it(SKIP, "test", testFunction);
+                    skip.it("test", testFunction);
                 });
             });
         }
@@ -67,7 +66,7 @@ public class SkipTests {
         {
             describe("basic API usage", () -> {
                 when("the 'when' is run", () -> {
-                    it(SKIP, "test", testFunction);
+                    skip.it("test", testFunction);
                 });
             });
         }
@@ -87,7 +86,7 @@ public class SkipTests {
         TestFunction testFunction2 = mock(TestFunction.class);
         {
             describe("basic API usage", () -> {
-                when(SKIP, "the 'when' is run", () -> {
+                skip.when("the 'when' is run", () -> {
                     it("runs the test", testFunction1);
                     it("runs the test", testFunction2);
                 });
@@ -111,7 +110,7 @@ public class SkipTests {
         TestFunction testFunction2 = mock(TestFunction.class);
         {
             describe("basic API usage", () -> {
-                when(SKIP, "the 'when' is run", () -> {
+                skip.when("the 'when' is run", () -> {
                     it("test1", testFunction1);
                     it("test2", testFunction2);
                 });
@@ -137,7 +136,7 @@ public class SkipTests {
             describe("basic API usage", () -> {
                 when("the 'when' is run", () -> {
                     it("before test", testFunctionBefore);
-                    it(ONLY, "test", testFunction);
+                    only.it("test", testFunction);
                     it("after test", testFunctionAfter);
                 });
             });
@@ -161,7 +160,7 @@ public class SkipTests {
             describe("basic API usage", () -> {
                 when("the 'when' is run", () -> {
                     it("before test", TestFunction.identity());
-                    it(ONLY, "test", TestFunction.identity());
+                    only.it("test", TestFunction.identity());
                     it("after test", TestFunction.identity());
                 });
             });
@@ -185,8 +184,8 @@ public class SkipTests {
             describe("basic API usage", () -> {
                 when("the 'when' is run", () -> {
                     it("before test", TestFunction.identity());
-                    it(ONLY, "only test 1", testFunctionOnly1);
-                    it(ONLY, "only test 2", testFunctionOnly2);
+                    only.it("only test 1", testFunctionOnly1);
+                    only.it("only test 2", testFunctionOnly2);
                 });
             });
         }
@@ -207,7 +206,7 @@ public class SkipTests {
         TestFunction testFunctionAfter = mock(TestFunction.class);
         {
             describe("basic API usage", () -> {
-                when(ONLY, "only when", () -> {
+                only.when("only when", () -> {
                     it("test", testFunction);
                 });
                 when("after when", () -> {
@@ -231,8 +230,8 @@ public class SkipTests {
         TestFunction testFunction = mock(TestFunction.class);
         {
             describe("basic API usage", () -> {
-                when(ONLY, "only when", () -> {
-                    it(SKIP, "test", testFunction);
+                only.when("only when", () -> {
+                    skip.it("test", testFunction);
                 });
             });
         }
@@ -251,8 +250,8 @@ public class SkipTests {
         TestFunction testFunction = mock(TestFunction.class);
         {
             describe("basic API usage", () -> {
-                when(SKIP, "only when", () -> {
-                    it(ONLY, "test", testFunction);
+                skip.when("only when", () -> {
+                    only.it("test", testFunction);
                 });
             });
         }
@@ -271,8 +270,8 @@ public class SkipTests {
         TestFunction testFunction = mock(TestFunction.class);
         {
             describe("basic API usage", () -> {
-                when(SKIP, "only when", () -> {
-                    it(ONLY, "test", TestFunction.identity());
+                skip.when("only when", () -> {
+                    only.it("test", TestFunction.identity());
                 });
                 it("test 2", testFunction);
             });

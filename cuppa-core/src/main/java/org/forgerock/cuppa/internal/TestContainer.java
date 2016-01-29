@@ -63,7 +63,7 @@ public enum TestContainer {
     /**
      * Registers a described suite of tests to be run.
      *
-     * @param behaviour If {@link Behaviour#SKIP} then this test will be skipped.
+     * @param behaviour If {@link Behaviour#skip} then this test will be skipped.
      * @param description The description of the 'describe' block.
      * @param function The 'describe' block.
      */
@@ -92,7 +92,7 @@ public enum TestContainer {
     /**
      * Registers a 'when' block to be run.
      *
-     * @param behaviour If {@link Behaviour#SKIP} then this test will be skipped.
+     * @param behaviour If {@link Behaviour#skip} then this test will be skipped.
      * @param description The description of the 'when' block.
      * @param function The 'when' block.
      */
@@ -199,7 +199,7 @@ public enum TestContainer {
     /**
      * Registers a test function to be run.
      *
-     * @param behaviour If {@link Behaviour#SKIP} then this test will be skipped.
+     * @param behaviour If {@link Behaviour#skip} then this test will be skipped.
      * @param description The description of the test function.
      * @param function The test function.
      */

@@ -18,7 +18,7 @@ package org.forgerock.cuppa.junit;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.forgerock.cuppa.Cuppa.*;
-import static org.forgerock.cuppa.model.Behaviour.SKIP;
+import static org.forgerock.cuppa.model.Behaviour.skip;
 
 import org.assertj.core.api.Assertions;
 import org.forgerock.cuppa.functions.TestFunction;
@@ -235,7 +235,7 @@ public class CuppaRunnerTest {
         {
             describe("Cuppa", () -> {
                 when("running with CuppaRunner", () -> {
-                    it(SKIP, "skipped test", TestFunction.identity());
+                    skip.it("skipped test", TestFunction.identity());
                 });
             });
         }

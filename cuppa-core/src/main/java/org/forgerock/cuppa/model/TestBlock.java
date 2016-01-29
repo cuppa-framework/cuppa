@@ -16,7 +16,7 @@
 
 package org.forgerock.cuppa.model;
 
-import static org.forgerock.cuppa.model.Behaviour.ONLY;
+import static org.forgerock.cuppa.model.Behaviour.only;
 
 import java.util.List;
 import java.util.Objects;
@@ -102,13 +102,13 @@ public final class TestBlock {
     }
 
     /**
-     * Determine if this test block contains any tests or test blocks marked as {@link Behaviour#ONLY}.
+     * Determine if this test block contains any tests or test blocks marked as {@link Behaviour#only}.
      *
-     * @return {@code true} if this block, or any block or test under it, is marked as {@link Behaviour#ONLY}.
+     * @return {@code true} if this block, or any block or test under it, is marked as {@link Behaviour#only}.
      */
     public boolean hasOnlyTests() {
-        return behaviour == ONLY
-                || tests.stream().anyMatch(t -> t.behaviour == ONLY)
+        return behaviour == only
+                || tests.stream().anyMatch(t -> t.behaviour == only)
                 || testBlocks.stream().anyMatch(TestBlock::hasOnlyTests);
     }
 
