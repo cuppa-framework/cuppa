@@ -1,6 +1,6 @@
 description = 'Cuppa JUnit Integration'
 
 dependencies {
-    compile project(':cuppa-core')
+    compile project(':cuppa')
     compile group: 'junit', name: 'junit', version: '4.12'
 }

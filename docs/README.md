@@ -43,7 +43,7 @@ $ cd cuppa/docs
 $ bundle exec jekyll build -d ../../cuppa-gh-pages
 $ cd ..
 $ ./gradlew javadoc
-$ cp -r cuppa-core/build/docs/javadoc/ ../cuppa-gh-pages/javadoc/cuppa
+$ cp -r cuppa/build/docs/javadoc/ ../cuppa-gh-pages/javadoc/cuppa
 $ cp -r cuppa-junit/build/docs/javadoc/ ../cuppa-gh-pages/javadoc/cuppa-junit
 ```
 
