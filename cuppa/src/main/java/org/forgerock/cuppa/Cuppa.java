@@ -20,6 +20,8 @@ import org.forgerock.cuppa.functions.HookFunction;
 import org.forgerock.cuppa.functions.TestBlockFunction;
 import org.forgerock.cuppa.functions.TestFunction;
 import org.forgerock.cuppa.internal.TestContainer;
+import org.forgerock.cuppa.model.TestBlockBuilder;
+import org.forgerock.cuppa.model.TestBuilder;
 
 /**
  * Use the methods of this class to define your tests.
@@ -40,6 +42,16 @@ public final class Cuppa {
     }
 
     /**
+     * Returns a builder for registering a described suite of tests to be run.
+     *
+     * @param description The description of the 'describe' block.
+     * @return The builder for registering a described suite of tests.
+     */
+    public static TestBlockBuilder describe(String description) {
+        return TestContainer.INSTANCE.describe(description);
+    }
+
+    /**
      * Registers a 'when' block to be run.
      *
      * @param description The description of the 'when' block.
@@ -47,6 +59,16 @@ public final class Cuppa {
      */
     public static void when(String description, TestBlockFunction function) {
         TestContainer.INSTANCE.when(description, function);
+    }
+
+    /**
+     * Returns a builder for registering a 'when' block to be run.
+     *
+     * @param description The description of the 'when' block.
+     * @return The builder for registering a 'when' block.
+     */
+    public static TestBlockBuilder when(String description) {
+        return TestContainer.INSTANCE.when(description);
     }
 
     /**
@@ -136,11 +158,14 @@ public final class Cuppa {
     }
 
     /**
-     * Registers a pending test function that has yet to be implemented.
+     * Returns a builder for registering a test function.
+     *
+     * <p>To register a pending test do not call the {@link TestBuilder#asserts(TestFunction)}.</p>
      *
      * @param description The description of the test function.
+     * @return The builder for registering a test function.
      */
-    public static void it(String description) {
-        TestContainer.INSTANCE.it(description);
+    public static TestBuilder it(String description) {
+        return TestContainer.INSTANCE.it(description);
     }
 }

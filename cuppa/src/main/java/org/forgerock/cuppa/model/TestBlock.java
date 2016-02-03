@@ -20,8 +20,10 @@ import static org.forgerock.cuppa.model.Behaviour.only;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 
 /**
  * Encapsulates the 'describe' and 'when' function blocks and all nested 'describe', 'when' and
@@ -70,6 +72,11 @@ public final class TestBlock {
     public final ImmutableList<Test> tests;
 
     /**
+     * The set of tags applied to all tests within block.
+     */
+    public final Set<String> tags;
+
+    /**
      * Constructs a new TestBlock. Will convert mutable lists to immutable lists.
      *
      * @param behaviour Controls how the test block and its descendants behave.
@@ -80,9 +87,11 @@ public final class TestBlock {
      * @param beforeEachHooks Before each hooks. Will run before each test in this test block is executed.
      * @param afterEachHooks After each hooks. Will run after each test in this test block is executed.
      * @param tests Nested tests.
+     * @param tags The set of tags applied to all tests within block.
      */
     public TestBlock(Behaviour behaviour, String description, List<TestBlock> testBlocks, List<Hook> beforeHooks,
-            List<Hook> afterHook, List<Hook> beforeEachHooks, List<Hook> afterEachHooks, List<Test> tests) {
+            List<Hook> afterHook, List<Hook> beforeEachHooks, List<Hook> afterEachHooks, List<Test> tests,
+            Set<String> tags) {
         Objects.requireNonNull(behaviour, "TestBlock must have a behaviour");
         Objects.requireNonNull(description, "TestBlock must have a description");
         Objects.requireNonNull(testBlocks, "TestBlock must have testBlocks");
@@ -99,6 +108,7 @@ public final class TestBlock {
         this.beforeEachHooks = ImmutableList.copyOf(beforeEachHooks);
         this.afterEachHooks = ImmutableList.copyOf(afterEachHooks);
         this.tests = ImmutableList.copyOf(tests);
+        this.tags = ImmutableSet.copyOf(tags);
     }
 
     /**

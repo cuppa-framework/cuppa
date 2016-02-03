@@ -20,6 +20,7 @@ import java.util.Arrays;
 import java.util.Optional;
 
 import org.forgerock.cuppa.internal.TestContainer;
+import org.forgerock.cuppa.model.Tags;
 import org.forgerock.cuppa.model.TestBlock;
 import org.forgerock.cuppa.reporters.Reporter;
 
@@ -37,7 +38,18 @@ public final class CuppaTestProvider {
      * @param reporter A reporter to apprise of test outcomes.
      */
     public static void runTests(Reporter reporter) {
-        TestContainer.INSTANCE.runTests(reporter);
+        runTests(reporter, Tags.EMPTY_TAGS);
+    }
+
+    /**
+     * Runs all the tests that have been loaded into the test framework that match the specified
+     * tags.
+     *
+     * @param reporter A reporter to apprise of test outcomes.
+     * @param tags Tags and anti-tags (excluded tags) to filter the tests to be run.
+     */
+    public static void runTests(Reporter reporter, Tags tags) {
+        TestContainer.INSTANCE.runTests(reporter, tags);
     }
 
     /**

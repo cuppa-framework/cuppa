@@ -16,12 +16,17 @@
 
 package org.forgerock.cuppa.internal;
 
+import static com.google.common.collect.Sets.intersection;
+import static com.google.common.collect.Sets.union;
 import static org.forgerock.cuppa.model.Behaviour.only;
 import static org.forgerock.cuppa.model.Behaviour.skip;
+
+import java.util.Set;
 
 import org.forgerock.cuppa.functions.TestFunction;
 import org.forgerock.cuppa.model.Behaviour;
 import org.forgerock.cuppa.model.Hook;
+import org.forgerock.cuppa.model.Tags;
 import org.forgerock.cuppa.model.Test;
 import org.forgerock.cuppa.model.TestBlock;
 import org.forgerock.cuppa.reporters.Reporter;
@@ -31,12 +36,13 @@ import org.forgerock.cuppa.reporters.Reporter;
  */
 final class TestRunner {
 
-    void runTests(TestBlock testBlock, boolean ignoreTestsNotMarkedAsOnly, Reporter reporter) {
-        runTests(testBlock, ignoreTestsNotMarkedAsOnly, testBlock.behaviour, reporter, TestFunction::apply);
+    void runTests(TestBlock testBlock, boolean ignoreTestsNotMarkedAsOnly, Reporter reporter, Tags runTags) {
+        runTests(testBlock, ignoreTestsNotMarkedAsOnly, testBlock.behaviour, reporter, testBlock.tags, runTags,
+                TestFunction::apply);
     }
 
     private void runTests(TestBlock testBlock, boolean ignoreTestsNotMarkedAsOnly, Behaviour behaviour,
-            Reporter reporter, TestWrapper outerTestWrapper) {
+            Reporter reporter, Set<String> testTags, Tags runTags, TestWrapper outerTestWrapper) {
         Behaviour combinedBehaviour = behaviour.combine(testBlock.behaviour);
         TestWrapper testWrapper = createWrapper(testBlock, outerTestWrapper, reporter);
         try {
@@ -50,13 +56,18 @@ final class TestRunner {
                 }
             }
             for (Test t : testBlock.tests) {
-                if (ignoreTestsNotMarkedAsOnly && combinedBehaviour.combine(t.behaviour) == only
-                        || !ignoreTestsNotMarkedAsOnly) {
-                    testWrapper.apply(() -> runTest(t, combinedBehaviour, reporter));
+                if (shouldRunTestBasedOnTag(testTags, t.tags, runTags)) {
+                    if (ignoreTestsNotMarkedAsOnly && combinedBehaviour.combine(t.behaviour) == only
+                            || !ignoreTestsNotMarkedAsOnly) {
+                        testWrapper.apply(() -> runTest(t, combinedBehaviour, reporter));
+                    }
                 }
             }
+            //@Checkstyle:off
             testBlock.testBlocks.stream()
-                    .forEach((d) -> runTests(d, ignoreTestsNotMarkedAsOnly, combinedBehaviour, reporter, testWrapper));
+                    .forEach((d) -> runTests(d, ignoreTestsNotMarkedAsOnly, combinedBehaviour, reporter,
+                            union(testTags, d.tags), runTags, testWrapper));
+            //@Checkstyle:on
         } catch (HookException e) {
             if (e.getTestBlock() != testBlock) {
                 throw e;
@@ -69,6 +80,14 @@ final class TestRunner {
             runAfterHooks(testBlock, reporter);
             reporter.describeEnd(testBlock);
         }
+    }
+
+    private boolean shouldRunTestBasedOnTag(Set<String> parentBlockTags, Set<String> testTags, Tags runTags) {
+        Set<String> tags = union(parentBlockTags, testTags);
+        boolean runTagsSpecified = !runTags.tags.isEmpty() || !runTags.excludedTags.isEmpty();
+        boolean matchesTag = !intersection(tags, runTags.tags).isEmpty();
+        boolean matchAntiTag = !intersection(tags, runTags.excludedTags).isEmpty();
+        return !runTagsSpecified || (matchesTag && !matchAntiTag);
     }
 
     private void runTest(Test test, Behaviour behaviour, Reporter reporter) {

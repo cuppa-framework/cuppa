@@ -6,6 +6,7 @@
   docs:
   - parameterised-tests
   - skipping-tests
+  - tagging-tests
   - exceptions
   - timeouts
   - reporters

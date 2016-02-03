@@ -28,8 +28,10 @@ import org.forgerock.cuppa.functions.HookFunction;
 import org.forgerock.cuppa.functions.TestBlockFunction;
 import org.forgerock.cuppa.functions.TestFunction;
 import org.forgerock.cuppa.model.Behaviour;
-import org.forgerock.cuppa.model.Test;
+import org.forgerock.cuppa.model.Tags;
 import org.forgerock.cuppa.model.TestBlock;
+import org.forgerock.cuppa.model.TestBlockBuilder;
+import org.forgerock.cuppa.model.TestBuilder;
 import org.forgerock.cuppa.reporters.Reporter;
 
 /**
@@ -41,8 +43,8 @@ public enum TestContainer {
      */
     INSTANCE;
 
-    private TestBlockBuilder rootBuilder;
-    private Deque<TestBlockBuilder> stack;
+    private InternalTestBlockBuilder rootBuilder;
+    private Deque<InternalTestBlockBuilder> stack;
     private boolean runningTests;
     private Class<?> testClass;
 
@@ -57,26 +59,32 @@ public enum TestContainer {
      * @param function The 'describe' block.
      */
     public void describe(String description, TestBlockFunction function) {
-        describe(NORMAL, description, function);
+        describe(NORMAL, description).then(function);
     }
 
     /**
-     * Registers a described suite of tests to be run.
+     * Returns a builder for registering a described suite of tests to be run.
+     *
+     * @param description The description of the 'describe' block.
+     * @return The builder for registering a described suite of tests.
+     */
+    public TestBlockBuilder describe(String description) {
+        return describe(NORMAL, description);
+    }
+
+    /**
+     * Returns a builder for registering a described suite of tests to be run.
      *
      * @param behaviour If {@link Behaviour#skip} then this test will be skipped.
      * @param description The description of the 'describe' block.
-     * @param function The 'describe' block.
+     * @return The builder for registering a described suite of tests.
      */
-    public void describe(Behaviour behaviour, String description, TestBlockFunction function) {
+    public TestBlockBuilder describe(Behaviour behaviour, String description) {
+
         assertNotRunningTests("describe");
-        TestBlockBuilder testBlockBuilder = new TestBlockBuilder(behaviour, description);
+        InternalTestBlockBuilder testBlockBuilder = new InternalTestBlockBuilder(behaviour, description);
         stack.addLast(testBlockBuilder);
-        try {
-            function.apply();
-        } finally {
-            stack.removeLast();
-            getCurrentDescribeBlock().addTestBlock(testBlockBuilder.build());
-        }
+        return new TestBlockBuilderImpl(testBlockBuilder);
     }
 
     /**
@@ -86,20 +94,30 @@ public enum TestContainer {
      * @param function The 'when' block.
      */
     public void when(String description, TestBlockFunction function) {
-        when(NORMAL, description, function);
+        when(NORMAL, description).then(function);
     }
 
     /**
-     * Registers a 'when' block to be run.
+     * Returns a builder for registering a 'when' block to be run.
+     *
+     * @param description The description of the 'when' block.
+     * @return The builder for registering a 'when' block.
+     */
+    public TestBlockBuilder when(String description) {
+        return when(NORMAL, description);
+    }
+
+    /**
+     * Returns a builder for registering a 'when' block to be run.
      *
      * @param behaviour If {@link Behaviour#skip} then this test will be skipped.
      * @param description The description of the 'when' block.
-     * @param function The 'when' block.
+     * @return The builder for registering a 'when' block.
      */
-    public void when(Behaviour behaviour, String description, TestBlockFunction function) {
+    public TestBlockBuilder when(Behaviour behaviour, String description) {
         assertNotRunningTests("when");
         assertNotRootDescribeBlock("when", "when", "describe");
-        describe(behaviour, description, function);
+        return describe(behaviour, description);
     }
 
     /**
@@ -193,29 +211,36 @@ public enum TestContainer {
      * @param function The test function.
      */
     public void it(String description, TestFunction function) {
-        it(NORMAL, description, function);
+        it(NORMAL, description).asserts(function);
     }
 
     /**
-     * Registers a test function to be run.
+     * Returns a builder for registering a test function to be run.
+     *
+     * <p>To register a pending test do not call the {@link TestBuilder#asserts(TestFunction)}.</p>
+     *
+     * @param description The description of the test function.
+     * @return The builder for registering a test function.
+     */
+    public TestBuilder it(String description) {
+        return it(NORMAL, description);
+    }
+
+    /**
+     * Returns a builder for registering a test function to be run.
+     *
+     * <p>To register a pending test do not call the {@link TestBuilder#asserts(TestFunction)}.</p>
      *
      * @param behaviour If {@link Behaviour#skip} then this test will be skipped.
      * @param description The description of the test function.
-     * @param function The test function.
+     * @return The builder for registering a test function.
      */
-    public void it(Behaviour behaviour, String description, TestFunction function) {
+    public TestBuilder it(Behaviour behaviour, String description) {
         assertNotRunningTests("it");
         assertNotRootDescribeBlock("it", "when", "describe");
-        getCurrentDescribeBlock().addTest(new Test(behaviour, testClass, description, Optional.of(function)));
-    }
-
-    /**
-     * Registers a pending test function that has yet to be implemented.
-     *
-     * @param description The description of the test function.
-     */
-    public void it(String description) {
-        getCurrentDescribeBlock().addTest(new Test(NORMAL, testClass, description, Optional.empty()));
+        TestBuilderImpl testBuilder = new TestBuilderImpl(behaviour, description, testClass);
+        getCurrentDescribeBlock().addTest(testBuilder);
+        return testBuilder;
     }
 
     /**
@@ -233,15 +258,16 @@ public enum TestContainer {
      * Runs all the tests that have been loaded into the test framework.
      *
      * @param reporter A reporter to apprise of test outcomes.
+     * @param tags The set of tags to filter the tests to run by.
      */
-    public void runTests(Reporter reporter) {
+    public void runTests(Reporter reporter, Tags tags) {
         if (stack.size() != 1) {
             throw new IllegalStateException("runTests cannot be run from within a 'describe' or 'when'");
         }
         runningTests = true;
         TestBlock rootBlock = rootBuilder.build();
         reporter.start();
-        new TestRunner().runTests(rootBlock, rootBlock.hasOnlyTests(), reporter);
+        new TestRunner().runTests(rootBlock, rootBlock.hasOnlyTests(), reporter, tags);
         reporter.end();
     }
 
@@ -261,7 +287,7 @@ public enum TestContainer {
      */
     public void reset() {
         runningTests = false;
-        rootBuilder = new TestBlockBuilder(NORMAL, "");
+        rootBuilder = new InternalTestBlockBuilder(NORMAL, "");
         stack = new ArrayDeque<>();
         stack.addLast(rootBuilder);
         testClass = null;
@@ -281,7 +307,33 @@ public enum TestContainer {
         }
     }
 
-    private TestBlockBuilder getCurrentDescribeBlock() {
+    private InternalTestBlockBuilder getCurrentDescribeBlock() {
         return stack.getLast();
     }
+
+    private final class TestBlockBuilderImpl implements TestBlockBuilder {
+
+        private final InternalTestBlockBuilder testBlockBuilder;
+
+        private TestBlockBuilderImpl(InternalTestBlockBuilder testBlockBuilder) {
+            this.testBlockBuilder = testBlockBuilder;
+        }
+
+        @Override
+        public TestBlockBuilder eachWithTags(String tag, String... tags) {
+            testBlockBuilder.eachWithTags(tag, tags);
+            return this;
+        }
+
+        @Override
+        public void then(TestBlockFunction function) {
+            try {
+                function.apply();
+            } finally {
+                stack.removeLast();
+                getCurrentDescribeBlock().addTestBlock(testBlockBuilder.build());
+            }
+        }
+    }
+
 }

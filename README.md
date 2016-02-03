@@ -42,7 +42,7 @@ Add a test dependency for Cuppa in your project's POM:
 <dependency>
     <groupId>org.forgerock.cuppa</groupId>
     <artifactId>cuppa</artifactId>
-    <version>1.0.0</version>
+    <version>0.8.0-SNAPSHOT</version>
     <scope>test</scope>
 </dependency>
 ```
@@ -59,7 +59,7 @@ To get Surefire (the Maven plugin that runs unit tests) to run Cuppa tests, you'
             <dependency>
                 <groupId>org.forgerock.cuppa</groupId>
                 <artifactId>cuppa-surefire</artifactId>
-                <version>1.0.0</version>
+                <version>0.8.0-SNAPSHOT</version>
             </dependency>
         </dependencies>
     </plugin>
@@ -75,7 +75,7 @@ Add a test dependency for Cuppa in your project's build file:
 
 ```groovy
 dependencies {
-    testCompile 'org.forgerock.cuppa:cuppa:1.0.0'
+    testCompile 'org.forgerock.cuppa:cuppa:0.8.0-SNAPSHOT'
 }
 ```
 

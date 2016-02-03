@@ -18,7 +18,9 @@ package org.forgerock.cuppa.model;
 
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 
+import com.google.common.collect.ImmutableSet;
 import org.forgerock.cuppa.functions.TestFunction;
 
 /**
@@ -47,6 +49,11 @@ public final class Test {
     public final Optional<TestFunction> function;
 
     /**
+     * The set of tags applied to the test.
+     */
+    public final Set<String> tags;
+
+    /**
      * Constructs a new test.
      *
      * @param behaviour The behaviour of the test.
@@ -54,8 +61,10 @@ public final class Test {
      * @param description The description of the test. Will be used for reporting.
      * @param function The body of the test. If the {@link Optional} is empty the test is
      *     classified as pending.
+     * @param tags The set of tags applied to the test.
      */
-    public Test(Behaviour behaviour, Class<?> testClass, String description, Optional<TestFunction> function) {
+    public Test(Behaviour behaviour, Class<?> testClass, String description, Optional<TestFunction> function,
+            Set<String> tags) {
         Objects.requireNonNull(behaviour, "Test must have a behaviour");
         Objects.requireNonNull(testClass, "Test must have a testClass");
         Objects.requireNonNull(description, "Test must have a description");
@@ -64,6 +73,7 @@ public final class Test {
         this.testClass = testClass;
         this.description = description;
         this.function = function;
+        this.tags = ImmutableSet.copyOf(tags);
     }
 
     @Override

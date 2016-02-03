@@ -17,8 +17,12 @@
 package org.forgerock.cuppa.internal;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.forgerock.cuppa.functions.HookFunction;
 import org.forgerock.cuppa.model.Behaviour;
@@ -26,7 +30,7 @@ import org.forgerock.cuppa.model.Hook;
 import org.forgerock.cuppa.model.Test;
 import org.forgerock.cuppa.model.TestBlock;
 
-final class TestBlockBuilder {
+final class InternalTestBlockBuilder {
 
     private final Behaviour behaviour;
     private final String description;
@@ -35,45 +39,53 @@ final class TestBlockBuilder {
     private final List<Hook> afterAfter = new ArrayList<>();
     private final List<Hook> beforeEachHooks = new ArrayList<>();
     private final List<Hook> afterEachHooks = new ArrayList<>();
-    private final List<Test> tests = new ArrayList<>();
+    private final List<TestBuilderImpl> testBuilders = new ArrayList<>();
+    private final Set<String> tags = new HashSet<>();
 
-    TestBlockBuilder(Behaviour behaviour, String description) {
+    InternalTestBlockBuilder(Behaviour behaviour, String description) {
         this.behaviour = behaviour;
         this.description = description;
     }
 
-    TestBlockBuilder addTestBlock(TestBlock testBlock) {
+    InternalTestBlockBuilder addTestBlock(TestBlock testBlock) {
         testBlocks.add(testBlock);
         return this;
     }
 
-    TestBlockBuilder addBefore(Optional<String> description, HookFunction function) {
+    InternalTestBlockBuilder addBefore(Optional<String> description, HookFunction function) {
         beforeHooks.add(new Hook(description, function));
         return this;
     }
 
-    TestBlockBuilder addAfter(Optional<String> description, HookFunction function) {
+    InternalTestBlockBuilder addAfter(Optional<String> description, HookFunction function) {
         afterAfter.add(new Hook(description, function));
         return this;
     }
 
-    TestBlockBuilder addBeforeEach(Optional<String> description, HookFunction function) {
+    InternalTestBlockBuilder addBeforeEach(Optional<String> description, HookFunction function) {
         beforeEachHooks.add(new Hook(description, function));
         return this;
     }
 
-    TestBlockBuilder addAfterEach(Optional<String> description, HookFunction function) {
+    InternalTestBlockBuilder addAfterEach(Optional<String> description, HookFunction function) {
         afterEachHooks.add(new Hook(description, function));
         return this;
     }
 
-    TestBlockBuilder addTest(Test test) {
-        tests.add(test);
+    InternalTestBlockBuilder addTest(TestBuilderImpl test) {
+        testBuilders.add(test);
+        return this;
+    }
+
+    InternalTestBlockBuilder eachWithTags(String tag, String... tags) {
+        this.tags.addAll(Arrays.asList(tags));
+        this.tags.add(tag);
         return this;
     }
 
     TestBlock build() {
+        List<Test> tests = testBuilders.stream().map(TestBuilderImpl::build).collect(Collectors.toList());
         return new TestBlock(behaviour, description, testBlocks, beforeHooks, afterAfter, beforeEachHooks,
-                afterEachHooks, tests);
+                afterEachHooks, tests, tags);
     }
 }

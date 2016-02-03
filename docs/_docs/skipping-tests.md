@@ -10,7 +10,7 @@ following syntax to mark the test as skipped.
 ```java
 skip.it("returns -1", () -> {
     // ...
-);
+});
 ```
 
 Skipped tests will be reported to remind you to restore the test before committing the code.
@@ -32,7 +32,7 @@ If you'd like to run a single test to debug a problem, just use the following sy
 ```java
 only.it("returns -1", () -> {
     // ...
-);
+});
 ```
 
 Likewise, this can be applied to `describe` and `when` blocks.
