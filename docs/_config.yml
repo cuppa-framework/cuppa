@@ -1,8 +1,8 @@
 ---
 name: Cuppa
 description: A test framework for Java 8
-url: https://cuppa-framework.github.io
-baseurl: "/cuppa"
+url: http://cuppa.forgerock.org
+baseurl: "/"
 collections:
   docs:
     output: true
