@@ -5,7 +5,7 @@ body {
 .jumbotron {
     margin-top: -20px;
     /* Background pattern from subtlepatterns.com */
-    background: #555 url("/cuppa/img/hero.png");
+    background: #555 url("/img/hero.png");
     color: #ddd;
     border-top: 1px solid #FE6A00;
 }
