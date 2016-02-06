@@ -14,29 +14,16 @@
  * limitations under the License.
  */
 
-package org.forgerock.cuppa.internal;
-
-import org.forgerock.cuppa.model.TestBlock;
+package org.forgerock.cuppa;
 
 /**
- * Internal exception used to handle hooks throwing exceptions.
+ * Provides configuration for Cuppa at runtime.
  */
-public final class HookException extends RuntimeException {
-
-    private final TestBlock testBlock;
-
+public interface ConfigurationProvider {
     /**
-     * Creates a new hook exception.
+     * Should configure Cuppa using the provided {@link Configuration}.
      *
-     * @param testBlock The test block that the hook is in.
-     * @param cause The exception that the hook function threw.
+     * @param configuration The configuration that will be provided by Cuppa.
      */
-    public HookException(TestBlock testBlock, Throwable cause) {
-        super(cause);
-        this.testBlock = testBlock;
-    }
-
-    public TestBlock getTestBlock() {
-        return testBlock;
-    }
+    void configure(Configuration configuration);
 }

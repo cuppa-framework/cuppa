@@ -112,7 +112,7 @@
             <property name="sortImportsInGroupAlphabetically" value="true"/>
         </module>
         <module name="CyclomaticComplexity">
-            <property name="max" value="11"/>
+            <property name="max" value="12"/>
         </module>
         <module name="DeclarationOrder"/>
         <module name="DefaultComesLast"/>

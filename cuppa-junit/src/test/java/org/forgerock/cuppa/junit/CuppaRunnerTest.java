@@ -183,7 +183,7 @@ public class CuppaRunnerTest {
     }
 
     @RunWith(CuppaRunner.class)
-    static class PassingTest {
+    public static class PassingTest {
         {
             describe("Cuppa", () -> {
                 when("running with CuppaRunner", () -> {
@@ -194,7 +194,7 @@ public class CuppaRunnerTest {
     }
 
     @RunWith(CuppaRunner.class)
-    static class FailingTest {
+    public static class FailingTest {
         {
             describe("Cuppa", () -> {
                 when("running with CuppaRunner", () -> {
@@ -207,7 +207,7 @@ public class CuppaRunnerTest {
     }
 
     @RunWith(CuppaRunner.class)
-    static class ErroringTest {
+    public static class ErroringTest {
         {
             describe("Cuppa", () -> {
                 when("running with CuppaRunner", () -> {
@@ -220,7 +220,7 @@ public class CuppaRunnerTest {
     }
 
     @RunWith(CuppaRunner.class)
-    static class PendingTest {
+    public static class PendingTest {
         {
             describe("Cuppa", () -> {
                 when("running with CuppaRunner", () -> {
@@ -231,7 +231,7 @@ public class CuppaRunnerTest {
     }
 
     @RunWith(CuppaRunner.class)
-    static class SkippedTest {
+    public static class SkippedTest {
         {
             describe("Cuppa", () -> {
                 when("running with CuppaRunner", () -> {
@@ -242,7 +242,7 @@ public class CuppaRunnerTest {
     }
 
     @RunWith(CuppaRunner.class)
-    static class FailingBeforeHookTest {
+    public static class FailingBeforeHookTest {
         {
             describe("Cuppa", () -> {
                 when("running with CuppaRunner", () -> {
@@ -256,7 +256,7 @@ public class CuppaRunnerTest {
     }
 
     @RunWith(CuppaRunner.class)
-    static class FailingAfterHookTest {
+    public static class FailingAfterHookTest {
         {
             describe("Cuppa", () -> {
                 when("running with CuppaRunner", () -> {
@@ -270,7 +270,7 @@ public class CuppaRunnerTest {
     }
 
     @RunWith(CuppaRunner.class)
-    static class FailingBeforeEachHookTest {
+    public static class FailingBeforeEachHookTest {
         {
             describe("Cuppa", () -> {
                 when("running with CuppaRunner", () -> {
@@ -284,7 +284,7 @@ public class CuppaRunnerTest {
     }
 
     @RunWith(CuppaRunner.class)
-    static class FailingAfterEachHookTest {
+    public static class FailingAfterEachHookTest {
         {
             describe("Cuppa", () -> {
                 when("running with CuppaRunner", () -> {

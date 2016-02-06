@@ -28,11 +28,9 @@ import org.forgerock.cuppa.functions.HookFunction;
 import org.forgerock.cuppa.functions.TestBlockFunction;
 import org.forgerock.cuppa.functions.TestFunction;
 import org.forgerock.cuppa.model.Behaviour;
-import org.forgerock.cuppa.model.Tags;
 import org.forgerock.cuppa.model.TestBlock;
 import org.forgerock.cuppa.model.TestBlockBuilder;
 import org.forgerock.cuppa.model.TestBuilder;
-import org.forgerock.cuppa.reporters.Reporter;
 
 /**
  * Singleton container for user-defined tests.
@@ -248,27 +246,14 @@ public enum TestContainer {
      *
      * @param testClass The test class.
      */
-    @SuppressFBWarnings(value = "ME_ENUM_FIELD_SETTER",
-            justification = "Need to be able to set the class in which the tests are defined when they are registered.")
+    @SuppressFBWarnings(value = "ME_ENUM_FIELD_SETTER", justification = "Enum is being (ab)used for a singleton.")
     public void setTestClass(Class<?> testClass) {
         this.testClass = testClass;
     }
 
-    /**
-     * Runs all the tests that have been loaded into the test framework.
-     *
-     * @param reporter A reporter to apprise of test outcomes.
-     * @param tags The set of tags to filter the tests to run by.
-     */
-    public void runTests(Reporter reporter, Tags tags) {
-        if (stack.size() != 1) {
-            throw new IllegalStateException("runTests cannot be run from within a 'describe' or 'when'");
-        }
-        runningTests = true;
-        TestBlock rootBlock = rootBuilder.build();
-        reporter.start();
-        new TestRunner().runTests(rootBlock, rootBlock.hasOnlyTests(), reporter, tags);
-        reporter.end();
+    @SuppressFBWarnings(value = "ME_ENUM_FIELD_SETTER", justification = "Enum is being (ab)used for a singleton.")
+    public void setRunningTests(boolean runningTests) {
+        this.runningTests = runningTests;
     }
 
     /**

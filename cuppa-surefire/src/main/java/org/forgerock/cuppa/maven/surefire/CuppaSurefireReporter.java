@@ -1,9 +1,25 @@
+/*
+ * Copyright 2015-2016 ForgeRock AS.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package org.forgerock.cuppa.maven.surefire;
 
 import org.apache.maven.surefire.report.PojoStackTraceWriter;
 import org.apache.maven.surefire.report.RunListener;
 import org.apache.maven.surefire.report.SimpleReportEntry;
-import org.forgerock.cuppa.CuppaTestProvider;
+import org.forgerock.cuppa.ReporterSupport;
 import org.forgerock.cuppa.model.Hook;
 import org.forgerock.cuppa.model.TestBlock;
 import org.forgerock.cuppa.reporters.Reporter;
@@ -62,14 +78,14 @@ final class CuppaSurefireReporter implements Reporter {
 
     @Override
     public void testFail(org.forgerock.cuppa.model.Test test, AssertionError cause) {
-        CuppaTestProvider.filterStackTrace(cause);
+        ReporterSupport.filterStackTrace(cause);
         listener.testFailed(new SimpleReportEntry(test.testClass.getCanonicalName(), test.description,
                 new PojoStackTraceWriter(test.testClass.getCanonicalName(), test.description, cause), 0));
     }
 
     @Override
     public void testError(org.forgerock.cuppa.model.Test test, Throwable cause) {
-        CuppaTestProvider.filterStackTrace(cause);
+        ReporterSupport.filterStackTrace(cause);
         listener.testError(new SimpleReportEntry(test.testClass.getCanonicalName(), test.description,
                 new PojoStackTraceWriter(test.testClass.getCanonicalName(), test.description, cause), 0));
     }

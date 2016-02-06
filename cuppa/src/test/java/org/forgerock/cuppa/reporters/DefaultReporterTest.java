@@ -19,24 +19,15 @@ package org.forgerock.cuppa.reporters;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.forgerock.cuppa.Cuppa.*;
-import static org.forgerock.cuppa.CuppaTestProvider.runTests;
 import static org.forgerock.cuppa.model.Behaviour.skip;
 
 import java.io.ByteArrayOutputStream;
 
+import org.forgerock.cuppa.AbstractTest;
 import org.forgerock.cuppa.functions.TestFunction;
-import org.forgerock.cuppa.internal.TestContainer;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-public class DefaultReporterTest {
-
-    @BeforeMethod
-    public void setup() {
-        TestContainer.INSTANCE.reset();
-        TestContainer.INSTANCE.setTestClass(DefaultReporterTest.class);
-    }
-
+public class DefaultReporterTest extends AbstractTest {
     @Test
     public void reporterShouldLookGreatForPassingTests() {
 
@@ -103,7 +94,6 @@ public class DefaultReporterTest {
                 "  1 failing",
                 "",
                 "  1) describe when failing test:",
-                "     java.lang.AssertionError:",
         };
         String expectedOutput = String.join(System.lineSeparator(), expectedLines);
         assertThat(output).startsWith(expectedOutput);
@@ -237,8 +227,6 @@ public class DefaultReporterTest {
         String[] expectedLines = {
                 "",
                 "",
-                "  describe",
-                "    when",
                 "",
                 "",
                 "  0 passing",
@@ -291,7 +279,6 @@ public class DefaultReporterTest {
                 "  2 pending",
                 "",
                 "  1) describe when failing test:",
-                "     java.lang.AssertionError:",
         };
         String expectedOutput = String.join(System.lineSeparator(), expectedLines);
         assertThat(output).startsWith(expectedOutput);

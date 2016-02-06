@@ -18,7 +18,6 @@ package org.forgerock.cuppa;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.forgerock.cuppa.Cuppa.*;
-import static org.forgerock.cuppa.CuppaTestProvider.runTests;
 import static org.forgerock.cuppa.ModelFinder.findHook;
 import static org.forgerock.cuppa.ModelFinder.findTest;
 import static org.mockito.Mockito.*;
@@ -31,13 +30,11 @@ import java.util.function.BiConsumer;
 import org.forgerock.cuppa.functions.HookFunction;
 import org.forgerock.cuppa.functions.TestBlockFunction;
 import org.forgerock.cuppa.functions.TestFunction;
-import org.forgerock.cuppa.internal.TestContainer;
 import org.forgerock.cuppa.reporters.Reporter;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
-public class HookExceptionTests {
+public class HookExceptionTests extends AbstractTest {
 
     private static final List<BiConsumer<String, HookFunction>> ALL_HOOKS =
             new ArrayList<BiConsumer<String, HookFunction>>() {
@@ -48,12 +45,6 @@ public class HookExceptionTests {
             add(Cuppa::afterEach);
         }
     };
-
-    @BeforeMethod
-    public void setup() {
-        TestContainer.INSTANCE.reset();
-        TestContainer.INSTANCE.setTestClass(HookExceptionTests.class);
-    }
 
     @Test
     public void shouldReturnSingleErrorResultIfBeforeHookThrowsException() throws Exception {

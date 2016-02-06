@@ -14,29 +14,18 @@
  * limitations under the License.
  */
 
-package org.forgerock.cuppa.internal;
-
-import org.forgerock.cuppa.model.TestBlock;
+package org.forgerock.cuppa;
 
 /**
- * Internal exception used to handle hooks throwing exceptions.
+ * Instantiates test classes.
  */
-public final class HookException extends RuntimeException {
-
-    private final TestBlock testBlock;
-
+@FunctionalInterface
+public interface TestInstantiator {
     /**
-     * Creates a new hook exception.
+     * Instantiate a test class. Must throw an exception if it was not possible to instantiate the test class.
      *
-     * @param testBlock The test block that the hook is in.
-     * @param cause The exception that the hook function threw.
+     * @param testClass The class to instantiate.
+     * @throws Exception Thrown if test class could not be instantiated.
      */
-    public HookException(TestBlock testBlock, Throwable cause) {
-        super(cause);
-        this.testBlock = testBlock;
-    }
-
-    public TestBlock getTestBlock() {
-        return testBlock;
-    }
+    void instantiate(Class<?> testClass) throws Exception;
 }

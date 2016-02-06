@@ -17,12 +17,12 @@
 package org.forgerock.cuppa;
 
 import static java.util.stream.Stream.concat;
-import static org.forgerock.cuppa.CuppaTestProvider.getRootTestBlock;
 
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+import org.forgerock.cuppa.internal.TestContainer;
 import org.forgerock.cuppa.model.Hook;
 import org.forgerock.cuppa.model.Test;
 import org.forgerock.cuppa.model.TestBlock;
@@ -43,7 +43,10 @@ public final class ModelFinder {
      * @throws NoSuchElementException If no test was found with the given description.
      */
     public static Test findTest(String description) {
-        return getTests(getRootTestBlock()).filter(t -> t.description.equals(description)).findFirst().get();
+        return getTests(TestContainer.INSTANCE.getRootTestBlock())
+                .filter(t -> t.description.equals(description))
+                .findFirst()
+                .get();
     }
 
     private static Stream<Test> getTests(TestBlock block) {
@@ -58,7 +61,10 @@ public final class ModelFinder {
      * @throws NoSuchElementException If no test block was found with the given description.
      */
     public static TestBlock findTestBlock(String description) {
-        return getTestBlocks(getRootTestBlock()).filter(b -> b.description.equals(description)).findFirst().get();
+        return getTestBlocks(TestContainer.INSTANCE.getRootTestBlock())
+                .filter(b -> b.description.equals(description))
+                .findFirst()
+                .get();
     }
 
     private static Stream<TestBlock> getTestBlocks(TestBlock block) {
@@ -76,7 +82,7 @@ public final class ModelFinder {
      * @throws NoSuchElementException If no hook was found with the given description.
      */
     public static Hook findHook(String description) {
-        return getHooks(getRootTestBlock())
+        return getHooks(TestContainer.INSTANCE.getRootTestBlock())
                 .filter(h -> h.description.equals(Optional.of(description)))
                 .findFirst()
                 .get();
@@ -84,7 +90,7 @@ public final class ModelFinder {
 
     private static Stream<Hook> getHooks(TestBlock block) {
         Stream<Hook> hooks = concat(block.beforeHooks.stream(),
-                concat(block.afterHook.stream(),
+                concat(block.afterHooks.stream(),
                 concat(block.beforeEachHooks.stream(),
                 block.afterEachHooks.stream())));
         Stream<Hook> nestedHooks = block.testBlocks.stream().flatMap(ModelFinder::getHooks);

@@ -16,7 +16,7 @@
 
 package org.forgerock.cuppa.junit;
 
-import org.forgerock.cuppa.CuppaTestProvider;
+import org.forgerock.cuppa.ReporterSupport;
 import org.forgerock.cuppa.model.Hook;
 import org.forgerock.cuppa.model.Test;
 import org.forgerock.cuppa.model.TestBlock;
@@ -63,7 +63,7 @@ final class ReportJUnitAdapter implements Reporter {
 
     @Override
     public void hookError(Hook hook, Throwable cause) {
-        CuppaTestProvider.filterStackTrace(cause);
+        ReporterSupport.filterStackTrace(cause);
         notifier.fireTestFailure(new Failure(getDescription(hook.description.orElse("Hook")), cause));
     }
 
@@ -87,13 +87,13 @@ final class ReportJUnitAdapter implements Reporter {
 
     @Override
     public void testFail(Test test, AssertionError e) {
-        CuppaTestProvider.filterStackTrace(e);
+        ReporterSupport.filterStackTrace(e);
         notifier.fireTestFailure(new Failure(getDescription(test.description), e));
     }
 
     @Override
     public void testError(Test test, Throwable e) {
-        CuppaTestProvider.filterStackTrace(e);
+        ReporterSupport.filterStackTrace(e);
         notifier.fireTestFailure(new Failure(getDescription(test.description), e));
     }
 

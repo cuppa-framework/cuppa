@@ -18,25 +18,16 @@ package org.forgerock.cuppa;
 
 import static org.forgerock.cuppa.Cuppa.*;
 import static org.forgerock.cuppa.Cuppa.when;
-import static org.forgerock.cuppa.CuppaTestProvider.runTests;
 import static org.forgerock.cuppa.ModelFinder.findTest;
-import static org.forgerock.cuppa.model.Behaviour.*;
+import static org.forgerock.cuppa.model.Behaviour.only;
+import static org.forgerock.cuppa.model.Behaviour.skip;
 import static org.mockito.Mockito.*;
 
 import org.forgerock.cuppa.functions.TestFunction;
-import org.forgerock.cuppa.internal.TestContainer;
 import org.forgerock.cuppa.reporters.Reporter;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-public class SkipTests {
-
-    @BeforeMethod
-    public void setup() {
-        TestContainer.INSTANCE.reset();
-        TestContainer.INSTANCE.setTestClass(SkipTests.class);
-    }
-
+public class SkipTests extends AbstractTest {
     @Test
     public void shouldSkipTestIfTestIsMarkedSkip() throws Exception {
 

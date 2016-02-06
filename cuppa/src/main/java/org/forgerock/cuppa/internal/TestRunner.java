@@ -136,7 +136,7 @@ final class TestRunner {
     }
 
     private void runAfterHooks(TestBlock testBlock, Reporter reporter) {
-        for (Hook hook : testBlock.afterHook) {
+        for (Hook hook : testBlock.afterHooks) {
             try {
                 hook.function.apply();
             } catch (Exception e) {

@@ -19,46 +19,12 @@ package org.forgerock.cuppa;
 import java.util.Arrays;
 import java.util.Optional;
 
-import org.forgerock.cuppa.internal.TestContainer;
-import org.forgerock.cuppa.model.Tags;
-import org.forgerock.cuppa.model.TestBlock;
-import org.forgerock.cuppa.reporters.Reporter;
-
 /**
- * This class allows integrations to control Cuppa and provides access to its model.
+ * Provides utility methods for reporters.
  */
-public final class CuppaTestProvider {
+public final class ReporterSupport {
 
-    private CuppaTestProvider() {
-    }
-
-    /**
-     * Runs all the tests that have been loaded into the test framework.
-     *
-     * @param reporter A reporter to apprise of test outcomes.
-     */
-    public static void runTests(Reporter reporter) {
-        runTests(reporter, Tags.EMPTY_TAGS);
-    }
-
-    /**
-     * Runs all the tests that have been loaded into the test framework that match the specified
-     * tags.
-     *
-     * @param reporter A reporter to apprise of test outcomes.
-     * @param tags Tags and anti-tags (excluded tags) to filter the tests to be run.
-     */
-    public static void runTests(Reporter reporter, Tags tags) {
-        TestContainer.INSTANCE.runTests(reporter, tags);
-    }
-
-    /**
-     * Returns the test block that contains all user-defined tests and test blocks.
-     *
-     * @return The root test block.
-     */
-    public static TestBlock getRootTestBlock() {
-        return TestContainer.INSTANCE.getRootTestBlock();
+    private ReporterSupport() {
     }
 
     /**
@@ -108,14 +74,5 @@ public final class CuppaTestProvider {
 
     private static boolean isStackTraceElementForLambda(StackTraceElement element) {
         return element.getMethodName().startsWith("lambda$");
-    }
-
-    /**
-     * Sets the class from which tests are being loaded.
-     *
-     * @param testClass The test class.
-     */
-    public static void setTestClass(Class testClass) {
-        TestContainer.INSTANCE.setTestClass(testClass);
     }
 }

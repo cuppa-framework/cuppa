@@ -1,8 +1,25 @@
+/*
+ * Copyright 2015-2016 ForgeRock AS.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package org.forgerock.cuppa.maven.surefire;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -12,10 +29,10 @@ import org.apache.maven.surefire.providerapi.ProviderParameters;
 import org.apache.maven.surefire.report.ReporterFactory;
 import org.apache.maven.surefire.report.RunListener;
 import org.apache.maven.surefire.suite.RunResult;
-import org.apache.maven.surefire.util.TestsToRun;
-import org.forgerock.cuppa.CuppaTestProvider;
+import org.forgerock.cuppa.Runner;
 import org.forgerock.cuppa.Test;
 import org.forgerock.cuppa.model.Tags;
+import org.forgerock.cuppa.model.TestBlock;
 
 /**
  * Maven Surefire and Failsafe provider for locating and running Cuppa tests.
@@ -71,8 +88,9 @@ public final class CuppaSurefireProvider extends AbstractProvider {
     public RunResult invoke(Object forkTestSet) {
         ReporterFactory reporterFactory = providerParameters.getReporterFactory();
         RunListener listener = reporterFactory.createReporter();
-        instantiateTestClasses(scanClasspathForTests());
-        CuppaTestProvider.runTests(new CuppaSurefireReporter(listener), tags);
+        Runner runner = new Runner(tags);
+        TestBlock rootBlock = runner.defineTests(scanClasspathForTests());
+        runner.run(rootBlock, new CuppaSurefireReporter(listener));
         return reporterFactory.close();
     }
 
@@ -81,21 +99,10 @@ public final class CuppaSurefireProvider extends AbstractProvider {
         return scanClasspathForTests().iterator();
     }
 
-    private TestsToRun scanClasspathForTests() {
-        return providerParameters.getScanResult()
+    private List<Class<?>> scanClasspathForTests() {
+        return Arrays.asList(providerParameters.getScanResult()
                 .applyFilter(clazz -> Arrays.stream(clazz.getAnnotations())
-                        .anyMatch(annotation -> Test.class.equals(annotation.annotationType())),
-                        providerParameters.getTestClassLoader());
-    }
-
-    private void instantiateTestClasses(TestsToRun testClasses) {
-        Arrays.stream(testClasses.getLocatedClasses()).forEach(testClass -> {
-            try {
-                CuppaTestProvider.setTestClass(testClass);
-                testClass.newInstance();
-            } catch (InstantiationException | IllegalAccessException e) {
-                throw new IllegalStateException("Must be able to instantiate test classes", e);
-            }
-        });
+                                .anyMatch(annotation -> Test.class.equals(annotation.annotationType())),
+                        providerParameters.getTestClassLoader()).getLocatedClasses());
     }
 }

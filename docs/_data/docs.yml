@@ -11,6 +11,7 @@
   - timeouts
   - reporters
   - integrating-with-existing-tests
+  - using-guice
   - writing-a-reporter
 - title: Javadoc
   docs:

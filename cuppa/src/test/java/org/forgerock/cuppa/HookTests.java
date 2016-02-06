@@ -17,28 +17,17 @@
 package org.forgerock.cuppa;
 
 import static org.forgerock.cuppa.Cuppa.*;
-import static org.forgerock.cuppa.CuppaTestProvider.runTests;
 import static org.mockito.Mockito.*;
 
 import java.util.Arrays;
 
 import org.forgerock.cuppa.functions.HookFunction;
 import org.forgerock.cuppa.functions.TestFunction;
-import org.forgerock.cuppa.internal.TestContainer;
 import org.forgerock.cuppa.reporters.Reporter;
 import org.mockito.InOrder;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-
-public class HookTests {
-
-    @BeforeMethod
-    public void setup() {
-        TestContainer.INSTANCE.reset();
-        TestContainer.INSTANCE.setTestClass(HookTests.class);
-    }
-
+public class HookTests extends AbstractTest {
     @Test
     public void beforeShouldRunOnceBeforeTests() throws Exception {
 

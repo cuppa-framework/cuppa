@@ -18,7 +18,6 @@ package org.forgerock.cuppa;
 
 import static org.forgerock.cuppa.Cuppa.*;
 import static org.forgerock.cuppa.Cuppa.when;
-import static org.forgerock.cuppa.CuppaTestProvider.runTests;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
@@ -28,21 +27,12 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.forgerock.cuppa.functions.TestFunction;
-import org.forgerock.cuppa.internal.TestContainer;
 import org.forgerock.cuppa.model.Tags;
 import org.forgerock.cuppa.reporters.Reporter;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
-public class TaggedTests {
-
-    @BeforeMethod
-    public void setup() {
-        TestContainer.INSTANCE.reset();
-        TestContainer.INSTANCE.setTestClass(HookTests.class);
-    }
-
+public class TaggedTests extends AbstractTest {
     @Test
     public void shouldRunAllTestsWithNoRunTagsSpecified() throws Exception {
 
@@ -343,7 +333,7 @@ public class TaggedTests {
     }
 
     @Test
-    public void shouldNotRunTestsWhichMatchRunAntiTag() throws Exception {
+    public void shouldNotRunTestsWhichMatchExcludedTags() throws Exception {
 
         //Given
         Reporter reporter = mock(Reporter.class);
@@ -365,7 +355,7 @@ public class TaggedTests {
     }
 
     @Test
-    public void shouldNotRunTestsWhichMatchBothRunTagAndAntiTag() throws Exception {
+    public void shouldNotRunTestsWhichMatchBothRunTagsAndExcludedTags() throws Exception {
 
         //Given
         Reporter reporter = mock(Reporter.class);

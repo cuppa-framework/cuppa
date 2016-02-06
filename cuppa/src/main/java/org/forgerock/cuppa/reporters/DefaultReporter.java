@@ -27,7 +27,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.forgerock.cuppa.CuppaTestProvider;
+import org.forgerock.cuppa.ReporterSupport;
 import org.forgerock.cuppa.model.Hook;
 import org.forgerock.cuppa.model.Test;
 import org.forgerock.cuppa.model.TestBlock;
@@ -97,7 +97,7 @@ public final class DefaultReporter implements Reporter {
                 TestFailure failure = failures.get(i);
                 stream.println("  " + (i + 1) + ")" + failure.description + ":");
                 stream.print("     ");
-                CuppaTestProvider.filterStackTrace(failure.cause);
+                ReporterSupport.filterStackTrace(failure.cause);
                 failure.cause.printStackTrace(stream);
             }
         }
