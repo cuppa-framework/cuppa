@@ -185,9 +185,9 @@ public class ReportingTests extends AbstractTest {
         InOrder inOrder = inOrder(reporter);
         inOrder.verify(reporter).start();
         inOrder.verify(reporter).describeStart(findTestBlock("describe"));
-        inOrder.verify(reporter).describeStart(findTestBlock("when"));
+        inOrder.verify(reporter).describeStart(findTestBlock("when when"));
         inOrder.verify(reporter).testPass(findTest("test"));
-        inOrder.verify(reporter).describeEnd(findTestBlock("when"));
+        inOrder.verify(reporter).describeEnd(findTestBlock("when when"));
         inOrder.verify(reporter).describeEnd(findTestBlock("describe"));
         inOrder.verify(reporter).end();
     }

@@ -51,7 +51,7 @@ public class DefaultReporterTest extends AbstractTest {
                 "",
                 "",
                 "  describe",
-                "    when",
+                "    when when",
                 "      ✓ passing test",
                 "",
                 "",
@@ -86,14 +86,14 @@ public class DefaultReporterTest extends AbstractTest {
                 "",
                 "",
                 "  describe",
-                "    when",
+                "    when when",
                 "      1) failing test",
                 "",
                 "",
                 "  0 passing",
                 "  1 failing",
                 "",
-                "  1) describe when failing test:",
+                "  1) describe when when failing test:",
         };
         String expectedOutput = String.join(System.lineSeparator(), expectedLines);
         assertThat(output).startsWith(expectedOutput);
@@ -124,14 +124,14 @@ public class DefaultReporterTest extends AbstractTest {
                 "",
                 "",
                 "  describe",
-                "    when",
+                "    when when",
                 "      1) erroring test",
                 "",
                 "",
                 "  0 passing",
                 "  1 failing",
                 "",
-                "  1) describe when erroring test:",
+                "  1) describe when when erroring test:",
                 "     java.lang.IllegalStateException",
         };
         String expectedOutput = String.join(System.lineSeparator(), expectedLines);
@@ -161,7 +161,7 @@ public class DefaultReporterTest extends AbstractTest {
                 "",
                 "",
                 "  describe",
-                "    when",
+                "    when when",
                 "      - pending test",
                 "",
                 "",
@@ -195,7 +195,7 @@ public class DefaultReporterTest extends AbstractTest {
                 "",
                 "",
                 "  describe",
-                "    when",
+                "    when when",
                 "      - skipped test",
                 "",
                 "",
@@ -266,7 +266,7 @@ public class DefaultReporterTest extends AbstractTest {
                 "",
                 "",
                 "  describe",
-                "    when",
+                "    when when",
                 "      ✓ passing test",
                 "      1) failing test",
                 "      2) erroring test",
@@ -278,7 +278,7 @@ public class DefaultReporterTest extends AbstractTest {
                 "  2 failing",
                 "  2 pending",
                 "",
-                "  1) describe when failing test:",
+                "  1) describe when when failing test:",
         };
         String expectedOutput = String.join(System.lineSeparator(), expectedLines);
         assertThat(output).startsWith(expectedOutput);

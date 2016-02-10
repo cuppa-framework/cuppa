@@ -115,7 +115,7 @@ public enum TestContainer {
     public TestBlockBuilder when(Behaviour behaviour, String description) {
         assertNotRunningTests("when");
         assertNotRootDescribeBlock("when", "when", "describe");
-        return describe(behaviour, description);
+        return describe(behaviour, "when " + description);
     }
 
     /**

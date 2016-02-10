@@ -16,11 +16,15 @@
 
 package org.forgerock.cuppa.maven.surefire;
 
+import java.util.ArrayDeque;
+import java.util.Deque;
+
 import org.apache.maven.surefire.report.PojoStackTraceWriter;
 import org.apache.maven.surefire.report.RunListener;
 import org.apache.maven.surefire.report.SimpleReportEntry;
 import org.forgerock.cuppa.ReporterSupport;
 import org.forgerock.cuppa.model.Hook;
+import org.forgerock.cuppa.model.Test;
 import org.forgerock.cuppa.model.TestBlock;
 import org.forgerock.cuppa.reporters.Reporter;
 
@@ -30,6 +34,7 @@ import org.forgerock.cuppa.reporters.Reporter;
 final class CuppaSurefireReporter implements Reporter {
 
     private final RunListener listener;
+    private final Deque<String> blockStack = new ArrayDeque<>();
 
     /**
      * Constructs a reporter that adapts events to Surefire.
@@ -52,10 +57,12 @@ final class CuppaSurefireReporter implements Reporter {
 
     @Override
     public void describeStart(TestBlock testBlock) {
+        blockStack.addLast(testBlock.description);
     }
 
     @Override
     public void describeEnd(TestBlock testBlock) {
+        blockStack.removeLast();
     }
 
     @Override
@@ -63,40 +70,46 @@ final class CuppaSurefireReporter implements Reporter {
     }
 
     @Override
-    public void testStart(org.forgerock.cuppa.model.Test test) {
-        listener.testStarting(new SimpleReportEntry(test.testClass.getCanonicalName(), test.description));
+    public void testStart(Test test) {
+        listener.testStarting(new SimpleReportEntry(test.testClass.getCanonicalName(), getFullTestDescription(test)));
     }
 
     @Override
-    public void testEnd(org.forgerock.cuppa.model.Test test) {
+    public void testEnd(Test test) {
     }
 
     @Override
-    public void testPass(org.forgerock.cuppa.model.Test test) {
-        listener.testSucceeded(new SimpleReportEntry(test.testClass.getCanonicalName(), test.description));
+    public void testPass(Test test) {
+        listener.testSucceeded(new SimpleReportEntry(test.testClass.getCanonicalName(), getFullTestDescription(test)));
     }
 
     @Override
-    public void testFail(org.forgerock.cuppa.model.Test test, AssertionError cause) {
+    public void testFail(Test test, AssertionError cause) {
         ReporterSupport.filterStackTrace(cause);
-        listener.testFailed(new SimpleReportEntry(test.testClass.getCanonicalName(), test.description,
-                new PojoStackTraceWriter(test.testClass.getCanonicalName(), test.description, cause), 0));
+        String description = getFullTestDescription(test);
+        listener.testFailed(new SimpleReportEntry(test.testClass.getCanonicalName(), description,
+                new PojoStackTraceWriter(test.testClass.getCanonicalName(), description, cause), 0));
     }
 
     @Override
-    public void testError(org.forgerock.cuppa.model.Test test, Throwable cause) {
+    public void testError(Test test, Throwable cause) {
         ReporterSupport.filterStackTrace(cause);
-        listener.testError(new SimpleReportEntry(test.testClass.getCanonicalName(), test.description,
-                new PojoStackTraceWriter(test.testClass.getCanonicalName(), test.description, cause), 0));
+        String description = getFullTestDescription(test);
+        listener.testError(new SimpleReportEntry(test.testClass.getCanonicalName(), description,
+                new PojoStackTraceWriter(test.testClass.getCanonicalName(), description, cause), 0));
     }
 
     @Override
-    public void testPending(org.forgerock.cuppa.model.Test test) {
-        listener.testSkipped(new SimpleReportEntry(test.testClass.getCanonicalName(), test.description));
+    public void testPending(Test test) {
+        listener.testSkipped(new SimpleReportEntry(test.testClass.getCanonicalName(), getFullTestDescription(test)));
     }
 
     @Override
-    public void testSkip(org.forgerock.cuppa.model.Test test) {
-        listener.testSkipped(new SimpleReportEntry(test.testClass.getCanonicalName(), test.description));
+    public void testSkip(Test test) {
+        listener.testSkipped(new SimpleReportEntry(test.testClass.getCanonicalName(), getFullTestDescription(test)));
+    }
+
+    private String getFullTestDescription(Test test) {
+        return (String.join(" ", blockStack) + " " + test.description).trim();
     }
 }
