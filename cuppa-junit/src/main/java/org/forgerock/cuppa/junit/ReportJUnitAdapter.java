@@ -16,6 +16,10 @@
 
 package org.forgerock.cuppa.junit;
 
+import java.util.ArrayDeque;
+import java.util.Deque;
+import java.util.stream.Collectors;
+
 import org.forgerock.cuppa.ReporterSupport;
 import org.forgerock.cuppa.model.Hook;
 import org.forgerock.cuppa.model.Test;
@@ -33,6 +37,7 @@ final class ReportJUnitAdapter implements Reporter {
 
     private final Class<?> testClass;
     private final RunNotifier notifier;
+    private final Deque<TestBlock> testBlockDeque = new ArrayDeque<>();
 
     /**
      * Constructs a reporter that adapts events to JUnit.
@@ -55,10 +60,12 @@ final class ReportJUnitAdapter implements Reporter {
 
     @Override
     public void describeStart(TestBlock testBlock) {
+        testBlockDeque.addLast(testBlock);
     }
 
     @Override
     public void describeEnd(TestBlock testBlock) {
+        testBlockDeque.removeLast();
     }
 
     @Override
@@ -75,10 +82,6 @@ final class ReportJUnitAdapter implements Reporter {
     @Override
     public void testEnd(Test test) {
         notifier.fireTestFinished(getDescription(test.description));
-    }
-
-    private Description getDescription(String description) {
-        return Description.createTestDescription(testClass, description);
     }
 
     @Override
@@ -105,5 +108,13 @@ final class ReportJUnitAdapter implements Reporter {
     @Override
     public void testSkip(Test test) {
         notifier.fireTestIgnored(getDescription(test.description));
+    }
+
+    private Description getDescription(String description) {
+        String blockId = testBlockDeque.stream()
+                .map(b -> b.description)
+                .collect(Collectors.joining());
+        String uniqueId = blockId + description;
+        return Description.createTestDescription(testClass.getName(), description, uniqueId);
     }
 }

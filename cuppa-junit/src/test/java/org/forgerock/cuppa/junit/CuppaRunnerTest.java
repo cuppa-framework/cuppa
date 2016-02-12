@@ -20,17 +20,24 @@ import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.forgerock.cuppa.Cuppa.*;
 import static org.forgerock.cuppa.model.Behaviour.skip;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.assertj.core.api.Assertions;
 import org.forgerock.cuppa.functions.TestFunction;
 import org.forgerock.cuppa.internal.TestContainer;
+import org.junit.runner.Description;
 import org.junit.runner.JUnitCore;
 import org.junit.runner.Result;
 import org.junit.runner.RunWith;
 import org.junit.runner.notification.Failure;
+import org.junit.runner.notification.RunListener;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 public class CuppaRunnerTest {
+
+    Description suiteDescription;
 
     @BeforeMethod
     public void setup() {
@@ -182,6 +189,142 @@ public class CuppaRunnerTest {
         assertThat(result.getFailureCount()).isEqualTo(1);
     }
 
+    @Test
+    public void shouldReportCorrectDescriptionsOfSuite() {
+        JUnitCore jUnit = new JUnitCore();
+        jUnit.addListener(new RunListener() {
+            @Override
+            public void testRunStarted(Description description) throws Exception {
+                suiteDescription = description;
+            }
+        });
+        jUnit.run(CuppaRunnerTest.PassingTest.class);
+
+        assertThat(suiteDescription).isNotNull();
+        assertThat(suiteDescription.isSuite()).isTrue();
+        assertThat(suiteDescription.getChildren()).hasSize(1);
+
+        Description cuppaDescription = suiteDescription.getChildren().get(0);
+
+        assertThat(cuppaDescription.isSuite()).isTrue();
+        assertThat(cuppaDescription.getDisplayName()).isEqualTo(CuppaRunnerTest.PassingTest.class.getName());
+        assertThat(cuppaDescription.getChildren()).hasSize(1);
+
+        Description describeDescription = cuppaDescription.getChildren().get(0);
+
+        assertThat(describeDescription.isSuite()).isTrue();
+        assertThat(describeDescription.getDisplayName()).isEqualTo("Cuppa");
+        assertThat(describeDescription.getChildren()).hasSize(1);
+
+        Description whenDescription = describeDescription.getChildren().get(0);
+
+        assertThat(whenDescription.isSuite()).isTrue();
+        assertThat(whenDescription.getDisplayName()).isEqualTo("when running with CuppaRunner");
+        assertThat(whenDescription.getChildren()).hasSize(1);
+
+        Description testDescription = whenDescription.getChildren().get(0);
+
+        assertThat(testDescription.isTest()).isTrue();
+        assertThat(testDescription.getDisplayName()).isEqualTo("shows a passing test as passing("
+                + CuppaRunnerTest.PassingTest.class.getName() + ")");
+        assertThat(testDescription.getTestClass()).isEqualTo(CuppaRunnerTest.PassingTest.class);
+    }
+
+    @Test
+    public void shouldReportSameTestDescriptionsAsGivenBeforeStart() {
+
+        List<Description> testDescriptions = new ArrayList<>();
+        //When
+        JUnitCore jUnit = new JUnitCore();
+        jUnit.addListener(new RunListener() {
+            @Override
+            public void testRunStarted(Description description) throws Exception {
+                suiteDescription = description;
+            }
+
+            @Override
+            public void testStarted(Description description) throws Exception {
+                testDescriptions.add(description);
+            }
+        });
+        jUnit.run(CuppaRunnerTest.PassingTest.class);
+
+        //Then
+
+        Description testDescription = suiteDescription.getChildren().get(0)
+                .getChildren().get(0)
+                .getChildren().get(0)
+                .getChildren().get(0);
+
+        assertThat(testDescriptions).hasSize(1);
+        assertThat(testDescriptions.get(0)).isEqualTo(testDescription);
+    }
+
+    @Test
+    public void shouldReportDistinctDescriptionsForTestsWithSameName() {
+
+        List<Description> testDescriptions = new ArrayList<>();
+        //When
+        JUnitCore jUnit = new JUnitCore();
+        jUnit.addListener(new RunListener() {
+            @Override
+            public void testRunStarted(Description description) throws Exception {
+                suiteDescription = description;
+            }
+
+            @Override
+            public void testStarted(Description description) throws Exception {
+                testDescriptions.add(description);
+            }
+        });
+        jUnit.run(CuppaRunnerTest.DuplicateTests.class);
+
+        //Then
+        Description describeDescription = suiteDescription.getChildren().get(0)
+                .getChildren().get(0);
+
+        Description test1Description = describeDescription.getChildren().get(0).getChildren().get(0);
+        Description test2Description = describeDescription.getChildren().get(1).getChildren().get(0);
+
+        assertThat(test1Description).isNotEqualTo(test2Description);
+
+        assertThat(testDescriptions).hasSize(2);
+        assertThat(testDescriptions.get(0)).isNotEqualTo(testDescriptions.get(1));
+
+        assertThat(testDescriptions.get(0)).isEqualTo(test1Description);
+        assertThat(testDescriptions.get(1)).isEqualTo(test2Description);
+    }
+
+    @Test
+    public void shouldReportDistinctDescriptionsForTestBlocksWithSameName() {
+
+        List<Description> testDescriptions = new ArrayList<>();
+        //When
+        JUnitCore jUnit = new JUnitCore();
+        jUnit.addListener(new RunListener() {
+            @Override
+            public void testRunStarted(Description description) throws Exception {
+                suiteDescription = description;
+            }
+
+            @Override
+            public void testStarted(Description description) throws Exception {
+                testDescriptions.add(description);
+            }
+        });
+        jUnit.run(CuppaRunnerTest.DuplicateTestBlocks.class);
+
+        //Then
+        Description when1Description = suiteDescription.getChildren().get(0)
+                .getChildren().get(0)
+                .getChildren().get(0);
+        Description when2Description = suiteDescription.getChildren().get(0)
+                .getChildren().get(1)
+                .getChildren().get(0);
+
+        assertThat(when1Description).isNotEqualTo(when2Description);
+    }
+
     @RunWith(CuppaRunner.class)
     public static class PassingTest {
         {
@@ -292,6 +435,36 @@ public class CuppaRunnerTest {
                         throw new RuntimeException("After each hook is bad");
                     });
                     it("shows a passing test as passing", TestFunction.identity());
+                });
+            });
+        }
+    }
+
+    @RunWith(CuppaRunner.class)
+    public static class DuplicateTests {
+        {
+            describe("Cuppa", () -> {
+                when("running with CuppaRunner", () -> {
+                    it("is a duplicate test name", TestFunction.identity());
+                });
+                when("in another block", () -> {
+                    it("is a duplicate test name", TestFunction.identity());
+                });
+            });
+        }
+    }
+
+    @RunWith(CuppaRunner.class)
+    public static class DuplicateTestBlocks {
+        {
+            describe("Cuppa", () -> {
+                when("duplicate test blocks", () -> {
+                    it("supports tests in both blocks", TestFunction.identity());
+                });
+            });
+            describe("something else", () -> {
+                when("duplicate test blocks", () -> {
+                    it("supports tests in both blocks but different names", TestFunction.identity());
                 });
             });
         }

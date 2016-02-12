@@ -47,15 +47,18 @@ public final class CuppaRunner extends Runner {
 
     @Override
     public Description getDescription() {
-        Description description = createSuiteDescription(testClass);
-        rootBlock.testBlocks.forEach(b -> description.addChild(getDescriptionOfDescribeBlock(b)));
+        Description description = createSuiteDescription(testClass.getName(), rootBlock.description);
+        rootBlock.testBlocks.forEach(b ->
+                description.addChild(getDescriptionOfDescribeBlock(b, rootBlock.description)));
         return description;
     }
 
-    private Description getDescriptionOfDescribeBlock(TestBlock testBlock) {
-        Description description = createSuiteDescription(testBlock.description);
-        testBlock.testBlocks.forEach(b -> description.addChild(getDescriptionOfDescribeBlock(b)));
-        testBlock.tests.forEach(b -> description.addChild(createTestDescription(testClass, b.description)));
+    private Description getDescriptionOfDescribeBlock(TestBlock testBlock, String parentDescription) {
+        String blockDescription = parentDescription + testBlock.description;
+        Description description = createSuiteDescription(testBlock.description, blockDescription);
+        testBlock.testBlocks.forEach(b -> description.addChild(getDescriptionOfDescribeBlock(b, blockDescription)));
+        testBlock.tests.forEach(test -> description.addChild(createTestDescription(testClass.getName(),
+                test.description, blockDescription + test.description)));
         return description;
     }
 
