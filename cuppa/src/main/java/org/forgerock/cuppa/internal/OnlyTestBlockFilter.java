@@ -16,7 +16,7 @@
 
 package org.forgerock.cuppa.internal;
 
-import static org.forgerock.cuppa.model.Behaviour.only;
+import static org.forgerock.cuppa.model.Behaviour.ONLY;
 
 import java.util.List;
 import java.util.function.Function;
@@ -38,22 +38,22 @@ public final class OnlyTestBlockFilter implements Function<TestBlock, TestBlock>
     }
 
     private TestBlock pruneNotOnlyTests(TestBlock testBlock) {
-        if (testBlock.behaviour == only) {
+        if (testBlock.behaviour == ONLY) {
             return testBlock;
         }
         List<TestBlock> testBlocks = testBlock.testBlocks.stream()
                 .map(this::pruneNotOnlyTests)
                 .collect(Collectors.toList());
         List<org.forgerock.cuppa.model.Test> tests = testBlock.tests.stream()
-                .filter(t -> t.behaviour == only)
+                .filter(t -> t.behaviour == ONLY)
                 .collect(Collectors.toList());
         return new TestBlock(testBlock.behaviour, testBlock.description, testBlocks, testBlock.beforeHooks,
-                testBlock.afterHooks, testBlock.beforeEachHooks, testBlock.afterEachHooks, tests, testBlock.tags);
+                testBlock.afterHooks, testBlock.beforeEachHooks, testBlock.afterEachHooks, tests, testBlock.options);
     }
 
     private boolean hasOnlyTests(TestBlock block) {
-        return block.behaviour == only
-                || block.tests.stream().anyMatch(t -> t.behaviour == only)
+        return block.behaviour == ONLY
+                || block.tests.stream().anyMatch(t -> t.behaviour == ONLY)
                 || block.testBlocks.stream().anyMatch(this::hasOnlyTests);
     }
 }

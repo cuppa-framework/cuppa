@@ -12,27 +12,24 @@ Tagging tests only works with Maven Surefire/Failsafe integration at the moment.
 
 ## Tagging a Single Test
 
-Want to run just a sub-set of your tests? No problem. Simply tag your tests with one or more tags.
+Want to run just a sub-set of your tests? No problem. Simply decorate your tests with one or more tags:
  
 ```java
-it("returns -1")
-        .withTags("smoke")
-        .asserts(() -> {
-            // ...
-        });
+with(tags("smoke", "fast")).
+it("returns -1", () -> {
+    // ...
+});
 ```
 
-Running the following command will only run the tests with the matching tag `smoke` and all the remaining tests will be 
-ignored.
+Tags can be specified when running Cuppa via Maven using the `tags` property.
+For example, to run only the tests with the tag `smoke`:
 
 ```bash
 mvn -Dtags=smoke test
 ```
 
 Alternatively you can run all tests which __are not__ tagged with one or more specific tags.
-
-Running the following command will __not__ run the tests with the matching tag `slow` and all the remaining tests will 
-be run.
+For example, to run all tests except tests tagged with `slow`:
 
 ```bash
 mvn -DexcludedTags=slow test
@@ -48,25 +45,15 @@ It's important to note that you cannot use both `-Dgroups=` and `-Dtags=` or `-D
 at the same time.
 </div>
 
-## Tagging Pending Tests
+## Tagging a Block of Tests
 
-Want to add a tag to a pending test? No worries. Simply omit the `.asserts` method call and your done!
-
-```java
-it("returns -1")
-        .withTags("smoke");
-```
-
-## Tagging a Set of Tests
-
-Similarly you can also tag all tests within a `describe` or `when` block:
+Similarly you can tag all tests within a `describe` or `when` block:
 
 ```java
-when("it is empty")
-        .eachWithTags("smoke")
-        .then(() -> {
-            it("returns -1", () -> {
-                // ...
-            });
-        });
+with(tags("smoke")).
+when("it is empty", () -> {
+    it("returns -1", () -> {
+        // ...
+    });
+});
 ``` 

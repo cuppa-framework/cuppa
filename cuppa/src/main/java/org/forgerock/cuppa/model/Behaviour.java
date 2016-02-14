@@ -16,10 +16,6 @@
 
 package org.forgerock.cuppa.model;
 
-import org.forgerock.cuppa.functions.TestBlockFunction;
-import org.forgerock.cuppa.functions.TestFunction;
-import org.forgerock.cuppa.internal.TestContainer;
-
 /**
  * Controls the behaviour of a test or collection of tests.
  */
@@ -31,59 +27,11 @@ public enum Behaviour {
     /**
      * Do not run the test(s). The test(s) may still be included in test reports, but marked as skipped.
      */
-    skip,
+    SKIP,
     /**
      * Run the test(s) and ignore all other tests not marked as ONLY.
      */
-    only;
-
-    /**
-     * Registers a described suite of tests to be run.
-     *
-     * <p>If {@link Behaviour#skip} then this test will be skipped.</p>
-     *
-     * @param description The description of the 'describe' block.
-     * @param function The 'describe' block.
-     */
-    public void describe(String description, TestBlockFunction function) {
-        TestContainer.INSTANCE.describe(this, description).then(function);
-    }
-
-    /**
-     * Registers a 'when' block to be run.
-     *
-     * <p>If {@link Behaviour#skip} then this test will be skipped.</p>
-     *
-     * @param description The description of the 'when' block.
-     * @param function The 'when' block.
-     */
-    public void when(String description, TestBlockFunction function) {
-        TestContainer.INSTANCE.when(this, description).then(function);
-    }
-
-    /**
-     * Registers a test function to be run.
-     *
-     * <p>If {@link Behaviour#skip} then this test will be skipped.</p>
-     *
-     * @param description The description of the test function.
-     * @param function The test function.
-     */
-    public void it(String description, TestFunction function) {
-        it(description).asserts(function);
-    }
-
-    /**
-     * Returns a builder for registering a test function.
-     *
-     * <p>To register a pending test do not call the {@link TestBuilder#asserts(TestFunction)}.</p>
-     *
-     * @param description The description of the test function.
-     * @return The builder for registering a test function.
-     */
-    public TestBuilder it(String description) {
-        return TestContainer.INSTANCE.it(this, description);
-    }
+    ONLY;
 
     /**
      * Combine this behaviour with another behaviour.
@@ -91,10 +39,10 @@ public enum Behaviour {
      * @return The combined behaviour
      */
     public Behaviour combine(Behaviour behaviour) {
-        if (this == skip || behaviour == skip) {
-            return skip;
-        } else if (this == only || behaviour == only) {
-            return only;
+        if (this == SKIP || behaviour == SKIP) {
+            return SKIP;
+        } else if (this == ONLY || behaviour == ONLY) {
+            return ONLY;
         }
         return NORMAL;
     }

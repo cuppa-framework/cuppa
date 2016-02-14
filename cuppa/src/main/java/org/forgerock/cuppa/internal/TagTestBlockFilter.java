@@ -25,13 +25,15 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.forgerock.cuppa.model.Options;
 import org.forgerock.cuppa.model.Tags;
+import org.forgerock.cuppa.model.TagsOption;
 import org.forgerock.cuppa.model.Test;
 import org.forgerock.cuppa.model.TestBlock;
 
 /**
- * Filters the test tree to only include tests that have tags that match the given run tags, excluding any tests that
- * have the given excluded run tags.
+ * Filters the test tree to only include tests that have tags that match the given run tags, excluding any tests
+ * that have the given excluded run tags.
  */
 public final class TagTestBlockFilter implements Function<TestBlock, TestBlock> {
     private final Tags runTags;
@@ -54,15 +56,15 @@ public final class TagTestBlockFilter implements Function<TestBlock, TestBlock> 
     }
 
     private TestBlock filterTests(TestBlock testBlock, Set<String> parentBlockTags) {
-        Set<String> blockTags = union(testBlock.tags, parentBlockTags);
+        Set<String> blockTags = union(getTags(testBlock.options), parentBlockTags);
         List<TestBlock> testBlocks = testBlock.testBlocks.stream()
                 .map(b -> filterTests(b, blockTags))
                 .collect(Collectors.toList());
         List<Test> tests = testBlock.tests.stream()
-                .filter(t -> shouldRun(union(t.tags, blockTags)))
+                .filter(t -> shouldRun(union(getTags(t.options), blockTags)))
                 .collect(Collectors.toList());
         return new TestBlock(testBlock.behaviour, testBlock.description, testBlocks, testBlock.beforeHooks,
-                testBlock.afterHooks, testBlock.beforeEachHooks, testBlock.afterEachHooks, tests, testBlock.tags);
+                testBlock.afterHooks, testBlock.beforeEachHooks, testBlock.afterEachHooks, tests, testBlock.options);
     }
 
     private boolean shouldInclude(Set<String> testTags) {
@@ -75,5 +77,9 @@ public final class TagTestBlockFilter implements Function<TestBlock, TestBlock> 
 
     private boolean shouldRun(Set<String> testTags) {
         return shouldInclude(testTags) && !shouldExclude(testTags);
+    }
+
+    private Set<String> getTags(Options options) {
+        return options.get(TagsOption.class).orElse(Collections.emptySet());
     }
 }

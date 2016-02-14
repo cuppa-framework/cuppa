@@ -20,8 +20,7 @@ import org.forgerock.cuppa.functions.HookFunction;
 import org.forgerock.cuppa.functions.TestBlockFunction;
 import org.forgerock.cuppa.functions.TestFunction;
 import org.forgerock.cuppa.internal.TestContainer;
-import org.forgerock.cuppa.model.TestBlockBuilder;
-import org.forgerock.cuppa.model.TestBuilder;
+import org.forgerock.cuppa.model.Option;
 
 /**
  * Use the methods of this class to define your tests.
@@ -62,16 +61,6 @@ public final class Cuppa {
     }
 
     /**
-     * Returns a builder for registering a described suite of tests to be run.
-     *
-     * @param description The description of the 'describe' block.
-     * @return The builder for registering a described suite of tests.
-     */
-    public static TestBlockBuilder describe(String description) {
-        return TestContainer.INSTANCE.describe(description);
-    }
-
-    /**
      * Registers a 'when' block of tests.
      *
      * <p>Use 'when' blocks to group together tests that share some context. Blocks may be nested within other
@@ -82,16 +71,6 @@ public final class Cuppa {
      */
     public static void when(String description, TestBlockFunction function) {
         TestContainer.INSTANCE.when(description, function);
-    }
-
-    /**
-     * Returns a builder for registering a 'when' block to be run.
-     *
-     * @param description The description of the 'when' block.
-     * @return The builder for registering a 'when' block.
-     */
-    public static TestBlockBuilder when(String description) {
-        return TestContainer.INSTANCE.when(description);
     }
 
     /**
@@ -173,22 +152,103 @@ public final class Cuppa {
     /**
      * Registers a test function to be run.
      *
-     * @param description The description of the test.
-     * @param function The test function.
+     * @param description A description of the behaviour that the function will assert.
+     * @param function The function to execute.
      */
     public static void it(String description, TestFunction function) {
         TestContainer.INSTANCE.it(description, function);
     }
 
     /**
-     * Returns a builder for registering a test function.
+     * Registers a pending test.
      *
-     * <p>To register a pending test do not call the {@link TestBuilder#asserts(TestFunction)}.</p>
+     * <p>A pending test has no implementation and acts as a reminder to the developer to write the implementation
+     * later.</p>
      *
-     * @param description The description of the test function.
-     * @return The builder for registering a test function.
+     * @param description A description of the behaviour that this test will assert.
      */
-    public static TestBuilder it(String description) {
-        return TestContainer.INSTANCE.it(description);
+    public static void it(String description) {
+        TestContainer.INSTANCE.it(description);
+    }
+
+    /**
+     * Decorate a test or block of tests with additional options. Options are constructed via factory methods. For
+     * example, see {@link Cuppa#tags(String, String...)}.
+     *
+     * <p>Multiple options can be either passed as additional arguments or chained using the returned builder.</p>
+     *
+     * <pre><code>
+     * with(tags("slow")).
+     * it("takes a long time to start", () -&gt; {
+     *   // ...
+     * });
+     * </code></pre>
+     *
+     * @param option An option to apply to the test/block.
+     * @param options Additional options to apply to the test/block.
+     * @return An object for building a test or test block with the given options.
+     *
+     * @see Cuppa#tags(String, String...)
+     */
+    public static TestBuilder with(Option<?> option, Option<?>... options) {
+        return TestContainer.INSTANCE.with(option, options);
+    }
+
+    /**
+     * Mark a test or block of tests to be skipped.
+     *
+     * <p>The test(s) may still be included in test reports, but marked as skipped.</p>
+     *
+     * <pre><code>
+     * skip().it("does something", () -&gt; {
+     *   // Will not be run.
+     * });
+     * </code></pre>
+     *
+     * @return An object for building the test or test block that will be skipped.
+     */
+    public static TestBuilder skip() {
+        return TestContainer.INSTANCE.skip();
+    }
+
+    /**
+     * Mark a test or block of tests as the only tests that should be run.
+     *
+     * <p>If at least one test is marked as {@code only} then all tests not marked as {@code only} will not be run.</p>
+     *
+     * <pre><code>
+     * only().it("does something", () -&gt; {
+     *   // ...
+     * });
+     * </code></pre>
+     *
+     * @return An object for building the test or test block that will be run.
+     */
+    public static TestBuilder only() {
+        return TestContainer.INSTANCE.only();
+    }
+
+    /**
+     * Decorates tests with a set of tags. Tags can be used to group tests together to be included or excluded from a
+     * test run.
+     *
+     * <p>Apply to a test or block of tests by passing the result of this method to
+     * {@link Cuppa#with(Option, Option...)}.</p>
+     *
+     * <pre><code>
+     * with(tags("slow")).
+     * it("takes a long time to start", () -&gt; {
+     *   // ...
+     * });
+     * </code></pre>
+     *
+     * @param tag A string identifier that can be used when running Cuppa to include or exclude the test/block.
+     * @param tags Additional tags to apply to the test/block.
+     * @return An option, which can be passed to {@link Cuppa#with(Option, Option...)}.
+     *
+     * @see Cuppa#with(Option, Option...)
+     */
+    public static Option tags(String tag, String... tags) {
+        return TestContainer.INSTANCE.tags(tag, tags);
     }
 }

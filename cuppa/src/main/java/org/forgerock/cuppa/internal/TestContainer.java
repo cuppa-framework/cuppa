@@ -21,16 +21,21 @@ import static org.forgerock.cuppa.model.Behaviour.NORMAL;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.Optional;
+import java.util.Set;
 
+import com.google.common.collect.ImmutableSet;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.forgerock.cuppa.CuppaException;
+import org.forgerock.cuppa.TestBuilder;
 import org.forgerock.cuppa.functions.HookFunction;
 import org.forgerock.cuppa.functions.TestBlockFunction;
 import org.forgerock.cuppa.functions.TestFunction;
 import org.forgerock.cuppa.model.Behaviour;
+import org.forgerock.cuppa.model.Option;
+import org.forgerock.cuppa.model.Options;
+import org.forgerock.cuppa.model.TagsOption;
+import org.forgerock.cuppa.model.Test;
 import org.forgerock.cuppa.model.TestBlock;
-import org.forgerock.cuppa.model.TestBlockBuilder;
-import org.forgerock.cuppa.model.TestBuilder;
 
 /**
  * Singleton container for user-defined tests.
@@ -41,8 +46,8 @@ public enum TestContainer {
      */
     INSTANCE;
 
-    private InternalTestBlockBuilder rootBuilder;
-    private Deque<InternalTestBlockBuilder> stack;
+    private TestBlockBuilder rootBuilder;
+    private Deque<TestBlockBuilder> stack;
     private boolean runningTests;
     private Class<?> testClass;
 
@@ -57,32 +62,26 @@ public enum TestContainer {
      * @param function The 'describe' block.
      */
     public void describe(String description, TestBlockFunction function) {
-        describe(NORMAL, description).then(function);
+        new TestBuilderImpl().describe(description, function);
     }
 
     /**
      * Returns a builder for registering a described suite of tests to be run.
      *
+     * @param behaviour If {@link Behaviour#SKIP} then this test will be skipped.
      * @param description The description of the 'describe' block.
-     * @return The builder for registering a described suite of tests.
+     * @param options The set of options applied to the test block.
      */
-    public TestBlockBuilder describe(String description) {
-        return describe(NORMAL, description);
-    }
-
-    /**
-     * Returns a builder for registering a described suite of tests to be run.
-     *
-     * @param behaviour If {@link Behaviour#skip} then this test will be skipped.
-     * @param description The description of the 'describe' block.
-     * @return The builder for registering a described suite of tests.
-     */
-    public TestBlockBuilder describe(Behaviour behaviour, String description) {
-
+    void describe(Behaviour behaviour, String description, TestBlockFunction function, Options options) {
         assertNotRunningTests("describe");
-        InternalTestBlockBuilder testBlockBuilder = new InternalTestBlockBuilder(behaviour, description);
+        TestBlockBuilder testBlockBuilder = new TestBlockBuilder(behaviour, description, options);
         stack.addLast(testBlockBuilder);
-        return new TestBlockBuilderImpl(testBlockBuilder);
+        try {
+            function.apply();
+        } finally {
+            stack.removeLast();
+            getCurrentDescribeBlock().addTestBlock(testBlockBuilder.build());
+        }
     }
 
     /**
@@ -92,30 +91,7 @@ public enum TestContainer {
      * @param function The 'when' block.
      */
     public void when(String description, TestBlockFunction function) {
-        when(NORMAL, description).then(function);
-    }
-
-    /**
-     * Returns a builder for registering a 'when' block to be run.
-     *
-     * @param description The description of the 'when' block.
-     * @return The builder for registering a 'when' block.
-     */
-    public TestBlockBuilder when(String description) {
-        return when(NORMAL, description);
-    }
-
-    /**
-     * Returns a builder for registering a 'when' block to be run.
-     *
-     * @param behaviour If {@link Behaviour#skip} then this test will be skipped.
-     * @param description The description of the 'when' block.
-     * @return The builder for registering a 'when' block.
-     */
-    public TestBlockBuilder when(Behaviour behaviour, String description) {
-        assertNotRunningTests("when");
-        assertNotRootDescribeBlock("when", "when", "describe");
-        return describe(behaviour, "when " + description);
+        new TestBuilderImpl().when(description, function);
     }
 
     /**
@@ -209,36 +185,77 @@ public enum TestContainer {
      * @param function The test function.
      */
     public void it(String description, TestFunction function) {
-        it(NORMAL, description).asserts(function);
+        it(NORMAL, description, Optional.of(function), new Options());
     }
 
     /**
-     * Returns a builder for registering a test function to be run.
+     * Registers a pending test.
      *
-     * <p>To register a pending test do not call the {@link TestBuilder#asserts(TestFunction)}.</p>
+     * <p>A pending test has no implementation and acts as a reminder to the developer to write the implementation
+     * later.</p>
      *
-     * @param description The description of the test function.
-     * @return The builder for registering a test function.
+     * @param description The description of the test.
      */
-    public TestBuilder it(String description) {
-        return it(NORMAL, description);
+    public void it(String description) {
+        it(NORMAL, description, Optional.empty(), new Options());
     }
 
     /**
-     * Returns a builder for registering a test function to be run.
+     * Registers a test function to be run.
      *
-     * <p>To register a pending test do not call the {@link TestBuilder#asserts(TestFunction)}.</p>
-     *
-     * @param behaviour If {@link Behaviour#skip} then this test will be skipped.
+     * @param behaviour If {@link Behaviour#SKIP} then this test will be skipped.
      * @param description The description of the test function.
-     * @return The builder for registering a test function.
+     * @param function The test function.
+     * @param options The set of options applied to the test.
      */
-    public TestBuilder it(Behaviour behaviour, String description) {
+    public void it(Behaviour behaviour, String description, Optional<TestFunction> function, Options options) {
         assertNotRunningTests("it");
         assertNotRootDescribeBlock("it", "when", "describe");
-        TestBuilderImpl testBuilder = new TestBuilderImpl(behaviour, description, testClass);
-        getCurrentDescribeBlock().addTest(testBuilder);
-        return testBuilder;
+        getCurrentDescribeBlock().addTest(new Test(behaviour, testClass, description, function, options));
+    }
+
+
+    /**
+     * Decorate a test or block of tests with additional options.
+     *
+     * @param option An option to apply to the test/block.
+     * @param options Additional options to apply to the test/block.
+     * @return An object for building a test or test block with the given options.
+     */
+    public TestBuilder with(Option option, Option... options) {
+        TestBuilderImpl testBuilder = new TestBuilderImpl();
+        return testBuilder.with(option, options);
+    }
+
+    /**
+     * Mark a test or block of tests to be skipped.
+     *
+     * @return An object for building the test or test block that will be skipped.
+     */
+    public TestBuilder skip() {
+        return new TestBuilderImpl().skip();
+    }
+
+    /**
+     * Mark a test or block of tests as the only tests that should be run.
+     *
+     * @return An object for building the test or test block that will be run.
+     */
+    public TestBuilder only() {
+        return new TestBuilderImpl().only();
+    }
+
+    /**
+     * Decorates tests with a set of tags. Tags can be used to group tests together to be included or excluded from a
+     * test run.
+     *
+     * @param tag A string identifier that can be used when running Cuppa to include or exclude the test/block.
+     * @param tags Additional tags to apply to the test/block.
+     * @return An option.
+     */
+    public Option tags(String tag, String... tags) {
+        Set<String> set = ImmutableSet.<String>builder().add(tag).add(tags).build();
+        return new TagsOption(set);
     }
 
     /**
@@ -272,7 +289,7 @@ public enum TestContainer {
      */
     public void reset() {
         runningTests = false;
-        rootBuilder = new InternalTestBlockBuilder(NORMAL, "");
+        rootBuilder = new TestBlockBuilder(NORMAL, "", new Options());
         stack = new ArrayDeque<>();
         stack.addLast(rootBuilder);
         testClass = null;
@@ -292,33 +309,7 @@ public enum TestContainer {
         }
     }
 
-    private InternalTestBlockBuilder getCurrentDescribeBlock() {
+    private TestBlockBuilder getCurrentDescribeBlock() {
         return stack.getLast();
     }
-
-    private final class TestBlockBuilderImpl implements TestBlockBuilder {
-
-        private final InternalTestBlockBuilder testBlockBuilder;
-
-        private TestBlockBuilderImpl(InternalTestBlockBuilder testBlockBuilder) {
-            this.testBlockBuilder = testBlockBuilder;
-        }
-
-        @Override
-        public TestBlockBuilder eachWithTags(String tag, String... tags) {
-            testBlockBuilder.eachWithTags(tag, tags);
-            return this;
-        }
-
-        @Override
-        public void then(TestBlockFunction function) {
-            try {
-                function.apply();
-            } finally {
-                stack.removeLast();
-                getCurrentDescribeBlock().addTestBlock(testBlockBuilder.build());
-            }
-        }
-    }
-
 }

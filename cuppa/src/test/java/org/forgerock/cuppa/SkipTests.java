@@ -17,10 +17,10 @@
 package org.forgerock.cuppa;
 
 import static org.forgerock.cuppa.Cuppa.*;
+import static org.forgerock.cuppa.Cuppa.only;
 import static org.forgerock.cuppa.Cuppa.when;
 import static org.forgerock.cuppa.ModelFinder.findTest;
-import static org.forgerock.cuppa.model.Behaviour.only;
-import static org.forgerock.cuppa.model.Behaviour.skip;
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
 import org.forgerock.cuppa.functions.TestFunction;
@@ -36,7 +36,7 @@ public class SkipTests extends AbstractTest {
         {
             describe("basic API usage", () -> {
                 when("the 'when' is run", () -> {
-                    skip.it("test", testFunction);
+                    skip().it("test", testFunction);
                 });
             });
         }
@@ -57,7 +57,7 @@ public class SkipTests extends AbstractTest {
         {
             describe("basic API usage", () -> {
                 when("the 'when' is run", () -> {
-                    skip.it("test", testFunction);
+                    skip().it("test", testFunction);
                 });
             });
         }
@@ -77,7 +77,7 @@ public class SkipTests extends AbstractTest {
         TestFunction testFunction2 = mock(TestFunction.class);
         {
             describe("basic API usage", () -> {
-                skip.when("the 'when' is run", () -> {
+                skip().when("the 'when' is run", () -> {
                     it("runs the test", testFunction1);
                     it("runs the test", testFunction2);
                 });
@@ -101,7 +101,7 @@ public class SkipTests extends AbstractTest {
         TestFunction testFunction2 = mock(TestFunction.class);
         {
             describe("basic API usage", () -> {
-                skip.when("the 'when' is run", () -> {
+                skip().when("the 'when' is run", () -> {
                     it("test1", testFunction1);
                     it("test2", testFunction2);
                 });
@@ -127,7 +127,7 @@ public class SkipTests extends AbstractTest {
             describe("basic API usage", () -> {
                 when("the 'when' is run", () -> {
                     it("before test", testFunctionBefore);
-                    only.it("test", testFunction);
+                    only().it("test", testFunction);
                     it("after test", testFunctionAfter);
                 });
             });
@@ -151,7 +151,7 @@ public class SkipTests extends AbstractTest {
             describe("basic API usage", () -> {
                 when("the 'when' is run", () -> {
                     it("before test", TestFunction.identity());
-                    only.it("test", TestFunction.identity());
+                    only().it("test", TestFunction.identity());
                     it("after test", TestFunction.identity());
                 });
             });
@@ -175,8 +175,8 @@ public class SkipTests extends AbstractTest {
             describe("basic API usage", () -> {
                 when("the 'when' is run", () -> {
                     it("before test", TestFunction.identity());
-                    only.it("only test 1", testFunctionOnly1);
-                    only.it("only test 2", testFunctionOnly2);
+                    only().it("only test 1", testFunctionOnly1);
+                    only().it("only test 2", testFunctionOnly2);
                 });
             });
         }
@@ -197,7 +197,7 @@ public class SkipTests extends AbstractTest {
         TestFunction testFunctionAfter = mock(TestFunction.class);
         {
             describe("basic API usage", () -> {
-                only.when("only when", () -> {
+                only().when("only when", () -> {
                     it("test", testFunction);
                 });
                 when("after when", () -> {
@@ -221,8 +221,8 @@ public class SkipTests extends AbstractTest {
         TestFunction testFunction = mock(TestFunction.class);
         {
             describe("basic API usage", () -> {
-                only.when("only when", () -> {
-                    skip.it("test", testFunction);
+                only().when("only when", () -> {
+                    skip().it("test", testFunction);
                 });
             });
         }
@@ -241,8 +241,8 @@ public class SkipTests extends AbstractTest {
         TestFunction testFunction = mock(TestFunction.class);
         {
             describe("basic API usage", () -> {
-                skip.when("only when", () -> {
-                    only.it("test", testFunction);
+                skip().when("only when", () -> {
+                    only().it("test", testFunction);
                 });
             });
         }
@@ -261,8 +261,8 @@ public class SkipTests extends AbstractTest {
         TestFunction testFunction = mock(TestFunction.class);
         {
             describe("basic API usage", () -> {
-                skip.when("only when", () -> {
-                    only.it("test", TestFunction.identity());
+                skip().when("only when", () -> {
+                    only().it("test", TestFunction.identity());
                 });
                 it("test 2", testFunction);
             });

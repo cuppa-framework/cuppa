@@ -18,9 +18,7 @@ package org.forgerock.cuppa.model;
 
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
 
-import com.google.common.collect.ImmutableSet;
 import org.forgerock.cuppa.functions.TestFunction;
 
 /**
@@ -49,9 +47,9 @@ public final class Test {
     public final Optional<TestFunction> function;
 
     /**
-     * The set of tags applied to the test.
+     * The set of options applied to the test.
      */
-    public final Set<String> tags;
+    public final Options options;
 
     /**
      * Constructs a new test.
@@ -61,10 +59,10 @@ public final class Test {
      * @param description The description of the test. Will be used for reporting.
      * @param function The body of the test. If the {@link Optional} is empty the test is
      *     classified as pending.
-     * @param tags The set of tags applied to the test.
+     * @param options The set of options applied to the test.
      */
     public Test(Behaviour behaviour, Class<?> testClass, String description, Optional<TestFunction> function,
-            Set<String> tags) {
+            Options options) {
         Objects.requireNonNull(behaviour, "Test must have a behaviour");
         Objects.requireNonNull(testClass, "Test must have a testClass");
         Objects.requireNonNull(description, "Test must have a description");
@@ -73,7 +71,7 @@ public final class Test {
         this.testClass = testClass;
         this.description = description;
         this.function = function;
-        this.tags = ImmutableSet.copyOf(tags);
+        this.options = Options.immutableCopyOf(options);
     }
 
     @Override
@@ -86,12 +84,13 @@ public final class Test {
         }
         Test test = (Test) o;
         return Objects.equals(behaviour, test.behaviour)
-            && Objects.equals(description, test.description);
+            && Objects.equals(description, test.description)
+            && Objects.equals(options, test.options);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(behaviour, description, function);
+        return Objects.hash(behaviour, description, function, options);
     }
 
     @Override
@@ -99,6 +98,7 @@ public final class Test {
         return "Test{"
             + "behaviour=" + behaviour
             + ", description='" + description + '\''
+            + ", options=" + options
             + '}';
     }
 }

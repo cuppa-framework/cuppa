@@ -16,8 +16,6 @@
 
 package org.forgerock.cuppa;
 
-import static org.forgerock.cuppa.model.Behaviour.skip;
-
 import java.util.Iterator;
 import java.util.List;
 import java.util.ServiceLoader;
@@ -164,7 +162,7 @@ public final class Runner {
     private void runTest(org.forgerock.cuppa.model.Test test, Behaviour behaviour, Reporter reporter) {
         if (!test.function.isPresent()) {
             reporter.testPending(test);
-        } else if (behaviour.combine(test.behaviour) != skip) {
+        } else if (behaviour.combine(test.behaviour) != Behaviour.SKIP) {
             try {
                 reporter.testStart(test);
                 test.function.get().apply();

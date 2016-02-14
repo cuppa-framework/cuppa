@@ -26,7 +26,6 @@ import static org.mockito.Mockito.*;
 import java.util.Arrays;
 import java.util.stream.Stream;
 
-import org.forgerock.cuppa.functions.TestBlockFunction;
 import org.forgerock.cuppa.functions.TestFunction;
 import org.forgerock.cuppa.reporters.Reporter;
 import org.testng.annotations.Test;
@@ -137,18 +136,6 @@ public class BasicApiTests extends AbstractTest {
 
         //Then
         verify(testFunction).apply();
-    }
-
-    @Test
-    public void basicApiUsageShouldThrowErrorWithTopLevelWhenBlock() throws Exception {
-
-        //Given
-        TestBlockFunction whenFunction = mock(TestBlockFunction.class);
-
-        //When/Then
-        assertThatThrownBy(() -> when("basic API usage", whenFunction))
-                .hasCauseInstanceOf(IllegalStateException.class);
-        verify(whenFunction, never()).apply();
     }
 
     @Test

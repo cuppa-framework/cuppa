@@ -17,7 +17,6 @@
 package org.forgerock.cuppa;
 
 import static org.forgerock.cuppa.Cuppa.*;
-import static org.forgerock.cuppa.Cuppa.when;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
@@ -41,9 +40,8 @@ public class TaggedTests extends AbstractTest {
         TestFunction testFunction = mock(TestFunction.class);
         {
             describe("tagged tests", () -> {
-                it("runs the tagged test")
-                        .withTags("smoke")
-                        .asserts(testFunction);
+                with(tags("smoke")).
+                it("runs the tagged test", testFunction);
             });
         }
 
@@ -63,11 +61,10 @@ public class TaggedTests extends AbstractTest {
         TestFunction testFunction = mock(TestFunction.class);
         Set<String> tags = Collections.singleton("smoke");
         {
-            describe("tagged tests")
-                    .eachWithTags("smoke")
-                    .then(() -> {
-                        it("runs the tagged test", testFunction);
-                    });
+            with(tags("smoke")).
+            describe("tagged tests", () -> {
+                it("runs the tagged test", testFunction);
+            });
         }
 
         //When
@@ -88,12 +85,10 @@ public class TaggedTests extends AbstractTest {
         Set<String> tags = Collections.singleton("smoke");
         {
             describe("tagged tests", () -> {
-                it("runs the tagged test")
-                        .withTags("smoke")
-                        .asserts(testOneFunction);
-                it("does not runs the non-matching tagged test")
-                        .withTags("long")
-                        .asserts(testTwoFunction);
+                with(tags("smoke")).
+                it("runs the tagged test", testOneFunction);
+                with(tags("long")).
+                it("does not runs the non-matching tagged test", testTwoFunction);
             });
         }
 
@@ -116,16 +111,14 @@ public class TaggedTests extends AbstractTest {
         Set<String> tags = Collections.singleton("smoke");
         {
             describe("tagged tests", () -> {
-                when("the when is tagged 'smoke'")
-                        .eachWithTags("smoke")
-                        .then(() -> {
-                            it("runs the tagged test", testOneFunction);
-                        });
-                when("the when is tagged 'long'")
-                        .eachWithTags("long")
-                        .then(() -> {
-                            it("does not runs the non-matching tagged test", testTwoFunction);
-                        });
+                with(tags("smoke")).
+                when("the when is tagged 'smoke'", () -> {
+                    it("runs the tagged test", testOneFunction);
+                });
+                with(tags("long")).
+                when("the when is tagged 'long'", () -> {
+                    it("does not runs the non-matching tagged test", testTwoFunction);
+                });
             });
         }
 
@@ -147,16 +140,14 @@ public class TaggedTests extends AbstractTest {
         TestFunction testTwoFunction = mock(TestFunction.class);
         Set<String> tags = Collections.singleton("smoke");
         {
-            describe("the describe is tagged 'smoke'")
-                    .eachWithTags("smoke")
-                    .then(() -> {
-                        it("runs the tagged test", testOneFunction);
-                    });
-            describe("the describe is tagged 'long'")
-                    .eachWithTags("long")
-                    .then(() -> {
-                        it("does not runs the non-matching tagged test", testTwoFunction);
-                    });
+            with(tags("smoke")).
+            describe("the describe is tagged 'smoke'", () -> {
+                it("runs the tagged test", testOneFunction);
+            });
+            with(tags("long")).
+            describe("the describe is tagged 'long'", () -> {
+                it("does not runs the non-matching tagged test", testTwoFunction);
+            });
         }
 
         //When
@@ -178,12 +169,10 @@ public class TaggedTests extends AbstractTest {
         Set<String> tags = Collections.singleton("smoke");
         {
             describe("tagged tests", () -> {
-                it("runs the tagged test")
-                        .withTags("smoke")
-                        .asserts(testOneFunction);
-                it("runs the second tagged test")
-                        .withTags("smoke")
-                        .asserts(testTwoFunction);
+                with(tags("smoke")).
+                it("runs the tagged test", testOneFunction);
+                with(tags("smoke")).
+                it("runs the second tagged test", testTwoFunction);
             });
         }
 
@@ -206,16 +195,14 @@ public class TaggedTests extends AbstractTest {
         Set<String> tags = Collections.singleton("smoke");
         {
             describe("tagged tests", () -> {
-                when("the when is tagged 'smoke'")
-                        .eachWithTags("smoke")
-                        .then(() -> {
-                            it("runs the tagged test", testOneFunction);
-                        });
-                when("the when is tagged 'smoke'")
-                        .eachWithTags("smoke")
-                        .then(() -> {
-                            it("runs the second tagged test", testTwoFunction);
-                        });
+                with(tags("smoke")).
+                when("the when is tagged 'smoke'", () -> {
+                    it("runs the tagged test", testOneFunction);
+                });
+                with(tags("smoke")).
+                when("the when is tagged 'smoke'", () -> {
+                    it("runs the second tagged test", testTwoFunction);
+                });
             });
         }
 
@@ -237,16 +224,14 @@ public class TaggedTests extends AbstractTest {
         TestFunction testTwoFunction = mock(TestFunction.class);
         Set<String> tags = Collections.singleton("smoke");
         {
-            describe("the describe is tagged 'smoke'")
-                    .eachWithTags("smoke")
-                    .then(() -> {
-                        it("runs the tagged test", testOneFunction);
-                    });
-            describe("the describe is tagged 'smoke'")
-                    .eachWithTags("smoke")
-                    .then(() -> {
-                        it("runs the second tagged test", testTwoFunction);
-                    });
+            with(tags("smoke")).
+            describe("the describe is tagged 'smoke'", () -> {
+                it("runs the tagged test", testOneFunction);
+            });
+            with(tags("smoke")).
+            describe("the describe is tagged 'smoke'", () -> {
+                it("runs the second tagged test", testTwoFunction);
+            });
         }
 
         //When
@@ -276,9 +261,8 @@ public class TaggedTests extends AbstractTest {
         Set<String> tags = Collections.singleton(tag);
         {
             describe("tagged tests", () -> {
-                it("runs the tagged test")
-                        .withTags("smoke", "long", "big")
-                        .asserts(testOneFunction);
+                with(tags("smoke", "long", "big")).
+                it("runs the tagged test", testOneFunction);
             });
         }
 
@@ -300,27 +284,20 @@ public class TaggedTests extends AbstractTest {
         Set<String> tags = new HashSet<>(Arrays.asList("smoke", "big"));
         {
             describe("tagged tests", () -> {
-                it("runs the tagged test")
-                        .withTags("smoke", "long")
-                        .asserts(testFunctionRun);
-                it("runs the tagged test")
-                        .withTags("smoke", "big")
-                        .asserts(testFunctionRun);
-                it("runs the tagged test")
-                        .withTags("long", "big")
-                        .asserts(testFunctionRun);
-                it("runs the tagged test")
-                        .withTags("smoke")
-                        .asserts(testFunctionRun);
-                it("runs the tagged test")
-                        .withTags("long")
-                        .asserts(testFunctionNotRun);
-                it("runs the tagged test")
-                        .withTags("big")
-                        .asserts(testFunctionRun);
-                it("runs the tagged test")
-                        .withTags("long", "nightly")
-                        .asserts(testFunctionNotRun);
+                with(tags("smoke", "long")).
+                it("runs the tagged test", testFunctionRun);
+                with(tags("smoke", "big")).
+                it("runs the tagged test", testFunctionRun);
+                with(tags("long", "big")).
+                it("runs the tagged test", testFunctionRun);
+                with(tags("smoke")).
+                it("runs the tagged test", testFunctionRun);
+                with(tags("long")).
+                it("runs the tagged test", testFunctionNotRun);
+                with(tags("big")).
+                it("runs the tagged test", testFunctionRun);
+                with(tags("long", "nightly")).
+                it("runs the tagged test", testFunctionNotRun);
             });
         }
 
@@ -341,9 +318,8 @@ public class TaggedTests extends AbstractTest {
         Set<String> excludedTags = Collections.singleton("smoke");
         {
             describe("tagged tests", () -> {
-                it("runs the tagged test")
-                        .withTags("smoke")
-                        .asserts(testFunction);
+                with(tags("smoke")).
+                it("runs the tagged test", testFunction);
             });
         }
 
@@ -364,9 +340,8 @@ public class TaggedTests extends AbstractTest {
         Set<String> excludedTags = Collections.singleton("smoke");
         {
             describe("tagged tests", () -> {
-                it("runs the tagged test")
-                        .withTags("smoke")
-                        .asserts(testFunction);
+                with(tags("smoke")).
+                it("runs the tagged test", testFunction);
             });
         }
 
@@ -388,15 +363,12 @@ public class TaggedTests extends AbstractTest {
         Set<String> excludedTags = Collections.singleton("smoke");
         {
             describe("tagged tests", () -> {
-                it("runs the tagged test")
-                        .withTags("smoke", "long")
-                        .asserts(testFunctionNotRun);
-                it("runs the tagged test")
-                        .withTags("long")
-                        .asserts(testFunctionRun);
-                it("runs the tagged test")
-                        .withTags("big")
-                        .asserts(testFunctionNotRun);
+                with(tags("smoke", "long")).
+                it("runs the tagged test", testFunctionNotRun);
+                with(tags("long")).
+                it("runs the tagged test", testFunctionRun);
+                with(tags("big")).
+                it("runs the tagged test", testFunctionNotRun);
             });
         }
 

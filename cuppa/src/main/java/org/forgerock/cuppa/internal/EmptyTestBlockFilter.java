@@ -34,7 +34,7 @@ public final class EmptyTestBlockFilter implements Function<TestBlock, TestBlock
                 .collect(Collectors.toList());
         return new TestBlock(testBlock.behaviour, testBlock.description, testBlocks, testBlock.beforeHooks,
                 testBlock.afterHooks, testBlock.beforeEachHooks, testBlock.afterEachHooks, testBlock.tests,
-                testBlock.tags);
+                testBlock.options);
     }
 
     private boolean isEmpty(TestBlock testBlock) {

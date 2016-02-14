@@ -16,28 +16,21 @@
 
 package org.forgerock.cuppa.model;
 
-import org.forgerock.cuppa.functions.TestFunction;
+import java.util.Set;
+
+import com.google.common.collect.ImmutableSet;
 
 /**
- * A builder for registering a test function.
- *
- * <p>To register a pending test do not call the {@link #asserts(TestFunction)}.</p>
+ * An option for tagging tests and test blocks. Tags can be used to group tests together to be included or excluded from
+ * a test run.
  */
-public interface TestBuilder {
-
+public final class TagsOption extends Option<Set<String>> {
     /**
-     * Specifies a set of tags to apply to the test function.
+     * Create a new tags option.
      *
-     * @param tag The tag to apply.
-     * @param tags Subsequent tags to apply.
-     * @return This builder instance.
+     * @param value A set of tags.
      */
-    TestBuilder withTags(String tag, String... tags);
-
-    /**
-     * The test function that will be run to assert behaviour.
-     *
-     * @param function The test function.
-     */
-    void asserts(TestFunction function);
+    public TagsOption(Set<String> value) {
+        super(ImmutableSet.copyOf(value));
+    }
 }

@@ -18,10 +18,8 @@ package org.forgerock.cuppa.model;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableSet;
 
 /**
  * Encapsulates the 'describe' and 'when' function blocks and all nested 'describe', 'when' and
@@ -70,9 +68,9 @@ public final class TestBlock {
     public final ImmutableList<Test> tests;
 
     /**
-     * The set of tags applied to all tests within block.
+     * The set of options applied to the block.
      */
-    public final Set<String> tags;
+    public final Options options;
 
     /**
      * Constructs a new TestBlock. Will convert mutable lists to immutable lists.
@@ -85,11 +83,11 @@ public final class TestBlock {
      * @param beforeEachHooks Before each hooks. Will run before each test in this test block is executed.
      * @param afterEachHooks After each hooks. Will run after each test in this test block is executed.
      * @param tests Nested tests.
-     * @param tags The set of tags applied to all tests within block.
+     * @param options The set of options applied to the block.
      */
     public TestBlock(Behaviour behaviour, String description, List<TestBlock> testBlocks, List<Hook> beforeHooks,
             List<Hook> afterHooks, List<Hook> beforeEachHooks, List<Hook> afterEachHooks, List<Test> tests,
-            Set<String> tags) {
+            Options options) {
         Objects.requireNonNull(behaviour, "TestBlock must have a behaviour");
         Objects.requireNonNull(description, "TestBlock must have a description");
         Objects.requireNonNull(testBlocks, "TestBlock must have testBlocks");
@@ -98,6 +96,7 @@ public final class TestBlock {
         Objects.requireNonNull(beforeEachHooks, "TestBlock must have beforeEachHooks");
         Objects.requireNonNull(afterEachHooks, "TestBlock must have afterEachHooks");
         Objects.requireNonNull(tests, "TestBlock must have tests");
+        Objects.requireNonNull(options, "TestBlock must have options");
         this.behaviour = behaviour;
         this.description = description;
         this.testBlocks = ImmutableList.copyOf(testBlocks);
@@ -106,7 +105,7 @@ public final class TestBlock {
         this.beforeEachHooks = ImmutableList.copyOf(beforeEachHooks);
         this.afterEachHooks = ImmutableList.copyOf(afterEachHooks);
         this.tests = ImmutableList.copyOf(tests);
-        this.tags = ImmutableSet.copyOf(tags);
+        this.options = Options.immutableCopyOf(options);
     }
 
     @Override
@@ -128,13 +127,13 @@ public final class TestBlock {
             && Objects.equals(beforeEachHooks, testBlock.beforeEachHooks)
             && Objects.equals(afterEachHooks, testBlock.afterEachHooks)
             && Objects.equals(tests, testBlock.tests)
-            && Objects.equals(tags, testBlock.tags);
+            && Objects.equals(options, testBlock.options);
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(behaviour, description, testBlocks, beforeHooks, afterHooks, beforeEachHooks,
-                afterEachHooks, tests, tags);
+                afterEachHooks, tests, options);
     }
 
     @Override
@@ -148,7 +147,7 @@ public final class TestBlock {
             + ", beforeEachHooks=" + beforeEachHooks
             + ", afterEachHooks=" + afterEachHooks
             + ", tests=" + tests
-            + ", tags=" + tags
+            + ", options=" + options
             + '}';
     }
 }

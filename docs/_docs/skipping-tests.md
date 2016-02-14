@@ -8,7 +8,7 @@ During development, you may want to temporarily turn off a test. Rather than com
 following syntax to mark the test as skipped.
 
 ```java
-skip.it("returns -1", () -> {
+skip().it("returns -1", () -> {
     // ...
 });
 ```
@@ -18,7 +18,7 @@ Skipped tests will be reported to remind you to restore the test before committi
 You can also skip entire `describe` or `when` blocks:
 
 ```java
-skip.when("it is empty", () -> {
+skip().when("it is empty", () -> {
     it("returns -1", () -> {
         // ...
     });
@@ -30,7 +30,7 @@ skip.when("it is empty", () -> {
 If you'd like to run a single test to debug a problem, just use the following syntax.
 
 ```java
-only.it("returns -1", () -> {
+only().it("returns -1", () -> {
     // ...
 });
 ```

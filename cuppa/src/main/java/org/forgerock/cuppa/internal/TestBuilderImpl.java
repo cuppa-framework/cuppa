@@ -16,43 +16,57 @@
 
 package org.forgerock.cuppa.internal;
 
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Optional;
-import java.util.Set;
 
+import org.forgerock.cuppa.TestBuilder;
+import org.forgerock.cuppa.functions.TestBlockFunction;
 import org.forgerock.cuppa.functions.TestFunction;
 import org.forgerock.cuppa.model.Behaviour;
-import org.forgerock.cuppa.model.Test;
-import org.forgerock.cuppa.model.TestBuilder;
+import org.forgerock.cuppa.model.Option;
+import org.forgerock.cuppa.model.Options;
 
 final class TestBuilderImpl implements TestBuilder {
-
-    private final Behaviour behaviour;
-    private final String description;
-    private final Class<?> testClass;
-    private Optional<TestFunction> function = Optional.empty();
-    private Set<String> tags = new HashSet<>();
-
-    TestBuilderImpl(Behaviour behaviour, String description, Class<?> testClass) {
-        this.behaviour = behaviour;
-        this.description = description;
-        this.testClass = testClass;
-    }
+    private final Options options = new Options();
+    private Behaviour behaviour = Behaviour.NORMAL;
 
     @Override
-    public TestBuilder withTags(String tag, String... tags) {
-        this.tags.addAll(Arrays.asList(tags));
-        this.tags.add(tag);
+    public TestBuilder with(Option<?> option, Option<?>... options) {
+        this.options.set(option);
+        for (Option<?> o : options) {
+            this.options.set(o);
+        }
         return this;
     }
 
     @Override
-    public void asserts(TestFunction function) {
-        this.function = Optional.ofNullable(function);
+    public TestBuilder skip() {
+        behaviour = Behaviour.SKIP;
+        return this;
     }
 
-    Test build() {
-        return new Test(behaviour, testClass, description, function, tags);
+    @Override
+    public TestBuilder only() {
+        behaviour = Behaviour.ONLY;
+        return this;
+    }
+
+    @Override
+    public void describe(String description, TestBlockFunction function) {
+        TestContainer.INSTANCE.describe(behaviour, description, function, options);
+    }
+
+    @Override
+    public void when(String description, TestBlockFunction function) {
+        TestContainer.INSTANCE.describe(behaviour, "when " + description, function, options);
+    }
+
+    @Override
+    public void it(String description, TestFunction function) {
+        TestContainer.INSTANCE.it(behaviour, description, Optional.of(function), options);
+    }
+
+    @Override
+    public void it(String description) {
+        TestContainer.INSTANCE.it(behaviour, description, Optional.empty(), options);
     }
 }

@@ -17,4 +17,6 @@
     <suppress files="/src/test/java/" checks="JavadocStyle"/>
     <suppress files="/src/test/java/" checks="MagicNumber"/>
     <suppress files="/src/test/java/" checks="MultipleStringLiterals"/>
+    <suppress files="/src/test/java/" checks="Indentation"/>
+    <suppress files="/src/test/java/" checks="SeparatorWrap"/>
 </suppressions>
