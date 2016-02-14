@@ -25,6 +25,23 @@ import org.forgerock.cuppa.model.TestBuilder;
 
 /**
  * Use the methods of this class to define your tests.
+ *
+ * <p>Annotate your class with {@link Test}.</p>
+ *
+ * <pre><code>
+ * public class ListTest {
+ *   {
+ *     describe("List", () -&gt; {
+ *       describe("#indexOf", () -&gt; {
+ *         it("returns -1 when the value is not present", () -&gt; {
+ *           List&lt;Integer&gt; list = Arrays.asList(1, 2, 3);
+ *           assertThat(list.indexOf(5)).isEqualTo(-1);
+ *         });
+ *       });
+ *     });
+ *   }
+ * }
+ * </code></pre>
  */
 public final class Cuppa {
 
@@ -32,10 +49,13 @@ public final class Cuppa {
     }
 
     /**
-     * Registers a described suite of tests to be run.
+     * Registers a 'describe' block of tests.
      *
-     * @param description The description of the 'describe' block.
-     * @param function The 'describe' block.
+     * <p>Use 'describe' blocks to group together tests that describe the same thing. Blocks may be nested within other
+     * blocks.</p>
+     *
+     * @param description The description of the 'describe' block. Used solely for reporting.
+     * @param function A function that will define tests and/or test blocks. This function will be executed immediately.
      */
     public static void describe(String description, TestBlockFunction function) {
         TestContainer.INSTANCE.describe(description, function);
@@ -52,10 +72,13 @@ public final class Cuppa {
     }
 
     /**
-     * Registers a 'when' block to be run.
+     * Registers a 'when' block of tests.
      *
-     * @param description The description of the 'when' block.
-     * @param function The 'when' block.
+     * <p>Use 'when' blocks to group together tests that share some context. Blocks may be nested within other
+     * blocks.</p>
+     *
+     * @param description The description of the 'when' block. Used solely for reporting.
+     * @param function A function that will define tests and/or test blocks. This function will be executed immediately.
      */
     public static void when(String description, TestBlockFunction function) {
         TestContainer.INSTANCE.when(description, function);
@@ -72,7 +95,7 @@ public final class Cuppa {
     }
 
     /**
-     * Registers a 'before' block to be run.
+     * Registers the given function to be executed once, before any tests in the current and nested blocks.
      *
      * @param function The 'before' block.
      */
@@ -81,67 +104,67 @@ public final class Cuppa {
     }
 
     /**
-     * Registers a 'before' block to be run.
+     * Registers the given function to be executed once, before any tests in the current and nested blocks.
      *
-     * @param description The description of the 'before' block.
-     * @param function The 'before' block.
+     * @param description A description of the function. Displayed when the function throws an exception.
+     * @param function The function to execute.
      */
     public static void before(String description, HookFunction function) {
         TestContainer.INSTANCE.before(description, function);
     }
 
     /**
-     * Registers a 'after' block to be run.
+     * Registers the given function to be executed once, after all tests in the current and nested blocks.
      *
-     * @param function The 'after' block.
+     * @param function The function to execute.
      */
     public static void after(HookFunction function) {
         TestContainer.INSTANCE.after(function);
     }
 
     /**
-     * Registers a 'after' block to be run.
+     * Registers the given function to be executed once, after all tests in the current block.
      *
-     * @param description The description of the 'after' block.
-     * @param function The 'after' block.
+     * @param description A description of the function. Displayed when the function throws an exception.
+     * @param function The function to execute.
      */
     public static void after(String description, HookFunction function) {
         TestContainer.INSTANCE.after(description, function);
     }
 
     /**
-     * Registers a 'beforeEach' block to be run.
+     * Registers the given function to be executed before each test in the current and nested blocks.
      *
-     * @param function The 'beforeEach' block.
+     * @param function The function to execute.
      */
     public static void beforeEach(HookFunction function) {
         TestContainer.INSTANCE.beforeEach(function);
     }
 
     /**
-     * Registers a 'beforeEach' block to be run.
+     * Registers the given function to be executed before each test in the current and nested blocks.
      *
-     * @param description The description of the 'beforeEach' block.
-     * @param function The 'beforeEach' block.
+     * @param description A description of the function. Displayed when the function throws an exception.
+     * @param function The function to execute.
      */
     public static void beforeEach(String description, HookFunction function) {
         TestContainer.INSTANCE.beforeEach(description, function);
     }
 
     /**
-     * Registers a 'afterEach' block to be run.
+     * Registers the given function to be executed after each test in the current and nested blocks.
      *
-     * @param function The 'afterEach' block.
+     * @param function The function to execute.
      */
     public static void afterEach(HookFunction function) {
         TestContainer.INSTANCE.afterEach(function);
     }
 
     /**
-     * Registers a 'afterEach' block to be run.
+     * Registers the given function to be executed after each test in the current and nested blocks.
      *
-     * @param description The description of the 'afterEach' block.
-     * @param function The 'afterEach' block.
+     * @param description A description of the function. Displayed when the function throws an exception.
+     * @param function The function to execute.
      */
     public static void afterEach(String description, HookFunction function) {
         TestContainer.INSTANCE.afterEach(description, function);
@@ -150,7 +173,7 @@ public final class Cuppa {
     /**
      * Registers a test function to be run.
      *
-     * @param description The description of the test function.
+     * @param description The description of the test.
      * @param function The test function.
      */
     public static void it(String description, TestFunction function) {
