@@ -19,19 +19,20 @@ package org.forgerock.cuppa;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.forgerock.cuppa.Cuppa.*;
 import static org.forgerock.cuppa.Cuppa.when;
-import static org.forgerock.cuppa.ModelFinder.findTest;
+import static org.forgerock.cuppa.TestCuppaSupport.*;
 import static org.mockito.Mockito.*;
 
+import org.forgerock.cuppa.model.TestBlock;
 import org.forgerock.cuppa.reporters.Reporter;
 import org.testng.annotations.Test;
 
-public class PendingTestTests extends AbstractTest {
+public class PendingTestTests {
     @Test
     public void supportPendingTest() {
 
         //Given
         Reporter reporter = mock(Reporter.class);
-        {
+        TestBlock rootBlock = defineTests(() -> {
             describe("support pending tests", () -> {
                 when("the 'when' block is run", () -> {
                     it("runs the first test, which passes", () -> {
@@ -43,13 +44,13 @@ public class PendingTestTests extends AbstractTest {
                     });
                 });
             });
-        }
+        });
 
         //When
-        runTests(reporter);
+        runTests(rootBlock, reporter);
 
         //Then
         verify(reporter, times(2)).testPass(any());
-        verify(reporter).testPending(findTest("marks the second test as pending"));
+        verify(reporter).testPending(findTest(rootBlock, "marks the second test as pending"));
     }
 }

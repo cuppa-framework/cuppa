@@ -19,34 +19,37 @@ package org.forgerock.cuppa;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.forgerock.cuppa.Cuppa.*;
-import static org.forgerock.cuppa.Cuppa.when;
-import static org.forgerock.cuppa.ModelFinder.findTest;
+import static org.forgerock.cuppa.TestCuppaSupport.*;
 import static org.mockito.Mockito.*;
 
 import java.util.Arrays;
 import java.util.stream.Stream;
 
 import org.forgerock.cuppa.functions.TestFunction;
+import org.forgerock.cuppa.model.TestBlock;
 import org.forgerock.cuppa.reporters.Reporter;
 import org.mockito.ArgumentCaptor;
 import org.testng.annotations.Test;
 
-public class BasicApiTests extends AbstractTest {
+public class BasicApiTests {
+
+    private TestBlock testBlock;
+
     @Test
     public void basicApiUsageWithSingleTestBlock() throws Exception {
 
         //Given
         TestFunction testFunction = mock(TestFunction.class);
-        {
+        TestBlock rootBlock = defineTests(() -> {
             describe("basic API usage", () -> {
                 when("the 'when' is run", () -> {
                     it("runs the test", testFunction);
                 });
             });
-        }
+        });
 
         //When
-        runTests(mock(Reporter.class));
+        runTests(rootBlock, mock(Reporter.class));
 
         //Then
         verify(testFunction).apply();
@@ -60,7 +63,7 @@ public class BasicApiTests extends AbstractTest {
                 .limit(8)
                 .toArray(TestFunction[]::new);
 
-        {
+        TestBlock rootBlock = defineTests(() -> {
             describe("basic API usage with multiple blocks", () -> {
                 when("the first 'when' block is run", () -> {
                     it("runs the first test", testFunctions[0]);
@@ -81,10 +84,10 @@ public class BasicApiTests extends AbstractTest {
                     it("runs the eighth test", testFunctions[7]);
                 });
             });
-        }
+        });
 
         //When
-        runTests(mock(Reporter.class));
+        runTests(rootBlock, mock(Reporter.class));
 
         //Then
         Arrays.stream(testFunctions).forEach((f) -> {
@@ -100,7 +103,7 @@ public class BasicApiTests extends AbstractTest {
 
         //Given
         TestFunction testFunction = mock(TestFunction.class);
-        {
+        TestBlock rootBlock = defineTests(() -> {
             describe("basic API usage", () -> {
                 describe("nested describe", () -> {
                     when("the 'when' block is run", () -> {
@@ -108,10 +111,10 @@ public class BasicApiTests extends AbstractTest {
                     });
                 });
             });
-        }
+        });
 
         //When
-        runTests(mock(Reporter.class));
+        runTests(rootBlock, mock(Reporter.class));
 
         //Then
         verify(testFunction).apply();
@@ -122,7 +125,7 @@ public class BasicApiTests extends AbstractTest {
 
         //Given
         TestFunction testFunction = mock(TestFunction.class);
-        {
+        TestBlock rootBlock = defineTests(() -> {
             describe("basic API usage", () -> {
                 when("the top level 'when' block is run", () -> {
                     when("the nested 'when' block is run", () -> {
@@ -130,10 +133,10 @@ public class BasicApiTests extends AbstractTest {
                     });
                 });
             });
-        }
+        });
 
         //When
-        runTests(mock(Reporter.class));
+        runTests(rootBlock, mock(Reporter.class));
 
         //Then
         verify(testFunction).apply();
@@ -146,7 +149,7 @@ public class BasicApiTests extends AbstractTest {
         TestFunction testFunction = mock(TestFunction.class);
 
         //When/Then
-        assertThatThrownBy(() -> it("basic API usage", testFunction))
+        assertThatThrownBy(() -> defineTests(() -> it("basic API usage", testFunction)))
                 .isExactlyInstanceOf(CuppaException.class)
                 .hasMessage("'it' must be nested within a 'describe' or 'when' block");
         verify(testFunction, never()).apply();
@@ -157,7 +160,7 @@ public class BasicApiTests extends AbstractTest {
 
         //Given
         Reporter reporter = mock(Reporter.class);
-        {
+        TestBlock rootBlock = defineTests(() -> {
             describe("basic API usage", () -> {
                 when("the 'when' block is run", () -> {
                     it("runs the test, which errors", () -> {
@@ -166,14 +169,14 @@ public class BasicApiTests extends AbstractTest {
                     });
                 });
             });
-        }
+        });
 
         //When
-        runTests(reporter);
+        runTests(rootBlock, reporter);
 
         //Then
         ArgumentCaptor<Throwable> captor = ArgumentCaptor.forClass(Throwable.class);
-        verify(reporter).testFail(eq(findTest("runs the test, which errors")), captor.capture());
+        verify(reporter).testFail(eq(findTest(rootBlock, "runs the test, which errors")), captor.capture());
         assertThat(captor.getValue())
                 .isExactlyInstanceOf(CuppaException.class)
                 .hasMessage("'describe' may only be nested within a 'describe' or 'when' block");
@@ -184,7 +187,7 @@ public class BasicApiTests extends AbstractTest {
 
         //Given
         Reporter reporter = mock(Reporter.class);
-        {
+        TestBlock rootBlock = defineTests(() -> {
             describe("basic API usage", () -> {
                 when("the 'when' block is run", () -> {
                     it("runs the test, which errors", () -> {
@@ -193,25 +196,25 @@ public class BasicApiTests extends AbstractTest {
                     });
                 });
             });
-        }
+        });
 
         //When
-        runTests(reporter);
+        runTests(rootBlock, reporter);
 
         //Then
         ArgumentCaptor<Throwable> captor = ArgumentCaptor.forClass(Throwable.class);
-        verify(reporter).testFail(eq(findTest("runs the test, which errors")), captor.capture());
+        verify(reporter).testFail(eq(findTest(rootBlock, "runs the test, which errors")), captor.capture());
         assertThat(captor.getValue())
                 .isExactlyInstanceOf(CuppaException.class)
                 .hasMessage("'when' may only be nested within a 'describe' or 'when' block");
     }
 
     @Test
-    public void basicApiUsageShouldReportTestErrorWithTestNestedUnderItBlock() {
+    public void basicApiUsageShouldReportTestFailureWithTestNestedUnderItBlock() {
 
         //Given
         Reporter reporter = mock(Reporter.class);
-        {
+        TestBlock rootBlock = defineTests(() -> {
             describe("basic API usage", () -> {
                 when("the 'when' block is run", () -> {
                     it("runs the test, which errors", () -> {
@@ -220,14 +223,14 @@ public class BasicApiTests extends AbstractTest {
                     });
                 });
             });
-        }
+        });
 
         //When
-        runTests(reporter);
+        runTests(rootBlock, reporter);
 
         //Then
         ArgumentCaptor<Throwable> captor = ArgumentCaptor.forClass(Throwable.class);
-        verify(reporter).testFail(eq(findTest("runs the test, which errors")), captor.capture());
+        verify(reporter).testFail(eq(findTest(rootBlock, "runs the test, which errors")), captor.capture());
         assertThat(captor.getValue())
                 .isExactlyInstanceOf(CuppaException.class)
                 .hasMessage("'it' may only be nested within a 'describe' or 'when' block");
@@ -238,7 +241,7 @@ public class BasicApiTests extends AbstractTest {
 
         //Given
         Reporter reporter = mock(Reporter.class);
-        {
+        TestBlock rootBlock = defineTests(() -> {
             describe("basic API usage", () -> {
                 when("the 'when' is run", () -> {
                     it("runs the first test, which errors", () -> {
@@ -249,14 +252,14 @@ public class BasicApiTests extends AbstractTest {
                     });
                 });
             });
-        }
+        });
 
         //When
-        runTests(reporter);
+        runTests(rootBlock, reporter);
 
         //Then
-        verify(reporter).testFail(eq(findTest("runs the first test, which errors")), isA(Throwable.class));
-        verify(reporter).testPass(findTest("runs the second test, which passes"));
+        verify(reporter).testFail(eq(findTest(rootBlock, "runs the first test, which errors")), isA(Throwable.class));
+        verify(reporter).testPass(findTest(rootBlock, "runs the second test, which passes"));
     }
 
     @Test
@@ -265,7 +268,7 @@ public class BasicApiTests extends AbstractTest {
         //Given
         Reporter reporter = mock(Reporter.class);
         RuntimeException exception = new RuntimeException();
-        {
+        TestBlock rootBlock = defineTests(() -> {
             describe("basic API usage", () -> {
                 when("the 'when' block is run", () -> {
                     it("runs the test, which fails", () -> {
@@ -273,13 +276,13 @@ public class BasicApiTests extends AbstractTest {
                     });
                 });
             });
-        }
+        });
 
         //When
-        runTests(reporter);
+        runTests(rootBlock, reporter);
 
         //Then
-        verify(reporter).testFail(eq(findTest("runs the test, which fails")), eq(exception));
+        verify(reporter).testFail(eq(findTest(rootBlock, "runs the test, which fails")), eq(exception));
     }
 
     @Test
@@ -288,7 +291,7 @@ public class BasicApiTests extends AbstractTest {
         //Given
         Reporter reporter = mock(Reporter.class);
         RuntimeException exception = new RuntimeException();
-        {
+        TestBlock rootBlock = defineTests(() -> {
             describe("basic API usage", () -> {
                 when("the 'when' block is run", () -> {
                     it("runs the first test, which fails", () -> {
@@ -297,14 +300,14 @@ public class BasicApiTests extends AbstractTest {
                     it("runs the second test, which passes", TestFunction.identity());
                 });
             });
-        }
+        });
 
         //When
-        runTests(reporter);
+        runTests(rootBlock, reporter);
 
         //Then
-        verify(reporter).testFail(eq(findTest("runs the first test, which fails")), any(Throwable.class));
-        verify(reporter).testPass(findTest("runs the second test, which passes"));
+        verify(reporter).testFail(eq(findTest(rootBlock, "runs the first test, which fails")), any(Throwable.class));
+        verify(reporter).testPass(findTest(rootBlock, "runs the second test, which passes"));
     }
 
     @Test
@@ -313,7 +316,7 @@ public class BasicApiTests extends AbstractTest {
         //Given
         Reporter reporter = mock(Reporter.class);
         Exception exception = new Exception();
-        {
+        TestBlock rootBlock = defineTests(() -> {
             describe("basic API usage", () -> {
                 when("the 'when' is run", () -> {
                     it("runs the test", () -> {
@@ -321,12 +324,43 @@ public class BasicApiTests extends AbstractTest {
                     });
                 });
             });
-        }
+        });
 
         //When
-        runTests(reporter);
+        runTests(rootBlock, reporter);
 
         //Then
-        verify(reporter).testFail(findTest("runs the test"), exception);
+        verify(reporter).testFail(findTest(rootBlock, "runs the test"), exception);
+    }
+
+    @Test
+    public void shouldThrowWhenCallingCuppaMethodsOutsideOfTestDefinitionContext() {
+        assertThatThrownBy(() -> {
+            describe("something", () -> {
+            });
+        }).isExactlyInstanceOf(CuppaException.class).hasMessage("Attempted to defined Cuppa tests from outside of"
+                + " Cuppa's control. Is something else instantiating your test class?");
+    }
+
+    /**
+     * This test ensures that Cuppa can be tested by tests written in Cuppa.
+     */
+    @Test
+    public void shouldAllowNestedTestDefinitions() {
+        TestBlock rootBlock = defineTests(() -> {
+            describe("basic API usage", () -> {
+                when("testing cuppa from cuppa tests", () -> {
+                    it("does not throw", () -> {
+                        testBlock = defineTests(() -> {
+                            describe("Cuppa", () -> {
+                                it("keeps the tests segregated");
+                            });
+                        });
+                    });
+                });
+            });
+        });
+        runTests(rootBlock, mock(Reporter.class));
+        assertThat(testBlock).isNotNull();
     }
 }

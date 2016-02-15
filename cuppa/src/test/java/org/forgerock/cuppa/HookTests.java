@@ -17,24 +17,27 @@
 package org.forgerock.cuppa;
 
 import static org.forgerock.cuppa.Cuppa.*;
+import static org.forgerock.cuppa.TestCuppaSupport.defineTests;
+import static org.forgerock.cuppa.TestCuppaSupport.runTests;
 import static org.mockito.Mockito.*;
 
 import java.util.Arrays;
 
 import org.forgerock.cuppa.functions.HookFunction;
 import org.forgerock.cuppa.functions.TestFunction;
+import org.forgerock.cuppa.model.TestBlock;
 import org.forgerock.cuppa.reporters.Reporter;
 import org.mockito.InOrder;
 import org.testng.annotations.Test;
 
-public class HookTests extends AbstractTest {
+public class HookTests {
     @Test
     public void beforeShouldRunOnceBeforeTests() throws Exception {
 
         //Given
         HookFunction topLevelBeforeFunction = mock(HookFunction.class);
         HookFunction nestedBeforeFunction = mock(HookFunction.class);
-        {
+        TestBlock rootBlock = defineTests(() -> {
             describe("before blocks", () -> {
                 before("running any tests", topLevelBeforeFunction);
                 when("the first 'when' block is run", () -> {
@@ -49,10 +52,10 @@ public class HookTests extends AbstractTest {
                     });
                 });
             });
-        }
+        });
 
         //When
-        runTests(mock(Reporter.class));
+        runTests(rootBlock, mock(Reporter.class));
 
         //Then
         verify(topLevelBeforeFunction).apply();
@@ -65,17 +68,17 @@ public class HookTests extends AbstractTest {
         //Given
         HookFunction firstBeforeFunction = mock(HookFunction.class);
         HookFunction secondBeforeFunction = mock(HookFunction.class);
-        {
+        TestBlock rootBlock = defineTests(() -> {
             describe("before blocks", () -> {
                 before(firstBeforeFunction);
                 before(secondBeforeFunction);
                 it("runs the third test", () -> {
                 });
             });
-        }
+        });
 
         //When
-        runTests(mock(Reporter.class));
+        runTests(rootBlock, mock(Reporter.class));
 
         //Then
         verifiedCalledInOrder(firstBeforeFunction, secondBeforeFunction);
@@ -87,7 +90,7 @@ public class HookTests extends AbstractTest {
         //Given
         HookFunction topLevelAfterFunction = mock(HookFunction.class);
         HookFunction nestedAfterFunction = mock(HookFunction.class);
-        {
+        TestBlock rootBlock = defineTests(() -> {
             describe("after blocks", () -> {
                 after("running any tests", topLevelAfterFunction);
                 when("the first 'when' block is run", () -> {
@@ -102,10 +105,10 @@ public class HookTests extends AbstractTest {
                     });
                 });
             });
-        }
+        });
 
         //When
-        runTests(mock(Reporter.class));
+        runTests(rootBlock, mock(Reporter.class));
 
         //Then
         verify(topLevelAfterFunction).apply();
@@ -118,17 +121,17 @@ public class HookTests extends AbstractTest {
         //Given
         HookFunction firstAfterFunction = mock(HookFunction.class);
         HookFunction secondAfterFunction = mock(HookFunction.class);
-        {
+        TestBlock rootBlock = defineTests(() -> {
             describe("before blocks", () -> {
                 after(firstAfterFunction);
                 after(secondAfterFunction);
                 it("runs the third test", () -> {
                 });
             });
-        }
+        });
 
         //When
-        runTests(mock(Reporter.class));
+        runTests(rootBlock, mock(Reporter.class));
 
         //Then
         verifiedCalledInOrder(firstAfterFunction, secondAfterFunction);
@@ -140,7 +143,7 @@ public class HookTests extends AbstractTest {
         //Given
         HookFunction topLevelBeforeEachFunction = mock(HookFunction.class);
         HookFunction nestedBeforeEachFunction = mock(HookFunction.class);
-        {
+        TestBlock rootBlock = defineTests(() -> {
             describe("beforeEach blocks", () -> {
                 beforeEach("running each test", topLevelBeforeEachFunction);
                 when("the first 'when' block is run", () -> {
@@ -155,10 +158,10 @@ public class HookTests extends AbstractTest {
                     });
                 });
             });
-        }
+        });
 
         //When
-        runTests(mock(Reporter.class));
+        runTests(rootBlock, mock(Reporter.class));
 
         //Then
         verify(topLevelBeforeEachFunction, times(3)).apply();
@@ -171,17 +174,17 @@ public class HookTests extends AbstractTest {
         //Given
         HookFunction firstBeforeEachFunction = mock(HookFunction.class);
         HookFunction secondBeforeEachFunction = mock(HookFunction.class);
-        {
+        TestBlock rootBlock = defineTests(() -> {
             describe("before blocks", () -> {
                 beforeEach(firstBeforeEachFunction);
                 beforeEach(secondBeforeEachFunction);
                 it("runs the third test", () -> {
                 });
             });
-        }
+        });
 
         //When
-        runTests(mock(Reporter.class));
+        runTests(rootBlock, mock(Reporter.class));
 
         //Then
         verifiedCalledInOrder(firstBeforeEachFunction, secondBeforeEachFunction);
@@ -193,7 +196,7 @@ public class HookTests extends AbstractTest {
         //Given
         HookFunction topLevelAfterEachFunction = mock(HookFunction.class);
         HookFunction nestedAfterEachFunction = mock(HookFunction.class);
-        {
+        TestBlock rootBlock = defineTests(() -> {
             describe("afterEach blocks", () -> {
                 afterEach("running each test", topLevelAfterEachFunction);
                 when("the first 'when' block is run", () -> {
@@ -208,10 +211,10 @@ public class HookTests extends AbstractTest {
                     });
                 });
             });
-        }
+        });
 
         //When
-        runTests(mock(Reporter.class));
+        runTests(rootBlock, mock(Reporter.class));
 
         //Then
         verify(topLevelAfterEachFunction, times(3)).apply();
@@ -224,17 +227,17 @@ public class HookTests extends AbstractTest {
         //Given
         HookFunction firstAfterEachFunction = mock(HookFunction.class);
         HookFunction secondAfterEachFunction = mock(HookFunction.class);
-        {
+        TestBlock rootBlock = defineTests(() -> {
             describe("before blocks", () -> {
                 afterEach(firstAfterEachFunction);
                 afterEach(secondAfterEachFunction);
                 it("runs the third test", () -> {
                 });
             });
-        }
+        });
 
         //When
-        runTests(mock(Reporter.class));
+        runTests(rootBlock, mock(Reporter.class));
 
         //Then
         verifiedCalledInOrder(firstAfterEachFunction, secondAfterEachFunction);
@@ -255,7 +258,7 @@ public class HookTests extends AbstractTest {
         TestFunction testFunction = mock(TestFunction.class, "testFunction");
         TestFunction nestedTestFunction = mock(TestFunction.class, "nestedTestFunction");
 
-        {
+        TestBlock rootBlock = defineTests(() -> {
             describe("before blocks", () -> {
                 before(topLevelBeforeFunction);
                 beforeEach(topLevelBeforeEachFunction);
@@ -270,10 +273,10 @@ public class HookTests extends AbstractTest {
                     it("doesn't run the test nested", nestedTestFunction);
                 });
             });
-        }
+        });
 
         //When
-        runTests(mock(Reporter.class));
+        runTests(rootBlock, mock(Reporter.class));
 
         //Then
         InOrder inOrder = inOrder(topLevelBeforeFunction, topLevelBeforeEachFunction, testFunction,

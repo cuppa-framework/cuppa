@@ -19,11 +19,14 @@ package org.forgerock.cuppa;
 import static org.forgerock.cuppa.model.HookType.*;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ServiceLoader;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import org.forgerock.cuppa.functions.TestFunction;
 import org.forgerock.cuppa.internal.EmptyTestBlockFilter;
@@ -33,6 +36,7 @@ import org.forgerock.cuppa.internal.TagTestBlockFilter;
 import org.forgerock.cuppa.internal.TestContainer;
 import org.forgerock.cuppa.model.Behaviour;
 import org.forgerock.cuppa.model.Hook;
+import org.forgerock.cuppa.model.Options;
 import org.forgerock.cuppa.model.Tags;
 import org.forgerock.cuppa.model.TestBlock;
 import org.forgerock.cuppa.reporters.Reporter;
@@ -43,49 +47,53 @@ import org.forgerock.cuppa.reporters.Reporter;
 public final class Runner {
     private static final ServiceLoader<ConfigurationProvider> CONFIGURATION_PROVIDER_LOADER
             = ServiceLoader.load(ConfigurationProvider.class);
+    private static final TestBlock EMPTY_TEST_BLOCK = new TestBlock(Behaviour.NORMAL, Cuppa.class, "",
+            Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), new Options());
 
     private final List<Function<TestBlock, TestBlock>> coreTestTransforms;
     private final Configuration configuration;
 
     /**
-     * Creates a new runner.
+     * Creates a new runner with no run tags and a configuration loaded from the classpath.
      */
     public Runner() {
         this(Tags.EMPTY_TAGS);
     }
 
     /**
-     * Creates a new runner with the given run tags.
+     * Creates a new runner with the given run tags and a configuration loaded from the classpath.
      *
      * @param runTags Tags to filter the tests on.
      */
     public Runner(Tags runTags) {
-        configuration = getConfiguration();
-        coreTestTransforms = Arrays.asList(new OnlyTestBlockFilter(), new TagTestBlockFilter(runTags),
-                new EmptyTestBlockFilter());
+        this(runTags, getConfiguration());
     }
 
     /**
-     * Runs the tests in the provided test classes, using the provided reporter.
+     * Creates a new runner with the given run tags and configuration.
+     *
+     * @param runTags Tags to filter the tests on.
+     * @param configuration Cuppa configuration to control the behaviour of the runner.
+     */
+    public Runner(Tags runTags, Configuration configuration) {
+        coreTestTransforms = Arrays.asList(new OnlyTestBlockFilter(), new TagTestBlockFilter(runTags),
+                new EmptyTestBlockFilter());
+        this.configuration = configuration;
+    }
+
+    /**
+     * Runs the tests contained in the provided test block and any nested test blocks, using the provided reporter.
      *
      * @param rootBlock The root test block that contains all tests to be run.
      * @param reporter The reporter to use to report test results.
      */
     public void run(TestBlock rootBlock, Reporter reporter) {
-        run(rootBlock, reporter, configuration);
-    }
-
-    // Visible for testing
-    void run(TestBlock rootBlock, Reporter reporter, Configuration configuration) {
-        TestContainer.INSTANCE.setRunningTests(true);
-        try {
+        TestContainer.INSTANCE.runTests(() -> {
             reporter.start();
             TestBlock transformedRootBlock = transformTests(rootBlock, configuration.testTransforms);
             runTests(transformedRootBlock, transformedRootBlock.behaviour, reporter, TestFunction::apply);
             reporter.end();
-        } finally {
-            TestContainer.INSTANCE.setRunningTests(false);
-        }
+        });
     }
 
     /**
@@ -99,20 +107,26 @@ public final class Runner {
     }
 
     private TestBlock defineTests(Iterable<Class<?>> testClasses, TestInstantiator testInstantiator) {
-        for (Class<?> testClass : testClasses) {
-            try {
-                TestContainer.INSTANCE.setTestClass(testClass);
-                testInstantiator.instantiate(testClass);
-            } catch (CuppaException e) {
-                throw e;
-            } catch (Exception e) {
-                throw new CuppaException("Failed to instantiate test class", e);
-            }
-        }
-        return TestContainer.INSTANCE.getRootTestBlock();
+        return StreamSupport.stream(testClasses.spliterator(), false)
+                .map(c -> TestContainer.INSTANCE.defineTests(c, () -> {
+                    try {
+                        testInstantiator.instantiate(c);
+                    } catch (CuppaException e) {
+                        throw e;
+                    } catch (Exception e) {
+                        throw new IllegalStateException("Failed to instantiate test class", e);
+                    }
+                }))
+                .reduce(EMPTY_TEST_BLOCK, this::mergeRootTestBlocks);
     }
 
-    private Configuration getConfiguration() {
+    private TestBlock mergeRootTestBlocks(TestBlock testBlock1, TestBlock testBlock2) {
+        return new TestBlock(Behaviour.NORMAL, Cuppa.class, "", Stream.concat(testBlock1.testBlocks.stream(),
+                testBlock2.testBlocks.stream()).collect(Collectors.toList()), Collections.emptyList(),
+                Collections.emptyList(), new Options());
+    }
+
+    private static Configuration getConfiguration() {
         Configuration configuration = new Configuration();
         Iterator<ConfigurationProvider> iterator = CONFIGURATION_PROVIDER_LOADER.iterator();
         if (iterator.hasNext()) {

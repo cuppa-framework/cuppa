@@ -24,25 +24,17 @@ import java.util.List;
 
 import org.assertj.core.api.Assertions;
 import org.forgerock.cuppa.functions.TestFunction;
-import org.forgerock.cuppa.internal.TestContainer;
 import org.junit.runner.Description;
 import org.junit.runner.JUnitCore;
 import org.junit.runner.Result;
 import org.junit.runner.RunWith;
 import org.junit.runner.notification.Failure;
 import org.junit.runner.notification.RunListener;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 public class CuppaRunnerTest {
 
     Description suiteDescription;
-
-    @BeforeMethod
-    public void setup() {
-        TestContainer.INSTANCE.reset();
-        TestContainer.INSTANCE.setTestClass(CuppaRunnerTest.class);
-    }
 
     @Test
     public void shouldReportPassingTest() {

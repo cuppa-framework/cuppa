@@ -19,8 +19,7 @@ package org.forgerock.cuppa;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.forgerock.cuppa.Cuppa.*;
-import static org.forgerock.cuppa.ModelFinder.findHook;
-import static org.forgerock.cuppa.ModelFinder.findTest;
+import static org.forgerock.cuppa.TestCuppaSupport.*;
 import static org.mockito.Mockito.*;
 
 import java.util.HashMap;
@@ -31,12 +30,13 @@ import java.util.function.BiConsumer;
 import org.forgerock.cuppa.functions.HookFunction;
 import org.forgerock.cuppa.functions.TestBlockFunction;
 import org.forgerock.cuppa.functions.TestFunction;
+import org.forgerock.cuppa.model.TestBlock;
 import org.forgerock.cuppa.reporters.Reporter;
 import org.mockito.ArgumentCaptor;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
-public class HookExceptionTests extends AbstractTest {
+public class HookExceptionTests {
 
     private static final Map<String, BiConsumer<String, HookFunction>> ALL_HOOKS =
             new HashMap<String, BiConsumer<String, HookFunction>>() {
@@ -56,7 +56,7 @@ public class HookExceptionTests extends AbstractTest {
         HookFunction beforeFunction = mock(HookFunction.class, "beforeFunction");
         RuntimeException exception = new RuntimeException("Before failed");
         doThrow(exception).when(beforeFunction).apply();
-        {
+        TestBlock rootBlock = defineTests(() -> {
             describe("before blocks", () -> {
                 before("hook", beforeFunction);
                 it("a test", () -> {
@@ -64,13 +64,13 @@ public class HookExceptionTests extends AbstractTest {
                 it("a second test", () -> {
                 });
             });
-        }
+        });
 
         //When
-        runTests(reporter);
+        runTests(rootBlock, reporter);
 
         //Then
-        verify(reporter).hookError(findHook("hook"), exception);
+        verify(reporter).hookError(findHook(rootBlock, "hook"), exception);
     }
 
     @Test
@@ -82,17 +82,17 @@ public class HookExceptionTests extends AbstractTest {
 
         doThrow(new RuntimeException("Before failed")).when(beforeFunction).apply();
 
-        {
+        TestBlock rootBlock = defineTests(() -> {
             describe("before blocks", () -> {
                 before(beforeFunction);
                 after(afterFunction);
                 it("a test", () -> {
                 });
             });
-        }
+        });
 
         //When
-        runTests(mock(Reporter.class));
+        runTests(rootBlock, mock(Reporter.class));
 
         //Then
         verify(afterFunction).apply();
@@ -107,17 +107,17 @@ public class HookExceptionTests extends AbstractTest {
 
         doThrow(new RuntimeException("Before failed")).when(beforeFunction).apply();
 
-        {
+        TestBlock rootBlock = defineTests(() -> {
             describe("before blocks", () -> {
                 before(beforeFunction);
                 beforeEach(beforeEachFunction);
                 it("a test", () -> {
                 });
             });
-        }
+        });
 
         //When
-        runTests(mock(Reporter.class));
+        runTests(rootBlock, mock(Reporter.class));
 
         //Then
         verify(beforeEachFunction, never()).apply();
@@ -132,17 +132,17 @@ public class HookExceptionTests extends AbstractTest {
 
         doThrow(new RuntimeException("Before failed")).when(beforeFunction).apply();
 
-        {
+        TestBlock rootBlock = defineTests(() -> {
             describe("before blocks", () -> {
                 before(beforeFunction);
                 afterEach(afterEachFunction);
                 it("a test", () -> {
                 });
             });
-        }
+        });
 
         //When
-        runTests(mock(Reporter.class));
+        runTests(rootBlock, mock(Reporter.class));
 
         //Then
         verify(afterEachFunction, never()).apply();
@@ -157,15 +157,15 @@ public class HookExceptionTests extends AbstractTest {
 
         doThrow(new RuntimeException("Before failed")).when(beforeFunction).apply();
 
-        {
+        TestBlock rootBlock = defineTests(() -> {
             describe("before blocks", () -> {
                 before(beforeFunction);
                 it("a test", testFunction);
             });
-        }
+        });
 
         //When
-        runTests(mock(Reporter.class));
+        runTests(rootBlock, mock(Reporter.class));
 
         //Then
         verify(testFunction, never()).apply();
@@ -184,7 +184,7 @@ public class HookExceptionTests extends AbstractTest {
 
         doThrow(new RuntimeException("Before failed")).when(topLevelBeforeFunction).apply();
 
-        {
+        TestBlock rootBlock = defineTests(() -> {
             describe("before blocks", () -> {
                 before(topLevelBeforeFunction);
                 when("the first 'before' block throws an exception", () -> {
@@ -195,10 +195,10 @@ public class HookExceptionTests extends AbstractTest {
                     it("doesn't run the test nested", nestedTestFunction);
                 });
             });
-        }
+        });
 
         //When
-        runTests(mock(Reporter.class));
+        runTests(rootBlock, mock(Reporter.class));
 
         //Then
         verify(nestedBeforeFunction, never()).apply();
@@ -216,7 +216,7 @@ public class HookExceptionTests extends AbstractTest {
         HookFunction beforeEachFunction = mock(HookFunction.class, "beforeEachFunction");
         RuntimeException exception = new RuntimeException("beforeEach failed");
         doThrow(exception).when(beforeEachFunction).apply();
-        {
+        TestBlock rootBlock = defineTests(() -> {
             describe("beforeEach blocks", () -> {
                 beforeEach("hook", beforeEachFunction);
                 it("a test", () -> {
@@ -224,13 +224,13 @@ public class HookExceptionTests extends AbstractTest {
                 it("a second test", () -> {
                 });
             });
-        }
+        });
 
         //When
-        runTests(reporter);
+        runTests(rootBlock, reporter);
 
         //Then
-        verify(reporter).hookError(findHook("hook"), exception);
+        verify(reporter).hookError(findHook(rootBlock, "hook"), exception);
     }
 
     @Test
@@ -242,17 +242,17 @@ public class HookExceptionTests extends AbstractTest {
 
         doThrow(new RuntimeException("Before each failed")).when(beforeEachFunction).apply();
 
-        {
+        TestBlock rootBlock = defineTests(() -> {
             describe("beforeEach blocks", () -> {
                 beforeEach(beforeEachFunction);
                 after(afterFunction);
                 it("a test", () -> {
                 });
             });
-        }
+        });
 
         //When
-        runTests(mock(Reporter.class));
+        runTests(rootBlock, mock(Reporter.class));
 
         //Then
         verify(afterFunction).apply();
@@ -267,17 +267,17 @@ public class HookExceptionTests extends AbstractTest {
 
         doThrow(new RuntimeException("Before each failed")).when(beforeEachFunction).apply();
 
-        {
+        TestBlock rootBlock = defineTests(() -> {
             describe("beforeEach blocks", () -> {
                 beforeEach(beforeEachFunction);
                 afterEach(afterEachFunction);
                 it("a test", () -> {
                 });
             });
-        }
+        });
 
         //When
-        runTests(mock(Reporter.class));
+        runTests(rootBlock, mock(Reporter.class));
 
         //Then
         verify(afterEachFunction).apply();
@@ -293,16 +293,16 @@ public class HookExceptionTests extends AbstractTest {
 
         doThrow(new RuntimeException("Before each failed")).when(beforeEachFunction).apply();
 
-        {
+        TestBlock rootBlock = defineTests(() -> {
             describe("beforeEach blocks", () -> {
                 beforeEach(beforeEachFunction);
                 it("a test", testFunction1);
                 it("a second test", testFunction2);
             });
-        }
+        });
 
         //When
-        runTests(mock(Reporter.class));
+        runTests(rootBlock, mock(Reporter.class));
 
         //Then
         verify(testFunction1, never()).apply();
@@ -320,7 +320,7 @@ public class HookExceptionTests extends AbstractTest {
 
         doThrow(new RuntimeException("Before each failed")).when(topLevelBeforeEachFunction).apply();
 
-        {
+        TestBlock rootBlock = defineTests(() -> {
             describe("beforeEach blocks", () -> {
                 beforeEach(topLevelBeforeEachFunction);
                 when("nested block", () -> {
@@ -329,10 +329,10 @@ public class HookExceptionTests extends AbstractTest {
                     it("doesn't run the test nested", nestedTestFunction);
                 });
             });
-        }
+        });
 
         //When
-        runTests(mock(Reporter.class));
+        runTests(rootBlock, mock(Reporter.class));
 
         //Then
         verify(nestedBeforeEachFunction, never()).apply();
@@ -350,7 +350,7 @@ public class HookExceptionTests extends AbstractTest {
 
         doThrow(new RuntimeException("Before each failed")).when(topLevelBeforeEachFunction).apply();
 
-        {
+        TestBlock rootBlock = defineTests(() -> {
             describe("beforeEach blocks", () -> {
                 beforeEach(topLevelBeforeEachFunction);
                 when("nested block", () -> {
@@ -360,10 +360,10 @@ public class HookExceptionTests extends AbstractTest {
                     });
                 });
             });
-        }
+        });
 
         //When
-        runTests(mock(Reporter.class));
+        runTests(rootBlock, mock(Reporter.class));
 
         //Then
         verify(nestedBeforeFunction).apply();
@@ -379,7 +379,7 @@ public class HookExceptionTests extends AbstractTest {
 
         doThrow(new RuntimeException("Before each failed")).when(topLevelBeforeEachFunction).apply();
 
-        {
+        TestBlock rootBlock = defineTests(() -> {
             describe("beforeEach blocks", () -> {
                 beforeEach(topLevelBeforeEachFunction);
                 when("nested block", () -> {
@@ -392,10 +392,10 @@ public class HookExceptionTests extends AbstractTest {
                     });
                 });
             });
-        }
+        });
 
         //When
-        runTests(mock(Reporter.class));
+        runTests(rootBlock, mock(Reporter.class));
 
         //Then
         verify(nestedBeforeFunction, never()).apply();
@@ -410,7 +410,7 @@ public class HookExceptionTests extends AbstractTest {
 
         doThrow(new RuntimeException("Before each failed")).when(topLevelBeforeEachFunction).apply();
 
-        {
+        TestBlock rootBlock = defineTests(() -> {
             describe("beforeEach blocks", () -> {
                 when("nested block", () -> {
                     beforeEach(topLevelBeforeEachFunction);
@@ -425,10 +425,10 @@ public class HookExceptionTests extends AbstractTest {
                     });
                 });
             });
-        }
+        });
 
         //When
-        runTests(mock(Reporter.class));
+        runTests(rootBlock, mock(Reporter.class));
 
         //Then
         verify(nestedBeforeFunction).apply();
@@ -442,18 +442,18 @@ public class HookExceptionTests extends AbstractTest {
         HookFunction beforeFunction = mock(HookFunction.class, "beforeFunction");
         RuntimeException exception = new RuntimeException("before failed");
         doThrow(exception).when(beforeFunction).apply();
-        {
+        TestBlock rootBlock = defineTests(() -> {
             describe("before blocks", () -> {
                 before("hook", beforeFunction);
                 it("does not run the first test", TestFunction.identity());
             });
-        }
+        });
 
         //When
-        runTests(reporter);
+        runTests(rootBlock, reporter);
 
         //Then
-        verify(reporter).hookError(findHook("hook"), exception);
+        verify(reporter).hookError(findHook(rootBlock, "hook"), exception);
         verify(reporter, never()).testFail(any(), any());
         verify(reporter, never()).testPass(any());
     }
@@ -466,18 +466,18 @@ public class HookExceptionTests extends AbstractTest {
         HookFunction afterFunction = mock(HookFunction.class, "afterFunction");
         RuntimeException exception = new RuntimeException("after failed");
         doThrow(exception).when(afterFunction).apply();
-        {
+        TestBlock rootBlock = defineTests(() -> {
             describe("after blocks", () -> {
                 after("hook", afterFunction);
                 it("runs the first test", TestFunction.identity());
             });
-        }
+        });
 
         //When
-        runTests(reporter);
+        runTests(rootBlock, reporter);
 
         //Then
-        verify(reporter).hookError(findHook("hook"), exception);
+        verify(reporter).hookError(findHook(rootBlock, "hook"), exception);
     }
 
     @Test
@@ -488,18 +488,18 @@ public class HookExceptionTests extends AbstractTest {
         HookFunction beforeEachFunction = mock(HookFunction.class, "beforeEachFunction");
         RuntimeException exception = new RuntimeException("beforeEach failed");
         doThrow(exception).when(beforeEachFunction).apply();
-        {
+        TestBlock rootBlock = defineTests(() -> {
             describe("beforeEach blocks", () -> {
                 beforeEach("hook", beforeEachFunction);
                 it("does not run the test", TestFunction.identity());
             });
-        }
+        });
 
         //When
-        runTests(reporter);
+        runTests(rootBlock, reporter);
 
         //Then
-        verify(reporter).hookError(findHook("hook"), exception);
+        verify(reporter).hookError(findHook(rootBlock, "hook"), exception);
         verify(reporter, never()).testFail(any(), any());
         verify(reporter, never()).testPass(any());
     }
@@ -512,18 +512,18 @@ public class HookExceptionTests extends AbstractTest {
         HookFunction afterEachFunction = mock(HookFunction.class, "afterEachFunction");
         RuntimeException exception = new RuntimeException("afterEach failed");
         doThrow(exception).when(afterEachFunction).apply();
-        {
+        TestBlock rootBlock = defineTests(() -> {
             describe("afterEach blocks", () -> {
                 afterEach("hook", afterEachFunction);
                 it("runs the first test", TestFunction.identity());
             });
-        }
+        });
 
         //When
-        runTests(reporter);
+        runTests(rootBlock, reporter);
 
         //Then
-        verify(reporter).hookError(findHook("hook"), exception);
+        verify(reporter).hookError(findHook(rootBlock, "hook"), exception);
     }
 
     @Test
@@ -537,20 +537,20 @@ public class HookExceptionTests extends AbstractTest {
         HookFunction afterEachFunction = mock(HookFunction.class, "afterEachFunction");
         RuntimeException afterEachException = new RuntimeException("afterEach failed");
         doThrow(afterEachException).when(afterEachFunction).apply();
-        {
+        TestBlock rootBlock = defineTests(() -> {
             describe("afterEach blocks", () -> {
                 beforeEach("beforeEach", beforeEachFunction);
                 afterEach("afterEach", afterEachFunction);
                 it("runs the first test", TestFunction.identity());
             });
-        }
+        });
 
         //When
-        runTests(reporter);
+        runTests(rootBlock, reporter);
 
         //Then
-        verify(reporter).hookError(findHook("beforeEach"), beforeEachException);
-        verify(reporter).hookError(findHook("afterEach"), afterEachException);
+        verify(reporter).hookError(findHook(rootBlock, "beforeEach"), beforeEachException);
+        verify(reporter).hookError(findHook(rootBlock, "afterEach"), afterEachException);
         verify(reporter, times(2)).hookError(any(), any());
         verify(reporter, never()).testFail(any(), any());
         verify(reporter, never()).testPass(any());
@@ -566,16 +566,16 @@ public class HookExceptionTests extends AbstractTest {
 
         doThrow(new RuntimeException("After each failed")).when(afterEachFunction).apply();
 
-        {
+        TestBlock rootBlock = defineTests(() -> {
             describe("afterEach blocks", () -> {
                 afterEach(afterEachFunction);
                 it("runs the first test", testFunction1);
                 it("doesn't run the second test", testFunction2);
             });
-        }
+        });
 
         //When
-        runTests(mock(Reporter.class));
+        runTests(rootBlock, mock(Reporter.class));
 
         //Then
         verify(testFunction2, never()).apply();
@@ -591,7 +591,7 @@ public class HookExceptionTests extends AbstractTest {
 
         doThrow(new RuntimeException("After each failed")).when(afterEachFunction).apply();
 
-        {
+        TestBlock rootBlock = defineTests(() -> {
             describe("afterEach blocks", () -> {
                 afterEach(afterEachFunction);
                 when("nested when", () -> {
@@ -601,10 +601,10 @@ public class HookExceptionTests extends AbstractTest {
                     it("doesn't run the second test", testFunction2);
                 });
             });
-        }
+        });
 
         //When
-        runTests(mock(Reporter.class));
+        runTests(rootBlock, mock(Reporter.class));
 
         //Then
         verify(testFunction2, never()).apply();
@@ -620,7 +620,7 @@ public class HookExceptionTests extends AbstractTest {
 
         doThrow(new RuntimeException("After each failed")).when(afterEachFunction).apply();
 
-        {
+        TestBlock rootBlock = defineTests(() -> {
             describe("afterEach blocks", () -> {
                 when("nested when", () -> {
                     afterEach(afterEachFunction);
@@ -630,10 +630,10 @@ public class HookExceptionTests extends AbstractTest {
                     it("runs the second test", testFunction2);
                 });
             });
-        }
+        });
 
         //When
-        runTests(mock(Reporter.class));
+        runTests(rootBlock, mock(Reporter.class));
 
         //Then
         verify(testFunction2).apply();
@@ -649,7 +649,7 @@ public class HookExceptionTests extends AbstractTest {
 
         doThrow(new RuntimeException("After failed")).when(afterFunction).apply();
 
-        {
+        TestBlock rootBlock = defineTests(() -> {
             describe("after blocks", () -> {
                 when("nested when", () -> {
                     after(afterFunction);
@@ -659,10 +659,10 @@ public class HookExceptionTests extends AbstractTest {
                     it("runs the second test", testFunction2);
                 });
             });
-        }
+        });
 
         //When
-        runTests(mock(Reporter.class));
+        runTests(rootBlock, mock(Reporter.class));
 
         //Then
         verify(testFunction2).apply();
@@ -682,22 +682,22 @@ public class HookExceptionTests extends AbstractTest {
 
         //Given
         Reporter reporter = mock(Reporter.class);
-        {
+        TestBlock rootBlock = defineTests(() -> {
             describe("tests in hook", () -> {
                 hookWithTest.apply();
                 it("does not run the test", TestFunction.identity());
             });
-        }
+        });
 
         //When
-        runTests(reporter);
+        runTests(rootBlock, reporter);
 
         //Then
         ArgumentCaptor<Throwable> captor = ArgumentCaptor.forClass(Throwable.class);
-        verify(reporter).hookError(eq(findHook("hook")), captor.capture());
+        verify(reporter).hookError(eq(findHook(rootBlock, "hook")), captor.capture());
         assertThat(captor.getValue())
                 .isExactlyInstanceOf(CuppaException.class)
-                .hasMessageMatching("'it' may only be nested within a 'describe' or 'when' block");
+                .hasMessage("'it' may only be nested within a 'describe' or 'when' block");
     }
 
     @DataProvider
@@ -705,38 +705,38 @@ public class HookExceptionTests extends AbstractTest {
         return ALL_HOOKS.entrySet().stream()
                 .map(e -> new Object[]{
                         e.getKey(),
-                        (TestFunction) () -> e.getValue().accept("hook", HookFunction.identity()),
+                        (Runnable) () -> e.getValue().accept("hook", HookFunction.identity()),
                 })
                 .iterator();
     }
 
     @Test(dataProvider = "hooks")
-    public void addingHookAtTopLevelShouldThrowException(String hookName, TestFunction hook) {
-        assertThatThrownBy(hook::apply)
+    public void addingHookAtTopLevelShouldThrowException(String hookName, Runnable hook) {
+        assertThatThrownBy(() -> defineTests(hook::run))
                 .isExactlyInstanceOf(CuppaException.class)
-                .hasMessageMatching("'" + hookName + "' must be nested within a 'describe' or 'when' block");
+                .hasMessage("'" + hookName + "' must be nested within a 'describe' or 'when' block");
     }
 
     @Test(dataProvider = "hooks")
-    public void addingHookInTestShouldThrowException(String hookName, TestFunction hook) {
+    public void addingHookInTestShouldThrowException(String hookName, Runnable hook) {
 
         //Given
         Reporter reporter = mock(Reporter.class);
-        {
+        TestBlock rootBlock = defineTests(() -> {
             describe("hook in test", () -> {
-                it("will cause the test to throw an error", hook);
+                it("will cause the test to throw an error", hook::run);
             });
-        }
+        });
 
         //When
-        runTests(reporter);
+        runTests(rootBlock, reporter);
 
         //Then
         ArgumentCaptor<Throwable> captor = ArgumentCaptor.forClass(Throwable.class);
-        verify(reporter).testFail(eq(findTest("will cause the test to throw an error")), captor.capture());
+        verify(reporter).testFail(eq(findTest(rootBlock, "will cause the test to throw an error")), captor.capture());
         assertThat(captor.getValue())
                 .isExactlyInstanceOf(CuppaException.class)
-                .hasMessageMatching("'" + hookName + "' may only be nested within a 'describe' or 'when' block");
+                .hasMessage("'" + hookName + "' may only be nested within a 'describe' or 'when' block");
     }
 
     @DataProvider
@@ -756,22 +756,22 @@ public class HookExceptionTests extends AbstractTest {
 
         //Given
         Reporter reporter = mock(Reporter.class);
-        {
+        TestBlock rootBlock = defineTests(() -> {
             describe("nested hook in hook", () -> {
                 nestedHook.apply();
                 it("does not run the test", TestFunction.identity());
             });
-        }
+        });
 
         //When
-        runTests(reporter);
+        runTests(rootBlock, reporter);
 
         //Then
         ArgumentCaptor<Throwable> captor = ArgumentCaptor.forClass(Throwable.class);
-        verify(reporter).hookError(eq(findHook("hook")), captor.capture());
+        verify(reporter).hookError(eq(findHook(rootBlock, "hook")), captor.capture());
         assertThat(captor.getValue())
                 .isExactlyInstanceOf(CuppaException.class)
-                .hasMessageMatching("'" + hookName + "' may only be nested within a 'describe' or 'when' block");
+                .hasMessage("'" + hookName + "' may only be nested within a 'describe' or 'when' block");
     }
 
     @DataProvider
@@ -789,18 +789,18 @@ public class HookExceptionTests extends AbstractTest {
 
         //Given
         Reporter reporter = mock(Reporter.class);
-        {
+        TestBlock rootBlock = defineTests(() -> {
             describe("before blocks", () -> {
                 hook.apply();
                 it("a test", TestFunction.identity());
             });
-        }
+        });
 
         //When
-        runTests(reporter);
+        runTests(rootBlock, reporter);
 
         //Then
-        verify(reporter).hookError(eq(findHook("hook")), isA(Exception.class));
+        verify(reporter).hookError(eq(findHook(rootBlock, "hook")), isA(Exception.class));
     }
 
     @DataProvider
@@ -818,17 +818,17 @@ public class HookExceptionTests extends AbstractTest {
 
         //Given
         Reporter reporter = mock(Reporter.class);
-        {
+        TestBlock rootBlock = defineTests(() -> {
             describe("before blocks", () -> {
                 hook.apply();
                 it("a test", TestFunction.identity());
             });
-        }
+        });
 
         //When
-        runTests(reporter);
+        runTests(rootBlock, reporter);
 
         //Then
-        verify(reporter).hookError(eq(findHook("hook")), isA(AssertionError.class));
+        verify(reporter).hookError(eq(findHook(rootBlock, "hook")), isA(AssertionError.class));
     }
 }

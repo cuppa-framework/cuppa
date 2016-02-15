@@ -25,7 +25,6 @@ import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.forgerock.cuppa.Cuppa;
 import org.forgerock.cuppa.CuppaException;
 import org.forgerock.cuppa.TestBuilder;
@@ -48,14 +47,7 @@ public enum TestContainer {
      */
     INSTANCE;
 
-    private TestBlockBuilder rootBuilder;
-    private Deque<TestBlockBuilder> stack;
-    private boolean runningTests;
-    private Class<?> testClass;
-
-    TestContainer() {
-        reset();
-    }
+    private final Deque<Context> contexts = new ArrayDeque<>();
 
     /**
      * Registers a described suite of tests to be run.
@@ -75,14 +67,14 @@ public enum TestContainer {
      * @param options The set of options applied to the test block.
      */
     void describe(Behaviour behaviour, String description, TestBlockFunction function, Options options) {
-        assertNotRunningTests("describe");
-        TestBlockBuilder testBlockBuilder = new TestBlockBuilder(behaviour, testClass, description, options);
-        stack.addLast(testBlockBuilder);
+        TestDefinitionContext context = assertIsInTestDefinitionContext("describe");
+        TestBlockBuilder testBlockBuilder = new TestBlockBuilder(behaviour, context.testClass, description, options);
+        context.stack.addLast(testBlockBuilder);
         try {
             function.apply();
         } finally {
-            stack.removeLast();
-            getCurrentDescribeBlock().addTestBlock(testBlockBuilder.build());
+            context.stack.removeLast();
+            context.getCurrentDescribeBlock().addTestBlock(testBlockBuilder.build());
         }
     }
 
@@ -93,7 +85,7 @@ public enum TestContainer {
      * @param function The 'when' block.
      */
     public void when(String description, TestBlockFunction function) {
-        assertNotRunningTests("when");
+        assertIsInTestDefinitionContext("when");
         new TestBuilderImpl().when(description, function);
     }
 
@@ -113,9 +105,9 @@ public enum TestContainer {
      * @param function The 'before' block.
      */
     public void before(String description, HookFunction function) {
-        assertNotRunningTests("before");
+        TestDefinitionContext context = assertIsInTestDefinitionContext("before");
         assertNotRootDescribeBlock("before");
-        getCurrentDescribeBlock().addBefore(Optional.ofNullable(description), function);
+        context.getCurrentDescribeBlock().addBefore(Optional.ofNullable(description), function);
     }
 
     /**
@@ -134,9 +126,9 @@ public enum TestContainer {
      * @param function The 'after' block.
      */
     public void after(String description, HookFunction function) {
-        assertNotRunningTests("after");
+        TestDefinitionContext context = assertIsInTestDefinitionContext("after");
         assertNotRootDescribeBlock("after");
-        getCurrentDescribeBlock().addAfter(Optional.ofNullable(description), function);
+        context.getCurrentDescribeBlock().addAfter(Optional.ofNullable(description), function);
     }
 
     /**
@@ -155,9 +147,9 @@ public enum TestContainer {
      * @param function The 'beforeEach' block.
      */
     public void beforeEach(String description, HookFunction function) {
-        assertNotRunningTests("beforeEach");
+        TestDefinitionContext context = assertIsInTestDefinitionContext("beforeEach");
         assertNotRootDescribeBlock("beforeEach");
-        getCurrentDescribeBlock().addBeforeEach(Optional.ofNullable(description), function);
+        context.getCurrentDescribeBlock().addBeforeEach(Optional.ofNullable(description), function);
     }
 
     /**
@@ -176,9 +168,9 @@ public enum TestContainer {
      * @param function The 'afterEach' block.
      */
     public void afterEach(String description, HookFunction function) {
-        assertNotRunningTests("afterEach");
+        TestDefinitionContext context = assertIsInTestDefinitionContext("afterEach");
         assertNotRootDescribeBlock("afterEach");
-        getCurrentDescribeBlock().addAfterEach(Optional.ofNullable(description), function);
+        context.getCurrentDescribeBlock().addAfterEach(Optional.ofNullable(description), function);
     }
 
     /**
@@ -212,9 +204,10 @@ public enum TestContainer {
      * @param options The set of options applied to the test.
      */
     public void it(Behaviour behaviour, String description, Optional<TestFunction> function, Options options) {
-        assertNotRunningTests("it");
+        TestDefinitionContext context = assertIsInTestDefinitionContext("it");
         assertNotRootDescribeBlock("it");
-        getCurrentDescribeBlock().addTest(new Test(behaviour, testClass, description, function, options));
+        context.getCurrentDescribeBlock()
+                .addTest(new Test(behaviour, context.testClass, description, function, options));
     }
 
 
@@ -264,55 +257,76 @@ public enum TestContainer {
     }
 
     /**
-     * Sets the class from which tests are being loaded.
+     * For internal use only. Code that executes Cuppa tests should be wrapped in this method, which will ensure that
+     * test code doesn't try to declare more tests.
      *
-     * @param testClass The test class.
+     * @param testRunner A function that will run tests.
      */
-    @SuppressFBWarnings(value = "ME_ENUM_FIELD_SETTER", justification = "Enum is being (ab)used for a singleton.")
-    public void setTestClass(Class<?> testClass) {
-        this.testClass = testClass;
-    }
-
-    @SuppressFBWarnings(value = "ME_ENUM_FIELD_SETTER", justification = "Enum is being (ab)used for a singleton.")
-    public void setRunningTests(boolean runningTests) {
-        this.runningTests = runningTests;
-    }
-
-    /**
-     * Returns the test block that contains all user-defined tests and test blocks.
-     *
-     * @return The root test block.
-     */
-    public TestBlock getRootTestBlock() {
-        return rootBuilder.build();
-    }
-
-    /**
-     * For test use only.
-     *
-     * <p>Resets the test framework state.</p>
-     */
-    public void reset() {
-        runningTests = false;
-        rootBuilder = new TestBlockBuilder(NORMAL, Cuppa.class, "", new Options());
-        stack = new ArrayDeque<>();
-        stack.addLast(rootBuilder);
-        testClass = null;
-    }
-
-    private void assertNotRunningTests(String blockType) {
-        if (runningTests) {
-            throw new CuppaException("'" + blockType + "' may only be nested within a 'describe' or 'when' block");
+    public void runTests(Runnable testRunner) {
+        contexts.addLast(new TestRunContext());
+        try {
+            testRunner.run();
+        } finally {
+            contexts.removeLast();
         }
     }
 
+    /**
+     * Define tests within the context of a test class. All code that may call {@link Cuppa} methods
+     * should be wrapped in this method.
+     *
+     * @param testClass The class that the tests are defined in.
+     * @param testDefiner A function that will define tests, usually by instantiating the given test class.
+     * @return A test block containing all the defined tests.
+     */
+    public TestBlock defineTests(Class<?> testClass, Runnable testDefiner) {
+        TestDefinitionContext context = new TestDefinitionContext(testClass);
+        contexts.addLast(context);
+        try {
+            testDefiner.run();
+            return context.rootBuilder.build();
+        } finally {
+            contexts.removeLast();
+        }
+    }
+
+    private TestDefinitionContext assertIsInTestDefinitionContext(String blockType) {
+        if (contexts.isEmpty()) {
+            throw new CuppaException("Attempted to defined Cuppa tests from outside of Cuppa's control. Is something"
+                    + " else instantiating your test class?");
+        }
+        if (contexts.getLast() instanceof TestRunContext) {
+            throw new CuppaException("'" + blockType + "' may only be nested within a 'describe' or 'when' block");
+        }
+        return (TestDefinitionContext) contexts.getLast();
+    }
+
     private void assertNotRootDescribeBlock(String blockType) {
-        if (getCurrentDescribeBlock().equals(rootBuilder)) {
+        TestDefinitionContext context = assertIsInTestDefinitionContext(blockType);
+        if (context.getCurrentDescribeBlock().equals(context.rootBuilder)) {
             throw new CuppaException("'" + blockType + "' must be nested within a 'describe' or 'when' block");
         }
     }
 
-    private TestBlockBuilder getCurrentDescribeBlock() {
-        return stack.getLast();
+    private interface Context {
+    }
+
+    private static final class TestDefinitionContext implements Context {
+        private final Deque<TestBlockBuilder> stack = new ArrayDeque<>();
+        private final TestBlockBuilder rootBuilder;
+        private final Class<?> testClass;
+
+        private TestDefinitionContext(Class<?> testClass) {
+            this.testClass = testClass;
+            rootBuilder = new TestBlockBuilder(NORMAL, testClass, "", new Options());
+            stack.addLast(rootBuilder);
+        }
+
+        private TestBlockBuilder getCurrentDescribeBlock() {
+            return stack.getLast();
+        }
+    }
+
+    private static final class TestRunContext implements Context {
     }
 }

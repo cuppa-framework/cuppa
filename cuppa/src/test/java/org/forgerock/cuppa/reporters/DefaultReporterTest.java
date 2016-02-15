@@ -19,30 +19,32 @@ package org.forgerock.cuppa.reporters;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.forgerock.cuppa.Cuppa.*;
+import static org.forgerock.cuppa.TestCuppaSupport.defineTests;
+import static org.forgerock.cuppa.TestCuppaSupport.runTests;
 
 import java.io.ByteArrayOutputStream;
 
-import org.forgerock.cuppa.AbstractTest;
 import org.forgerock.cuppa.functions.TestFunction;
+import org.forgerock.cuppa.model.TestBlock;
 import org.testng.annotations.Test;
 
-public class DefaultReporterTest extends AbstractTest {
+public class DefaultReporterTest {
     @Test
     public void reporterShouldLookGreatForPassingTests() {
 
         //Given
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         Reporter reporter = new DefaultReporter(outputStream);
-        {
+        TestBlock rootBlock = defineTests(() -> {
             describe("describe", () -> {
                 when("when", () -> {
                     it("passing test", TestFunction.identity());
                 });
             });
-        }
+        });
 
         //When
-        runTests(reporter);
+        runTests(rootBlock, reporter);
 
         //Then
         String output = new String(outputStream.toByteArray(), UTF_8);
@@ -66,7 +68,7 @@ public class DefaultReporterTest extends AbstractTest {
         //Given
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         Reporter reporter = new DefaultReporter(outputStream);
-        {
+        TestBlock rootBlock = defineTests(() -> {
             describe("describe", () -> {
                 when("when", () -> {
                     it("failing test", () -> {
@@ -74,10 +76,10 @@ public class DefaultReporterTest extends AbstractTest {
                     });
                 });
             });
-        }
+        });
 
         //When
-        runTests(reporter);
+        runTests(rootBlock, reporter);
 
         //Then
         String output = new String(outputStream.toByteArray(), UTF_8);
@@ -104,7 +106,7 @@ public class DefaultReporterTest extends AbstractTest {
         //Given
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         Reporter reporter = new DefaultReporter(outputStream);
-        {
+        TestBlock rootBlock = defineTests(() -> {
             describe("describe", () -> {
                 when("when", () -> {
                     it("erroring test", () -> {
@@ -112,10 +114,10 @@ public class DefaultReporterTest extends AbstractTest {
                     });
                 });
             });
-        }
+        });
 
         //When
-        runTests(reporter);
+        runTests(rootBlock, reporter);
 
         //Then
         String output = new String(outputStream.toByteArray(), UTF_8);
@@ -143,16 +145,16 @@ public class DefaultReporterTest extends AbstractTest {
         //Given
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         Reporter reporter = new DefaultReporter(outputStream);
-        {
+        TestBlock rootBlock = defineTests(() -> {
             describe("describe", () -> {
                 when("when", () -> {
                     it("pending test");
                 });
             });
-        }
+        });
 
         //When
-        runTests(reporter);
+        runTests(rootBlock, reporter);
 
         //Then
         String output = new String(outputStream.toByteArray(), UTF_8);
@@ -177,16 +179,16 @@ public class DefaultReporterTest extends AbstractTest {
         //Given
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         Reporter reporter = new DefaultReporter(outputStream);
-        {
+        TestBlock rootBlock = defineTests(() -> {
             describe("describe", () -> {
                 when("when", () -> {
                     skip().it("skipped test", TestFunction.identity());
                 });
             });
-        }
+        });
 
         //When
-        runTests(reporter);
+        runTests(rootBlock, reporter);
 
         //Then
         String output = new String(outputStream.toByteArray(), UTF_8);
@@ -211,15 +213,15 @@ public class DefaultReporterTest extends AbstractTest {
         //Given
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         Reporter reporter = new DefaultReporter(outputStream);
-        {
+        TestBlock rootBlock = defineTests(() -> {
             describe("describe", () -> {
                 when("when", () -> {
                 });
             });
-        }
+        });
 
         //When
-        runTests(reporter);
+        runTests(rootBlock, reporter);
 
         //Then
         String output = new String(outputStream.toByteArray(), UTF_8);
@@ -240,7 +242,7 @@ public class DefaultReporterTest extends AbstractTest {
         //Given
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         Reporter reporter = new DefaultReporter(outputStream);
-        {
+        TestBlock rootBlock = defineTests(() -> {
             describe("describe", () -> {
                 when("when", () -> {
                     it("passing test", TestFunction.identity());
@@ -254,10 +256,10 @@ public class DefaultReporterTest extends AbstractTest {
                     skip().it("skipped test", TestFunction.identity());
                 });
             });
-        }
+        });
 
         //When
-        runTests(reporter);
+        runTests(rootBlock, reporter);
 
         //Then
         String output = new String(outputStream.toByteArray(), UTF_8);
@@ -289,7 +291,7 @@ public class DefaultReporterTest extends AbstractTest {
         //Given
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         Reporter reporter = new DefaultReporter(outputStream);
-        {
+        TestBlock rootBlock = defineTests(() -> {
             describe("describe", () -> {
                 when("when", () -> {
                     beforeEach(() -> {
@@ -299,10 +301,10 @@ public class DefaultReporterTest extends AbstractTest {
                     });
                 });
             });
-        }
+        });
 
         //When
-        runTests(reporter);
+        runTests(rootBlock, reporter);
 
         //Then
         String output = new String(outputStream.toByteArray(), UTF_8);
@@ -330,7 +332,7 @@ public class DefaultReporterTest extends AbstractTest {
         //Given
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         Reporter reporter = new DefaultReporter(outputStream);
-        {
+        TestBlock rootBlock = defineTests(() -> {
             describe("describe", () -> {
                 when("when", () -> {
                     beforeEach("my hook", () -> {
@@ -340,10 +342,10 @@ public class DefaultReporterTest extends AbstractTest {
                     });
                 });
             });
-        }
+        });
 
         //When
-        runTests(reporter);
+        runTests(rootBlock, reporter);
 
         //Then
         String output = new String(outputStream.toByteArray(), UTF_8);

@@ -100,7 +100,6 @@
             <property name="allowStaticMemberImports" value="true" />
         </module>
         <module name="BooleanExpressionComplexity"/>
-        <module name="ClassDataAbstractionCoupling"/>
         <module name="ClassTypeParameterName"/>
         <module name="ConstantName"/>
         <module name="CommentsIndentation"/>

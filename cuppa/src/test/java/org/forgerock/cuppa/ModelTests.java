@@ -32,7 +32,7 @@ import org.forgerock.cuppa.model.Options;
 import org.forgerock.cuppa.model.TestBlock;
 import org.testng.annotations.Test;
 
-public class ModelTests extends AbstractTest {
+public class ModelTests {
     @Test
     public void testBlockShouldBeImmutable() {
         TestBlock testBlock = new TestBlock(Behaviour.NORMAL, ModelTests.class, "", new ArrayList<>(),

@@ -18,29 +18,29 @@ package org.forgerock.cuppa;
 
 import static org.forgerock.cuppa.Cuppa.*;
 import static org.forgerock.cuppa.Cuppa.when;
-import static org.forgerock.cuppa.ModelFinder.findTest;
-import static org.forgerock.cuppa.ModelFinder.findTestBlock;
+import static org.forgerock.cuppa.TestCuppaSupport.*;
 import static org.mockito.Mockito.*;
 
+import org.forgerock.cuppa.model.TestBlock;
 import org.forgerock.cuppa.reporters.Reporter;
 import org.mockito.InOrder;
 import org.testng.annotations.Test;
 
-public class ReportingTests extends AbstractTest {
+public class ReportingTests {
     @Test
     public void reporterShouldBeNotifiedAtTheStart() {
 
         //Given
         Reporter reporter = mock(Reporter.class);
-        {
+        TestBlock rootBlock = defineTests(() -> {
             describe("describe", () -> {
                 it("test", () -> {
                 });
             });
-        }
+        });
 
         //When
-        runTests(reporter);
+        runTests(rootBlock, reporter);
 
         //Then
         verify(reporter).start();
@@ -51,15 +51,15 @@ public class ReportingTests extends AbstractTest {
 
         //Given
         Reporter reporter = mock(Reporter.class);
-        {
+        TestBlock rootBlock = defineTests(() -> {
             describe("describe", () -> {
                 it("test", () -> {
                 });
             });
-        }
+        });
 
         //When
-        runTests(reporter);
+        runTests(rootBlock, reporter);
 
         //Then
         verify(reporter).end();
@@ -70,18 +70,18 @@ public class ReportingTests extends AbstractTest {
 
         //Given
         Reporter reporter = mock(Reporter.class);
-        {
+        TestBlock rootBlock = defineTests(() -> {
             describe("describe", () -> {
                 it("test", () -> {
                 });
             });
-        }
+        });
 
         //When
-        runTests(reporter);
+        runTests(rootBlock, reporter);
 
         //Then
-        verify(reporter).testPass(findTest("test"));
+        verify(reporter).testPass(findTest(rootBlock, "test"));
     }
 
     @Test
@@ -90,19 +90,19 @@ public class ReportingTests extends AbstractTest {
         //Given
         Reporter reporter = mock(Reporter.class);
         IllegalStateException exception = new IllegalStateException();
-        {
+        TestBlock rootBlock = defineTests(() -> {
             describe("describe", () -> {
                 it("test", () -> {
                     throw exception;
                 });
             });
-        }
+        });
 
         //When
-        runTests(reporter);
+        runTests(rootBlock, reporter);
 
         //Then
-        verify(reporter).testFail(findTest("test"), exception);
+        verify(reporter).testFail(findTest(rootBlock, "test"), exception);
     }
 
     @Test
@@ -110,18 +110,18 @@ public class ReportingTests extends AbstractTest {
 
         //Given
         Reporter reporter = mock(Reporter.class);
-        {
+        TestBlock rootBlock = defineTests(() -> {
             describe("describe", () -> {
                 it("test", () -> {
                 });
             });
-        }
+        });
 
         //When
-        runTests(reporter);
+        runTests(rootBlock, reporter);
 
         //Then
-        verify(reporter).describeStart(findTestBlock("describe"));
+        verify(reporter).describeStart(findTestBlock(rootBlock, "describe"));
     }
 
     @Test
@@ -129,18 +129,18 @@ public class ReportingTests extends AbstractTest {
 
         //Given
         Reporter reporter = mock(Reporter.class);
-        {
+        TestBlock rootBlock = defineTests(() -> {
             describe("describe", () -> {
                 it("test", () -> {
                 });
             });
-        }
+        });
 
         //When
-        runTests(reporter);
+        runTests(rootBlock, reporter);
 
         //Then
-        verify(reporter).describeEnd(findTestBlock("describe"));
+        verify(reporter).describeEnd(findTestBlock(rootBlock, "describe"));
     }
 
     @Test
@@ -148,26 +148,26 @@ public class ReportingTests extends AbstractTest {
 
         //Given
         Reporter reporter = mock(Reporter.class);
-        {
+        TestBlock rootBlock = defineTests(() -> {
             describe("describe", () -> {
                 when("when", () -> {
                     it("test", () -> {
                     });
                 });
             });
-        }
+        });
 
         //When
-        runTests(reporter);
+        runTests(rootBlock, reporter);
 
         //Then
         InOrder inOrder = inOrder(reporter);
         inOrder.verify(reporter).start();
-        inOrder.verify(reporter).describeStart(findTestBlock("describe"));
-        inOrder.verify(reporter).describeStart(findTestBlock("when when"));
-        inOrder.verify(reporter).testPass(findTest("test"));
-        inOrder.verify(reporter).describeEnd(findTestBlock("when when"));
-        inOrder.verify(reporter).describeEnd(findTestBlock("describe"));
+        inOrder.verify(reporter).describeStart(findTestBlock(rootBlock, "describe"));
+        inOrder.verify(reporter).describeStart(findTestBlock(rootBlock, "when when"));
+        inOrder.verify(reporter).testPass(findTest(rootBlock, "test"));
+        inOrder.verify(reporter).describeEnd(findTestBlock(rootBlock, "when when"));
+        inOrder.verify(reporter).describeEnd(findTestBlock(rootBlock, "describe"));
         inOrder.verify(reporter).end();
     }
 }

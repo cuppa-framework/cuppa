@@ -19,7 +19,7 @@ package org.forgerock.cuppa;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.forgerock.cuppa.Cuppa.describe;
 import static org.forgerock.cuppa.Cuppa.it;
-import static org.forgerock.cuppa.ModelFinder.findTest;
+import static org.forgerock.cuppa.TestCuppaSupport.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
@@ -27,17 +27,18 @@ import static org.mockito.Mockito.verify;
 
 import java.util.Arrays;
 
+import org.forgerock.cuppa.model.TestBlock;
 import org.forgerock.cuppa.reporters.Reporter;
 import org.testng.annotations.Test;
 
-public class DynamicDataTests extends AbstractTest {
+public class DynamicDataTests {
     @Test
     public void canCreateTestsDynamically() {
 
         //Given
         Reporter reporter = mock(Reporter.class);
         int[] testInputs = {1, 2, 3};
-        {
+        TestBlock rootBlock = defineTests(() -> {
             describe("dynamic data", () -> {
                 Arrays.stream(testInputs).forEach((i) -> {
                     it("test " + i, () -> {
@@ -45,14 +46,14 @@ public class DynamicDataTests extends AbstractTest {
                     });
                 });
             });
-        }
+        });
 
         //When
-        runTests(reporter);
+        runTests(rootBlock, reporter);
 
         //Then
-        verify(reporter).testPass(findTest("test 1"));
-        verify(reporter).testPass(findTest("test 2"));
-        verify(reporter).testFail(eq(findTest("test 3")), any(AssertionError.class));
+        verify(reporter).testPass(findTest(rootBlock, "test 1"));
+        verify(reporter).testPass(findTest(rootBlock, "test 2"));
+        verify(reporter).testFail(eq(findTest(rootBlock, "test 3")), any(AssertionError.class));
     }
 }

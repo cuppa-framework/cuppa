@@ -18,14 +18,17 @@ package org.forgerock.cuppa;
 
 import static org.forgerock.cuppa.Cuppa.describe;
 import static org.forgerock.cuppa.Cuppa.it;
+import static org.forgerock.cuppa.TestCuppaSupport.defineTests;
+import static org.forgerock.cuppa.TestCuppaSupport.runTests;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 import org.forgerock.cuppa.functions.TestFunction;
+import org.forgerock.cuppa.model.TestBlock;
 import org.forgerock.cuppa.reporters.Reporter;
 import org.testng.annotations.Test;
 
-public class RunnerTest extends AbstractTest {
+public class RunnerTest {
 
     @Test
     public void shouldMarkTestsAsNotRunningAfterTestRun() throws Exception {
@@ -34,13 +37,15 @@ public class RunnerTest extends AbstractTest {
         TestFunction function = mock(TestFunction.class);
 
         //When
-        runTests(mock(Reporter.class));
-        {
+        TestBlock emptyTestBlock = defineTests(() -> {
+        });
+        runTests(emptyTestBlock, mock(Reporter.class));
+        TestBlock rootBlock = defineTests(() -> {
             describe("Second Test", () -> {
                 it("runs the second test", function);
             });
-        }
-        runTests(mock(Reporter.class));
+        });
+        runTests(rootBlock, mock(Reporter.class));
 
         //Then
         verify(function).apply();
