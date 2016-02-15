@@ -89,27 +89,6 @@ public class ReportingTests extends AbstractTest {
 
         //Given
         Reporter reporter = mock(Reporter.class);
-        AssertionError assertionError = new AssertionError();
-        {
-            describe("describe", () -> {
-                it("test", () -> {
-                    throw assertionError;
-                });
-            });
-        }
-
-        //When
-        runTests(reporter);
-
-        //Then
-        verify(reporter).testFail(findTest("test"), assertionError);
-    }
-
-    @Test
-    public void reporterShouldBeNotifiedOfErroredTest() {
-
-        //Given
-        Reporter reporter = mock(Reporter.class);
         IllegalStateException exception = new IllegalStateException();
         {
             describe("describe", () -> {
@@ -123,7 +102,7 @@ public class ReportingTests extends AbstractTest {
         runTests(reporter);
 
         //Then
-        verify(reporter).testError(findTest("test"), exception);
+        verify(reporter).testFail(findTest("test"), exception);
     }
 
     @Test

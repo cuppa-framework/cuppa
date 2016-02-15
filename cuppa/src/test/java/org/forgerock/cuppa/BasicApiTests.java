@@ -151,7 +151,7 @@ public class BasicApiTests extends AbstractTest {
     }
 
     @Test
-    public void basicApiUsageShouldReportTestErrorWithDescribeBlockNestedUnderItBlock() {
+    public void basicApiUsageShouldReportTestFailureWithDescribeBlockNestedUnderItBlock() {
 
         //Given
         Reporter reporter = mock(Reporter.class);
@@ -170,11 +170,11 @@ public class BasicApiTests extends AbstractTest {
         runTests(reporter);
 
         //Then
-        verify(reporter).testError(eq(findTest("runs the test, which errors")), isA(CuppaException.class));
+        verify(reporter).testFail(eq(findTest("runs the test, which errors")), isA(CuppaException.class));
     }
 
     @Test
-    public void basicApiUsageShouldReportTestErrorWithWhenNestedUnderItBlock() {
+    public void basicApiUsageShouldReportTestFailureWithWhenNestedUnderItBlock() {
 
         //Given
         Reporter reporter = mock(Reporter.class);
@@ -193,11 +193,11 @@ public class BasicApiTests extends AbstractTest {
         runTests(reporter);
 
         //Then
-        verify(reporter).testError(eq(findTest("runs the test, which errors")), isA(CuppaException.class));
+        verify(reporter).testFail(eq(findTest("runs the test, which errors")), isA(CuppaException.class));
     }
 
     @Test
-    public void basicApiUsageShouldRunTestsAfterErroredTest() {
+    public void basicApiUsageShouldRunTestsAfterFailedTest() {
 
         //Given
         Reporter reporter = mock(Reporter.class);
@@ -218,7 +218,7 @@ public class BasicApiTests extends AbstractTest {
         runTests(reporter);
 
         //Then
-        verify(reporter).testError(eq(findTest("runs the first test, which errors")), isA(Throwable.class));
+        verify(reporter).testFail(eq(findTest("runs the first test, which errors")), isA(Throwable.class));
         verify(reporter).testPass(findTest("runs the second test, which passes"));
     }
 
@@ -227,34 +227,11 @@ public class BasicApiTests extends AbstractTest {
 
         //Given
         Reporter reporter = mock(Reporter.class);
-        AssertionError assertionError = new AssertionError();
+        RuntimeException exception = new RuntimeException();
         {
             describe("basic API usage", () -> {
                 when("the 'when' block is run", () -> {
                     it("runs the test, which fails", () -> {
-                        throw assertionError;
-                    });
-                });
-            });
-        }
-
-        //When
-        runTests(reporter);
-
-        //Then
-        verify(reporter).testFail(eq(findTest("runs the test, which fails")), any(AssertionError.class));
-    }
-
-    @Test
-    public void basicApiUsageWithSingleErroredTest() {
-
-        //Given
-        Reporter reporter = mock(Reporter.class);
-        IllegalStateException exception = new IllegalStateException();
-        {
-            describe("basic API usage", () -> {
-                when("the 'when' block is run", () -> {
-                    it("runs the test, which errors", () -> {
                         throw exception;
                     });
                 });
@@ -265,26 +242,22 @@ public class BasicApiTests extends AbstractTest {
         runTests(reporter);
 
         //Then
-        verify(reporter).testError(findTest("runs the test, which errors"), exception);
+        verify(reporter).testFail(eq(findTest("runs the test, which fails")), eq(exception));
     }
 
     @Test
-    public void basicApiUsageWithPassingFailingAndErroredTests() {
+    public void basicApiUsageWithPassingAndFailingTests() {
 
         //Given
         Reporter reporter = mock(Reporter.class);
         RuntimeException exception = new RuntimeException();
-        AssertionError assertionError = new AssertionError();
         {
             describe("basic API usage", () -> {
                 when("the 'when' block is run", () -> {
-                    it("runs the first test, which errors", () -> {
+                    it("runs the first test, which fails", () -> {
                         throw exception;
                     });
-                    it("runs the second test, which fails", () -> {
-                        throw assertionError;
-                    });
-                    it("runs the third test, which passes", TestFunction.identity());
+                    it("runs the second test, which passes", TestFunction.identity());
                 });
             });
         }
@@ -293,9 +266,8 @@ public class BasicApiTests extends AbstractTest {
         runTests(reporter);
 
         //Then
-        verify(reporter).testError(eq(findTest("runs the first test, which errors")), any(Throwable.class));
-        verify(reporter).testFail(eq(findTest("runs the second test, which fails")), any(AssertionError.class));
-        verify(reporter).testPass(findTest("runs the third test, which passes"));
+        verify(reporter).testFail(eq(findTest("runs the first test, which fails")), any(Throwable.class));
+        verify(reporter).testPass(findTest("runs the second test, which passes"));
     }
 
     @Test
@@ -318,6 +290,6 @@ public class BasicApiTests extends AbstractTest {
         runTests(reporter);
 
         //Then
-        verify(reporter).testError(findTest("runs the test"), exception);
+        verify(reporter).testFail(findTest("runs the test"), exception);
     }
 }

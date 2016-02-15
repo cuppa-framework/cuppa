@@ -721,7 +721,7 @@ public class HookExceptionTests extends AbstractTest {
         runTests(reporter);
 
         //Then
-        verify(reporter).testError(eq(findTest("will cause the test to throw an error")), isA(CuppaException.class));
+        verify(reporter).testFail(eq(findTest("will cause the test to throw an error")), isA(CuppaException.class));
     }
 
     @DataProvider

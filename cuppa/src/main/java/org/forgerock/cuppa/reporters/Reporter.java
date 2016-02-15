@@ -79,20 +79,12 @@ public interface Reporter {
     void testPass(Test test);
 
     /**
-     * Called after a test has failed due to throwing a assertion error.
+     * Called after a test has failed due to it throwing an exception.
      *
      * @param test The test that failed.
      * @param cause The assertion error that the test threw.
      */
-    void testFail(Test test, AssertionError cause);
-
-    /**
-     * Called after a test has failed due to throwing an exception that wasn't an assertion error.
-     *
-     * @param test The test that threw an exception.
-     * @param cause The throwable that the test threw.
-     */
-    void testError(Test test, Throwable cause);
+    void testFail(Test test, Throwable cause);
 
     /**
      * Called when a test cannot be run as it has not yet been implemented.

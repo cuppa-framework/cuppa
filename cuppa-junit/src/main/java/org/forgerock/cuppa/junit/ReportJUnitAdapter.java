@@ -97,13 +97,7 @@ final class ReportJUnitAdapter implements Reporter {
     }
 
     @Override
-    public void testFail(Test test, AssertionError e) {
-        ReporterSupport.filterStackTrace(e);
-        notifier.fireTestFailure(new Failure(getDescription(test.description), e));
-    }
-
-    @Override
-    public void testError(Test test, Throwable e) {
+    public void testFail(Test test, Throwable e) {
         ReporterSupport.filterStackTrace(e);
         notifier.fireTestFailure(new Failure(getDescription(test.description), e));
     }

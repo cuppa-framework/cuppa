@@ -141,15 +141,10 @@ public final class DefaultReporter implements Reporter {
     }
 
     @Override
-    public void testError(Test test, Throwable cause) {
+    public void testFail(Test test, Throwable cause) {
         failed++;
         failures.add(new TestFailure(String.join(" ", blockStack) + " " + test.description, cause));
         stream.println(getIndent() + failures.size() + ") " + test.description);
-    }
-
-    @Override
-    public void testFail(Test test, AssertionError cause) {
-        testError(test, cause);
     }
 
     @Override

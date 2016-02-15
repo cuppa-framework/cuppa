@@ -175,10 +175,8 @@ public final class Runner {
                 reporter.testStart(test);
                 test.function.get().apply();
                 reporter.testPass(test);
-            } catch (AssertionError e) {
-                reporter.testFail(test, e);
             } catch (Throwable e) {
-                reporter.testError(test, e);
+                reporter.testFail(test, e);
             } finally {
                 reporter.testEnd(test);
             }

@@ -97,18 +97,10 @@ final class CuppaSurefireReporter implements Reporter {
     }
 
     @Override
-    public void testFail(Test test, AssertionError cause) {
+    public void testFail(Test test, Throwable cause) {
         ReporterSupport.filterStackTrace(cause);
         String description = getFullDescription(test.description);
         listener.testFailed(new SimpleReportEntry(test.testClass.getCanonicalName(), description,
-                new PojoStackTraceWriter(test.testClass.getCanonicalName(), description, cause), 0));
-    }
-
-    @Override
-    public void testError(Test test, Throwable cause) {
-        ReporterSupport.filterStackTrace(cause);
-        String description = getFullDescription(test.description);
-        listener.testError(new SimpleReportEntry(test.testClass.getCanonicalName(), description,
                 new PojoStackTraceWriter(test.testClass.getCanonicalName(), description, cause), 0));
     }
 
