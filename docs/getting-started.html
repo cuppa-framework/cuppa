@@ -77,6 +77,14 @@
         
         
                 <li>
+                    <a href="/docs/tagging-tests">Tagging Tests</a>
+                </li>
+        
+    
+        
+        
+        
+                <li>
                     <a href="/docs/exceptions">Handling Exceptions</a>
                 </li>
         
@@ -102,6 +110,14 @@
         
                 <li>
                     <a href="/docs/integrating-with-existing-tests">Integrating with Existing Tests</a>
+                </li>
+        
+    
+        
+        
+        
+                <li>
+                    <a href="/docs/using-guice">Using Guice with Cuppa</a>
                 </li>
         
     
@@ -158,7 +174,7 @@
 <div class="highlighter-rouge"><pre class="highlight"><code><span class="nt">&lt;dependency&gt;</span>
     <span class="nt">&lt;groupId&gt;</span>org.forgerock.cuppa<span class="nt">&lt;/groupId&gt;</span>
     <span class="nt">&lt;artifactId&gt;</span>cuppa<span class="nt">&lt;/artifactId&gt;</span>
-    <span class="nt">&lt;version&gt;</span>1.0.0<span class="nt">&lt;/version&gt;</span>
+    <span class="nt">&lt;version&gt;</span>0.8.0-SNAPSHOT<span class="nt">&lt;/version&gt;</span>
     <span class="nt">&lt;scope&gt;</span>test<span class="nt">&lt;/scope&gt;</span>
 <span class="nt">&lt;/dependency&gt;</span>
 </code></pre>
@@ -175,7 +191,7 @@
             <span class="nt">&lt;dependency&gt;</span>
                 <span class="nt">&lt;groupId&gt;</span>org.forgerock.cuppa<span class="nt">&lt;/groupId&gt;</span>
                 <span class="nt">&lt;artifactId&gt;</span>cuppa-surefire<span class="nt">&lt;/artifactId&gt;</span>
-                <span class="nt">&lt;version&gt;</span>1.0.0<span class="nt">&lt;/version&gt;</span>
+                <span class="nt">&lt;version&gt;</span>0.8.0-SNAPSHOT<span class="nt">&lt;/version&gt;</span>
             <span class="nt">&lt;/dependency&gt;</span>
         <span class="nt">&lt;/dependencies&gt;</span>
     <span class="nt">&lt;/plugin&gt;</span>
@@ -191,7 +207,7 @@ Add <code class="highlighter-rouge">cuppa-surefire</code> as a dependency of the
 <p>Add a test dependency for Cuppa in your project’s build file:</p>
 
 <div class="highlighter-rouge"><pre class="highlight"><code><span class="n">dependencies</span> <span class="o">{</span>
-    <span class="n">testCompile</span> <span class="s1">'org.forgerock.cuppa:cuppa:1.0.0'</span>
+    <span class="n">testCompile</span> <span class="s1">'org.forgerock.cuppa:cuppa:0.8.0-SNAPSHOT'</span>
 <span class="o">}</span>
 </code></pre>
 </div>

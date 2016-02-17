@@ -77,6 +77,14 @@
         
         
                 <li>
+                    <a href="/docs/tagging-tests">Tagging Tests</a>
+                </li>
+        
+    
+        
+        
+        
+                <li>
                     <a href="/docs/exceptions">Handling Exceptions</a>
                 </li>
         
@@ -102,6 +110,14 @@
         
                 <li>
                     <a href="/docs/integrating-with-existing-tests">Integrating with Existing Tests</a>
+                </li>
+        
+    
+        
+        
+        
+                <li>
+                    <a href="/docs/using-guice">Using Guice with Cuppa</a>
                 </li>
         
     
@@ -153,9 +169,9 @@
 <p>During development, you may want to temporarily turn off a test. Rather than commenting it out, we recommend using the 
 following syntax to mark the test as skipped.</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code><span class="n">skip</span><span class="o">.</span><span class="na">it</span><span class="o">(</span><span class="s">"returns -1"</span><span class="o">,</span> <span class="o">()</span> <span class="o">-&gt;</span> <span class="o">{</span>
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="n">skip</span><span class="o">().</span><span class="na">it</span><span class="o">(</span><span class="s">"returns -1"</span><span class="o">,</span> <span class="o">()</span> <span class="o">-&gt;</span> <span class="o">{</span>
     <span class="c1">// ...</span>
-<span class="o">);</span>
+<span class="o">});</span>
 </code></pre>
 </div>
 
@@ -163,7 +179,7 @@ following syntax to mark the test as skipped.</p>
 
 <p>You can also skip entire <code class="highlighter-rouge">describe</code> or <code class="highlighter-rouge">when</code> blocks:</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code><span class="n">skip</span><span class="o">.</span><span class="na">when</span><span class="o">(</span><span class="s">"it is empty"</span><span class="o">,</span> <span class="o">()</span> <span class="o">-&gt;</span> <span class="o">{</span>
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="n">skip</span><span class="o">().</span><span class="na">when</span><span class="o">(</span><span class="s">"it is empty"</span><span class="o">,</span> <span class="o">()</span> <span class="o">-&gt;</span> <span class="o">{</span>
     <span class="n">it</span><span class="o">(</span><span class="s">"returns -1"</span><span class="o">,</span> <span class="o">()</span> <span class="o">-&gt;</span> <span class="o">{</span>
         <span class="c1">// ...</span>
     <span class="o">});</span>
@@ -175,9 +191,9 @@ following syntax to mark the test as skipped.</p>
 
 <p>If you’d like to run a single test to debug a problem, just use the following syntax.</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code><span class="n">only</span><span class="o">.</span><span class="na">it</span><span class="o">(</span><span class="s">"returns -1"</span><span class="o">,</span> <span class="o">()</span> <span class="o">-&gt;</span> <span class="o">{</span>
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="n">only</span><span class="o">().</span><span class="na">it</span><span class="o">(</span><span class="s">"returns -1"</span><span class="o">,</span> <span class="o">()</span> <span class="o">-&gt;</span> <span class="o">{</span>
     <span class="c1">// ...</span>
-<span class="o">);</span>
+<span class="o">});</span>
 </code></pre>
 </div>
 
@@ -222,7 +238,7 @@ pending test.</p>
         
         
                     <li class="next">
-                        <a href="/docs/exceptions" class="next">Next</a>
+                        <a href="/docs/tagging-tests" class="next">Next</a>
         
                     </li>
                 </ul>

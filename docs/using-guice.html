@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title>Integration API | Cuppa</title>
+    <title>Using Guice with Cuppa | Cuppa</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="/css/bootstrap.min.css" type="text/css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:400,700,300" type="text/css">
@@ -77,6 +77,14 @@
         
         
                 <li>
+                    <a href="/docs/tagging-tests">Tagging Tests</a>
+                </li>
+        
+    
+        
+        
+        
+                <li>
                     <a href="/docs/exceptions">Handling Exceptions</a>
                 </li>
         
@@ -102,6 +110,14 @@
         
                 <li>
                     <a href="/docs/integrating-with-existing-tests">Integrating with Existing Tests</a>
+                </li>
+        
+    
+        
+        
+        
+                <li>
+                    <a href="/docs/using-guice" class="active">Using Guice with Cuppa</a>
                 </li>
         
     
@@ -145,9 +161,40 @@
         </nav>
         <div class="col-md-9">
             <h1>
-                Integration API
-                <a href="https://github.com/cuppa-framework/cuppa/blob/master/docs/_docs/integration-api.md" class="edit-page">Edit on GitHub</a>
+                Using Guice with Cuppa
+                <a href="https://github.com/cuppa-framework/cuppa/blob/master/docs/_docs/using-guice.md" class="edit-page">Edit on GitHub</a>
             </h1>
+<p>Cuppa provides a hook to allow you to customise how your test classes are instantiated.
+This keeps Cuppa agnostic about which inversion of control container you happen to be using.</p>
+
+<p>To do this, you need to write a class that implements <code class="highlighter-rouge">ConfigurationProvider</code> and sets the class instantiator:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="kn">package</span> <span class="n">com</span><span class="o">.</span><span class="na">example</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">com.google.inject.Guice</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.forgerock.cuppa.ConfigurationProvider</span><span class="o">;</span>
+
+<span class="kd">public</span> <span class="kd">final</span> <span class="kd">class</span> <span class="nc">MyConfigurationProvider</span> <span class="kd">implements</span> <span class="n">ConfigurationProvider</span> <span class="o">{</span>
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="n">configure</span><span class="o">(</span><span class="n">Configuration</span> <span class="n">configuration</span><span class="o">)</span> <span class="o">{</span>
+        <span class="c1">// Setup Guice as needed...</span>
+        <span class="n">Injector</span> <span class="n">injector</span> <span class="o">=</span> <span class="n">Guice</span><span class="o">.</span><span class="na">createInjector</span><span class="o">(</span><span class="k">new</span> <span class="n">MyModule</span><span class="o">());</span>
+        <span class="n">configuration</span><span class="o">.</span><span class="na">setClassInstantiator</span><span class="o">(</span><span class="nl">injector:</span><span class="o">:</span><span class="n">getInstance</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre>
+</div>
+
+<p>Cuppa uses a <a href="https://docs.oracle.com/javase/8/docs/api/java/util/ServiceLoader.html">ServiceLoader</a> to find the
+configuration provider.
+Hence, you need to provide a configuration file called <code class="highlighter-rouge">META-INF/services/org.forgerock.cuppa.ConfigurationProvider</code>
+that contains the fully-qualified class name of your class:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>com.example.MyConfigurationProvider
+</code></pre>
+</div>
+
+<p>Ensure that this file is on the classpath when running Cuppa.</p>
 
 
 
@@ -180,22 +227,27 @@
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+            <nav>
+                <ul class="pager">
+        
+        
+        
+        
+                    <li class="previous">
+                        <a href="/docs/integrating-with-existing-tests" class="prev">Back</a>
+                    </li>
+        
+        
+        
+        
+        
+                    <li class="next">
+                        <a href="/docs/writing-a-reporter" class="next">Next</a>
+        
+                    </li>
+                </ul>
+            </nav>
+            <div class="clear"></div>
 
         </div>
     </div>

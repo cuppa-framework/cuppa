@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Tagging Tests | Cuppa</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="/css/bootstrap.min.css" type="text/css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:400,700,300" type="text/css">
+    <link rel="stylesheet" href="/css/styles.css" type="text/css">
+</head>
+<body>
+    <nav class="navbar navbar-inverse navbar-static-top">
+        <div class="container">
+            <div class="navbar-header">
+                <a href="/" class="navbar-brand">Cuppa</a>
+            </div>
+            <ul class="nav navbar-nav">
+                <li class="active"><a href="/docs/getting-started">Docs</a></li>
+                <li><a href="/blog/">Blog</a></li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                <li><a href="https://github.com/cuppa-framework/cuppa">GitHub <img src="/img/GitHub-Mark-Light-32px.png" width="20" height="20" class="github-logo"></a></li>
+            </ul>
+        </div>
+    </nav>
+    <div class="container">
+    <div class="row">
+        <div class="alert alert-danger" role="alert"><strong>Cuppa has not been released yet.</strong> This
+        documentation is subject to change without notice.</div>
+        <nav class="col-md-3 sidebar">
+
+            <h3>Quick Start</h3>
+            <ul>
+    
+        
+        
+        
+                <li>
+                    <a href="/docs/getting-started">Getting Started</a>
+                </li>
+        
+    
+        
+        
+        
+                <li>
+                    <a href="/docs/tutorial">Tutorial</a>
+                </li>
+        
+    
+            </ul>
+    
+            <hr>
+    
+
+            <h3>Guides</h3>
+            <ul>
+    
+        
+        
+        
+                <li>
+                    <a href="/docs/parameterised-tests">Parameterised Tests</a>
+                </li>
+        
+    
+        
+        
+        
+                <li>
+                    <a href="/docs/skipping-tests">Skipping Tests</a>
+                </li>
+        
+    
+        
+        
+        
+                <li>
+                    <a href="/docs/tagging-tests" class="active">Tagging Tests</a>
+                </li>
+        
+    
+        
+        
+        
+                <li>
+                    <a href="/docs/exceptions">Handling Exceptions</a>
+                </li>
+        
+    
+        
+        
+        
+                <li>
+                    <a href="/docs/timeouts">Timeouts</a>
+                </li>
+        
+    
+        
+        
+        
+                <li>
+                    <a href="/docs/reporters">Reporters</a>
+                </li>
+        
+    
+        
+        
+        
+                <li>
+                    <a href="/docs/integrating-with-existing-tests">Integrating with Existing Tests</a>
+                </li>
+        
+    
+        
+        
+        
+                <li>
+                    <a href="/docs/using-guice">Using Guice with Cuppa</a>
+                </li>
+        
+    
+        
+        
+        
+                <li>
+                    <a href="/docs/writing-a-reporter">Writing a Reporter</a>
+                </li>
+        
+    
+            </ul>
+    
+            <hr>
+    
+
+            <h3>Javadoc</h3>
+            <ul>
+    
+        
+                <li>
+                    <a href="/javadoc/cuppa/"><code>cuppa</code></a>
+                </li>
+        
+    
+        
+                <li>
+                    <a href="/javadoc/cuppa-junit/"><code>cuppa-junit</code></a>
+                </li>
+        
+    
+        
+                <li>
+                    <a href="/javadoc/cuppa-surefire/"><code>cuppa-surefire</code></a>
+                </li>
+        
+    
+            </ul>
+    
+
+        </nav>
+        <div class="col-md-9">
+            <h1>
+                Tagging Tests
+                <a href="https://github.com/cuppa-framework/cuppa/blob/master/docs/_docs/tagging-tests.md" class="edit-page">Edit on GitHub</a>
+            </h1>
+
+<div class="alert alert-info" role="alert">
+  <h4 id="note">Note</h4>
+
+  <p>Tagging tests only works with Maven Surefire/Failsafe integration at the moment.</p>
+</div>
+
+<h2 id="tagging-a-single-test">Tagging a Single Test</h2>
+
+<p>Want to run just a sub-set of your tests? No problem. Simply decorate your tests with one or more tags:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="n">with</span><span class="o">(</span><span class="n">tags</span><span class="o">(</span><span class="s">"smoke"</span><span class="o">,</span> <span class="s">"fast"</span><span class="o">)).</span>
+<span class="n">it</span><span class="o">(</span><span class="s">"returns -1"</span><span class="o">,</span> <span class="o">()</span> <span class="o">-&gt;</span> <span class="o">{</span>
+    <span class="c1">// ...</span>
+<span class="o">});</span>
+</code></pre>
+</div>
+
+<p>Tags can be specified when running Cuppa via Maven using the <code class="highlighter-rouge">tags</code> property.
+For example, to run only the tests with the tag <code class="highlighter-rouge">smoke</code>:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>mvn -Dtags<span class="o">=</span>smoke <span class="nb">test</span>
+</code></pre>
+</div>
+
+<p>Alternatively you can run all tests which <strong>are not</strong> tagged with one or more specific tags.
+For example, to run all tests except tests tagged with <code class="highlighter-rouge">slow</code>:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>mvn -DexcludedTags<span class="o">=</span>slow <span class="nb">test</span>
+</code></pre>
+</div>
+
+<div class="alert alert-info" role="alert">
+  <h4 id="note-1">Note</h4>
+
+  <p>When running with a combination of TestNG or JUnit along side Cuppa, you can use the TestNG/JUnit way of 
+specifying/excluding groups so that you can run a sub-set of tests across both TestNG/JUnit and Cuppa.</p>
+
+  <p>It’s important to note that you cannot use both <code class="highlighter-rouge">-Dgroups=</code> and <code class="highlighter-rouge">-Dtags=</code> or <code class="highlighter-rouge">-DexcludedGroups=</code> and <code class="highlighter-rouge">-DexcludedTags=</code> 
+at the same time.</p>
+</div>
+
+<h2 id="tagging-a-block-of-tests">Tagging a Block of Tests</h2>
+
+<p>Similarly you can tag all tests within a <code class="highlighter-rouge">describe</code> or <code class="highlighter-rouge">when</code> block:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="n">with</span><span class="o">(</span><span class="n">tags</span><span class="o">(</span><span class="s">"smoke"</span><span class="o">)).</span>
+<span class="n">when</span><span class="o">(</span><span class="s">"it is empty"</span><span class="o">,</span> <span class="o">()</span> <span class="o">-&gt;</span> <span class="o">{</span>
+    <span class="n">it</span><span class="o">(</span><span class="s">"returns -1"</span><span class="o">,</span> <span class="o">()</span> <span class="o">-&gt;</span> <span class="o">{</span>
+        <span class="c1">// ...</span>
+    <span class="o">});</span>
+<span class="o">});</span>
+</code></pre>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            <nav>
+                <ul class="pager">
+        
+        
+        
+        
+                    <li class="previous">
+                        <a href="/docs/skipping-tests" class="prev">Back</a>
+                    </li>
+        
+        
+        
+        
+        
+                    <li class="next">
+                        <a href="/docs/exceptions" class="next">Next</a>
+        
+                    </li>
+                </ul>
+            </nav>
+            <div class="clear"></div>
+
+        </div>
+    </div>
+</div>
+    <div class="container">
+        <footer class="text-right">
+            © 2015–2016 ForgeRock AS.<br>
+            Documentation licensed under <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>.
+        </footer>
+    </div>
+    <script>
+        (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+                    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+                m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+        })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+        ga('create', 'UA-72837005-1', 'auto');
+        ga('send', 'pageview');
+    </script>
+</body>
+</html>
