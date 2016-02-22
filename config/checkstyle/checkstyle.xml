@@ -101,7 +101,6 @@
         </module>
         <module name="BooleanExpressionComplexity"/>
         <module name="ClassDataAbstractionCoupling"/>
-        <module name="ClassFanOutComplexity"/>
         <module name="ClassTypeParameterName"/>
         <module name="ConstantName"/>
         <module name="CommentsIndentation"/>

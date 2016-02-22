@@ -79,10 +79,14 @@ public final class Runner {
     @VisibleForTesting
     void run(TestBlock rootBlock, Reporter reporter, Configuration configuration) {
         TestContainer.INSTANCE.setRunningTests(true);
-        reporter.start();
-        TestBlock transformedRootBlock = transformTests(rootBlock, configuration.testTransforms);
-        runTests(transformedRootBlock, transformedRootBlock.behaviour, reporter, TestFunction::apply);
-        reporter.end();
+        try {
+            reporter.start();
+            TestBlock transformedRootBlock = transformTests(rootBlock, configuration.testTransforms);
+            runTests(transformedRootBlock, transformedRootBlock.behaviour, reporter, TestFunction::apply);
+            reporter.end();
+        } finally {
+            TestContainer.INSTANCE.setRunningTests(false);
+        }
     }
 
     /**
@@ -100,6 +104,8 @@ public final class Runner {
             try {
                 TestContainer.INSTANCE.setTestClass(testClass);
                 testInstantiator.instantiate(testClass);
+            } catch (CuppaException e) {
+                throw e;
             } catch (Exception e) {
                 throw new IllegalStateException("Must be able to instantiate test class", e);
             }
