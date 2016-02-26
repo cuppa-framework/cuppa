@@ -50,6 +50,16 @@ public final class Options {
     }
 
     /**
+     * Creates an mutable options set from the given options.
+     *
+     * @param options A set of options to copy.
+     * @return An mutable set of options.
+     */
+    public static Options copyOf(Options options) {
+        return new Options(new HashMap<>(options.options));
+    }
+
+    /**
      * Get an option of the given type. If no such option has been set, then an empty optional will be returned.
      *
      * @param optionClass The class that corresponds to the option.
