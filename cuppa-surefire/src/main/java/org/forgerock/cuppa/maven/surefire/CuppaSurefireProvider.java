@@ -55,6 +55,9 @@ public final class CuppaSurefireProvider extends AbstractProvider {
 
     private Set<String> getTags(Properties properties) {
         String groups = properties.getProperty("groups");
+        if (groups == null) {
+            groups = System.getProperty("groups");
+        }
         String tags = properties.getProperty("tags");
         String overrideTags = System.getProperty("tags");
         return getTags(groups, overrideTags == null ? tags : overrideTags);
@@ -75,6 +78,9 @@ public final class CuppaSurefireProvider extends AbstractProvider {
 
     private Set<String> getExcludedTags(Properties properties) {
         String excludedGroups = properties.getProperty("excludedGroups");
+        if (excludedGroups == null) {
+            excludedGroups = System.getProperty("excludedGroups");
+        }
         String excludedTags = properties.getProperty("excludedTags");
         String overrideExcludedTags = System.getProperty("excludedTags");
         return getTags(excludedGroups, overrideExcludedTags == null ? excludedTags : overrideExcludedTags);
