@@ -63,8 +63,9 @@ public final class TagTestBlockFilter implements Function<TestBlock, TestBlock> 
         List<Test> tests = testBlock.tests.stream()
                 .filter(t -> shouldRun(union(getTags(t.options), blockTags)))
                 .collect(Collectors.toList());
-        return new TestBlock(testBlock.behaviour, testBlock.description, testBlocks, testBlock.beforeHooks,
-                testBlock.afterHooks, testBlock.beforeEachHooks, testBlock.afterEachHooks, tests, testBlock.options);
+        return new TestBlock(testBlock.behaviour, testBlock.testClass, testBlock.description, testBlocks,
+                testBlock.beforeHooks, testBlock.afterHooks, testBlock.beforeEachHooks, testBlock.afterEachHooks, tests,
+                testBlock.options);
     }
 
     private boolean shouldInclude(Set<String> testTags) {

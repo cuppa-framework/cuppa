@@ -47,8 +47,9 @@ public final class OnlyTestBlockFilter implements Function<TestBlock, TestBlock>
         List<org.forgerock.cuppa.model.Test> tests = testBlock.tests.stream()
                 .filter(t -> t.behaviour == ONLY)
                 .collect(Collectors.toList());
-        return new TestBlock(testBlock.behaviour, testBlock.description, testBlocks, testBlock.beforeHooks,
-                testBlock.afterHooks, testBlock.beforeEachHooks, testBlock.afterEachHooks, tests, testBlock.options);
+        return new TestBlock(testBlock.behaviour, testBlock.testClass, testBlock.description, testBlocks,
+                testBlock.beforeHooks, testBlock.afterHooks, testBlock.beforeEachHooks, testBlock.afterEachHooks, tests,
+                testBlock.options);
     }
 
     private boolean hasOnlyTests(TestBlock block) {

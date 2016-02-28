@@ -282,4 +282,86 @@ public class DefaultReporterTest extends AbstractTest {
         String expectedOutput = String.join(System.lineSeparator(), expectedLines);
         assertThat(output).startsWith(expectedOutput);
     }
+
+    @Test
+    public void reporterShouldReportFailingHooks() {
+
+        //Given
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        Reporter reporter = new DefaultReporter(outputStream);
+        {
+            describe("describe", () -> {
+                when("when", () -> {
+                    beforeEach(() -> {
+                        throw new RuntimeException();
+                    });
+                    it("passing test", () -> {
+                    });
+                });
+            });
+        }
+
+        //When
+        runTests(reporter);
+
+        //Then
+        String output = new String(outputStream.toByteArray(), UTF_8);
+        String[] expectedLines = {
+                "",
+                "",
+                "  describe",
+                "    when when",
+                "      1) \"before each\" hook",
+                "",
+                "",
+                "  0 passing",
+                "  1 failing",
+                "",
+                "  1) describe when when \"before each\" hook:",
+                "     java.lang.RuntimeException",
+        };
+        String expectedOutput = String.join(System.lineSeparator(), expectedLines);
+        assertThat(output).startsWith(expectedOutput);
+    }
+
+    @Test
+    public void reporterShouldReportFailingNamedHook() {
+
+        //Given
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        Reporter reporter = new DefaultReporter(outputStream);
+        {
+            describe("describe", () -> {
+                when("when", () -> {
+                    beforeEach("my hook", () -> {
+                        throw new RuntimeException();
+                    });
+                    it("passing test", () -> {
+                    });
+                });
+            });
+        }
+
+        //When
+        runTests(reporter);
+
+        //Then
+        String output = new String(outputStream.toByteArray(), UTF_8);
+        String[] expectedLines = {
+                "",
+                "",
+                "  describe",
+                "    when when",
+                "      1) \"before each\" hook \"my hook\"",
+                "",
+                "",
+                "  0 passing",
+                "  1 failing",
+                "",
+                "  1) describe when when \"before each\" hook \"my hook\":",
+                "     java.lang.RuntimeException",
+        };
+        String expectedOutput = String.join(System.lineSeparator(), expectedLines);
+        assertThat(output).startsWith(expectedOutput);
+    }
 }

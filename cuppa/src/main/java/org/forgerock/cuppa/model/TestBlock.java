@@ -33,6 +33,11 @@ public final class TestBlock {
     public final Behaviour behaviour;
 
     /**
+     * The class that the test block was defined in.
+     */
+    public final Class<?> testClass;
+
+    /**
      * The description of the test block. Will be used for reporting.
      */
     public final String description;
@@ -76,6 +81,7 @@ public final class TestBlock {
      * Constructs a new TestBlock. Will convert mutable lists to immutable lists.
      *
      * @param behaviour Controls how the test block and its descendants behave.
+     * @param testClass The class that the test block was defined in.
      * @param description The description of the test block. Will be used for reporting.
      * @param testBlocks Nested test blocks.
      * @param beforeHooks Before hooks. Will be run once before any tests in this test block are executed.
@@ -85,10 +91,11 @@ public final class TestBlock {
      * @param tests Nested tests.
      * @param options The set of options applied to the block.
      */
-    public TestBlock(Behaviour behaviour, String description, List<TestBlock> testBlocks, List<Hook> beforeHooks,
-            List<Hook> afterHooks, List<Hook> beforeEachHooks, List<Hook> afterEachHooks, List<Test> tests,
-            Options options) {
+    public TestBlock(Behaviour behaviour, Class<?> testClass, String description, List<TestBlock> testBlocks,
+            List<Hook> beforeHooks, List<Hook> afterHooks, List<Hook> beforeEachHooks, List<Hook> afterEachHooks,
+            List<Test> tests, Options options) {
         Objects.requireNonNull(behaviour, "TestBlock must have a behaviour");
+        Objects.requireNonNull(testClass, "TestBlock must have a testClass");
         Objects.requireNonNull(description, "TestBlock must have a description");
         Objects.requireNonNull(testBlocks, "TestBlock must have testBlocks");
         Objects.requireNonNull(beforeHooks, "TestBlock must have beforeHooks");
@@ -98,6 +105,7 @@ public final class TestBlock {
         Objects.requireNonNull(tests, "TestBlock must have tests");
         Objects.requireNonNull(options, "TestBlock must have options");
         this.behaviour = behaviour;
+        this.testClass = testClass;
         this.description = description;
         this.testBlocks = ImmutableList.copyOf(testBlocks);
         this.beforeHooks = ImmutableList.copyOf(beforeHooks);
@@ -120,6 +128,7 @@ public final class TestBlock {
         TestBlock testBlock = (TestBlock) o;
 
         return Objects.equals(behaviour, testBlock.behaviour)
+            && Objects.equals(testClass, testBlock.testClass)
             && Objects.equals(description, testBlock.description)
             && Objects.equals(testBlocks, testBlock.testBlocks)
             && Objects.equals(beforeHooks, testBlock.beforeHooks)
@@ -132,7 +141,7 @@ public final class TestBlock {
 
     @Override
     public int hashCode() {
-        return Objects.hash(behaviour, description, testBlocks, beforeHooks, afterHooks, beforeEachHooks,
+        return Objects.hash(behaviour, testClass, description, testBlocks, beforeHooks, afterHooks, beforeEachHooks,
                 afterEachHooks, tests, options);
     }
 
@@ -140,6 +149,7 @@ public final class TestBlock {
     public String toString() {
         return "TestBlock{"
             + "behaviour=" + behaviour
+            + ", testClass=" + testClass
             + ", description='" + description + '\''
             + ", testBlocks=" + testBlocks
             + ", beforeHooks=" + beforeHooks

@@ -22,6 +22,7 @@ import java.util.stream.Collectors;
 
 import org.forgerock.cuppa.ReporterSupport;
 import org.forgerock.cuppa.model.Hook;
+import org.forgerock.cuppa.model.HookType;
 import org.forgerock.cuppa.model.Test;
 import org.forgerock.cuppa.model.TestBlock;
 import org.forgerock.cuppa.reporters.Reporter;
@@ -71,7 +72,14 @@ final class ReportJUnitAdapter implements Reporter {
     @Override
     public void hookError(Hook hook, Throwable cause) {
         ReporterSupport.filterStackTrace(cause);
-        notifier.fireTestFailure(new Failure(getDescription(hook.description.orElse("Hook")), cause));
+        String description = "\"" + getHookType(hook.type) + "\" hook";
+        if (hook.description.isPresent()) {
+            description += " \"" + hook.description.get() + "\"";
+        }
+        description += " for \"";
+        description += testBlockDeque.stream().map(tb -> tb.description).collect(Collectors.joining(" ")).trim();
+        description += "\"";
+        notifier.fireTestFailure(new Failure(getDescription(description), cause));
     }
 
     @Override
@@ -116,5 +124,20 @@ final class ReportJUnitAdapter implements Reporter {
                 .collect(Collectors.joining());
         String uniqueId = blockId + description;
         return Description.createTestDescription(testClass.getName(), description, uniqueId);
+    }
+
+    private String getHookType(HookType type) {
+        switch (type) {
+            case BEFORE:
+                return "before";
+            case BEFORE_EACH:
+                return "before each";
+            case AFTER_EACH:
+                return "after each";
+            case AFTER:
+                return "after";
+            default:
+                throw new IllegalStateException("unknown hook type");
+        }
     }
 }

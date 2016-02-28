@@ -25,6 +25,7 @@ import java.util.Set;
 
 import com.google.common.collect.ImmutableSet;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import org.forgerock.cuppa.Cuppa;
 import org.forgerock.cuppa.CuppaException;
 import org.forgerock.cuppa.TestBuilder;
 import org.forgerock.cuppa.functions.HookFunction;
@@ -74,7 +75,7 @@ public enum TestContainer {
      */
     void describe(Behaviour behaviour, String description, TestBlockFunction function, Options options) {
         assertNotRunningTests("describe");
-        TestBlockBuilder testBlockBuilder = new TestBlockBuilder(behaviour, description, options);
+        TestBlockBuilder testBlockBuilder = new TestBlockBuilder(behaviour, testClass, description, options);
         stack.addLast(testBlockBuilder);
         try {
             function.apply();
@@ -289,7 +290,7 @@ public enum TestContainer {
      */
     public void reset() {
         runningTests = false;
-        rootBuilder = new TestBlockBuilder(NORMAL, "", new Options());
+        rootBuilder = new TestBlockBuilder(NORMAL, Cuppa.class, "", new Options());
         stack = new ArrayDeque<>();
         stack.addLast(rootBuilder);
         testClass = null;

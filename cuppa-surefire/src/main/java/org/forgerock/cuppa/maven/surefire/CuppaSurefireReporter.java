@@ -18,12 +18,14 @@ package org.forgerock.cuppa.maven.surefire;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
+import java.util.stream.Collectors;
 
 import org.apache.maven.surefire.report.PojoStackTraceWriter;
 import org.apache.maven.surefire.report.RunListener;
 import org.apache.maven.surefire.report.SimpleReportEntry;
 import org.forgerock.cuppa.ReporterSupport;
 import org.forgerock.cuppa.model.Hook;
+import org.forgerock.cuppa.model.HookType;
 import org.forgerock.cuppa.model.Test;
 import org.forgerock.cuppa.model.TestBlock;
 import org.forgerock.cuppa.reporters.Reporter;
@@ -34,7 +36,7 @@ import org.forgerock.cuppa.reporters.Reporter;
 final class CuppaSurefireReporter implements Reporter {
 
     private final RunListener listener;
-    private final Deque<String> blockStack = new ArrayDeque<>();
+    private final Deque<TestBlock> blockStack = new ArrayDeque<>();
 
     /**
      * Constructs a reporter that adapts events to Surefire.
@@ -57,7 +59,7 @@ final class CuppaSurefireReporter implements Reporter {
 
     @Override
     public void describeStart(TestBlock testBlock) {
-        blockStack.addLast(testBlock.description);
+        blockStack.addLast(testBlock);
     }
 
     @Override
@@ -67,11 +69,21 @@ final class CuppaSurefireReporter implements Reporter {
 
     @Override
     public void hookError(Hook hook, Throwable cause) {
+        ReporterSupport.filterStackTrace(cause);
+        String description = "\"" + getHookType(hook.type) + "\" hook";
+        if (hook.description.isPresent()) {
+            description += " \"" + hook.description.get() + "\"";
+        }
+        String fullDescription = getFullDescription(description);
+        String className = blockStack.getLast().testClass.getCanonicalName();
+        listener.testError(new SimpleReportEntry(className, fullDescription,
+                new PojoStackTraceWriter(className, fullDescription, cause), 0));
     }
 
     @Override
     public void testStart(Test test) {
-        listener.testStarting(new SimpleReportEntry(test.testClass.getCanonicalName(), getFullTestDescription(test)));
+        listener.testStarting(new SimpleReportEntry(test.testClass.getCanonicalName(),
+                getFullDescription(test.description)));
     }
 
     @Override
@@ -80,13 +92,14 @@ final class CuppaSurefireReporter implements Reporter {
 
     @Override
     public void testPass(Test test) {
-        listener.testSucceeded(new SimpleReportEntry(test.testClass.getCanonicalName(), getFullTestDescription(test)));
+        listener.testSucceeded(new SimpleReportEntry(test.testClass.getCanonicalName(),
+                getFullDescription(test.description)));
     }
 
     @Override
     public void testFail(Test test, AssertionError cause) {
         ReporterSupport.filterStackTrace(cause);
-        String description = getFullTestDescription(test);
+        String description = getFullDescription(test.description);
         listener.testFailed(new SimpleReportEntry(test.testClass.getCanonicalName(), description,
                 new PojoStackTraceWriter(test.testClass.getCanonicalName(), description, cause), 0));
     }
@@ -94,22 +107,40 @@ final class CuppaSurefireReporter implements Reporter {
     @Override
     public void testError(Test test, Throwable cause) {
         ReporterSupport.filterStackTrace(cause);
-        String description = getFullTestDescription(test);
+        String description = getFullDescription(test.description);
         listener.testError(new SimpleReportEntry(test.testClass.getCanonicalName(), description,
                 new PojoStackTraceWriter(test.testClass.getCanonicalName(), description, cause), 0));
     }
 
     @Override
     public void testPending(Test test) {
-        listener.testSkipped(new SimpleReportEntry(test.testClass.getCanonicalName(), getFullTestDescription(test)));
+        listener.testSkipped(new SimpleReportEntry(test.testClass.getCanonicalName(),
+                getFullDescription(test.description)));
     }
 
     @Override
     public void testSkip(Test test) {
-        listener.testSkipped(new SimpleReportEntry(test.testClass.getCanonicalName(), getFullTestDescription(test)));
+        listener.testSkipped(new SimpleReportEntry(test.testClass.getCanonicalName(),
+                getFullDescription(test.description)));
     }
 
-    private String getFullTestDescription(Test test) {
-        return (String.join(" ", blockStack) + " " + test.description).trim();
+    private String getFullDescription(String description) {
+        return (blockStack.stream().map(b -> b.description).collect(Collectors.joining(" ")) + " " + description)
+                .trim();
+    }
+
+    private String getHookType(HookType type) {
+        switch (type) {
+            case BEFORE:
+                return "before";
+            case BEFORE_EACH:
+                return "before each";
+            case AFTER_EACH:
+                return "after each";
+            case AFTER:
+                return "after";
+            default:
+                throw new IllegalStateException("unknown hook type");
+        }
     }
 }

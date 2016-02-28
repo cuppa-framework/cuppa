@@ -111,7 +111,7 @@
             <property name="sortImportsInGroupAlphabetically" value="true"/>
         </module>
         <module name="CyclomaticComplexity">
-            <property name="max" value="12"/>
+            <property name="max" value="13"/>
         </module>
         <module name="DeclarationOrder"/>
         <module name="DefaultComesLast"/>
@@ -223,7 +223,7 @@
         <module name="ParameterAssignment"/>
         <module name="ParameterName"/>
         <module name="ParameterNumber">
-            <property name="max" value="9"/>
+            <property name="max" value="10"/>
         </module>
         <module name="ParenPad"/>
         <module name="RedundantImport"/>

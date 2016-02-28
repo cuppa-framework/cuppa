@@ -16,6 +16,8 @@
 
 package org.forgerock.cuppa.internal;
 
+import static org.forgerock.cuppa.model.HookType.*;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -30,6 +32,7 @@ import org.forgerock.cuppa.model.TestBlock;
 final class TestBlockBuilder {
 
     private final Behaviour behaviour;
+    private final Class<?> testClass;
     private final String description;
     private final Options options;
     private final List<TestBlock> testBlocks = new ArrayList<>();
@@ -39,8 +42,9 @@ final class TestBlockBuilder {
     private final List<Hook> afterEachHooks = new ArrayList<>();
     private final List<Test> tests = new ArrayList<>();
 
-    TestBlockBuilder(Behaviour behaviour, String description, Options options) {
+    TestBlockBuilder(Behaviour behaviour, Class<?> testClass, String description, Options options) {
         this.behaviour = behaviour;
+        this.testClass = testClass;
         this.description = description;
         this.options = options;
     }
@@ -51,22 +55,22 @@ final class TestBlockBuilder {
     }
 
     TestBlockBuilder addBefore(Optional<String> description, HookFunction function) {
-        beforeHooks.add(new Hook(description, function));
+        beforeHooks.add(new Hook(BEFORE, description, function));
         return this;
     }
 
     TestBlockBuilder addAfter(Optional<String> description, HookFunction function) {
-        afterAfter.add(new Hook(description, function));
+        afterAfter.add(new Hook(AFTER, description, function));
         return this;
     }
 
     TestBlockBuilder addBeforeEach(Optional<String> description, HookFunction function) {
-        beforeEachHooks.add(new Hook(description, function));
+        beforeEachHooks.add(new Hook(BEFORE_EACH, description, function));
         return this;
     }
 
     TestBlockBuilder addAfterEach(Optional<String> description, HookFunction function) {
-        afterEachHooks.add(new Hook(description, function));
+        afterEachHooks.add(new Hook(AFTER_EACH, description, function));
         return this;
     }
 
@@ -76,7 +80,7 @@ final class TestBlockBuilder {
     }
 
     TestBlock build() {
-        return new TestBlock(behaviour, description, testBlocks, beforeHooks, afterAfter, beforeEachHooks,
+        return new TestBlock(behaviour, testClass, description, testBlocks, beforeHooks, afterAfter, beforeEachHooks,
                 afterEachHooks, tests, options);
     }
 }
