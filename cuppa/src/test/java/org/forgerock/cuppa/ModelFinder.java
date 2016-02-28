@@ -89,11 +89,6 @@ public final class ModelFinder {
     }
 
     private static Stream<Hook> getHooks(TestBlock block) {
-        Stream<Hook> hooks = concat(block.beforeHooks.stream(),
-                concat(block.afterHooks.stream(),
-                concat(block.beforeEachHooks.stream(),
-                block.afterEachHooks.stream())));
-        Stream<Hook> nestedHooks = block.testBlocks.stream().flatMap(ModelFinder::getHooks);
-        return concat(hooks, nestedHooks);
+        return concat(block.hooks.stream(), block.testBlocks.stream().flatMap(ModelFinder::getHooks));
     }
 }

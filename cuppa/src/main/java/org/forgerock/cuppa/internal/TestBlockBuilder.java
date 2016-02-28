@@ -36,10 +36,7 @@ final class TestBlockBuilder {
     private final String description;
     private final Options options;
     private final List<TestBlock> testBlocks = new ArrayList<>();
-    private final List<Hook> beforeHooks = new ArrayList<>();
-    private final List<Hook> afterAfter = new ArrayList<>();
-    private final List<Hook> beforeEachHooks = new ArrayList<>();
-    private final List<Hook> afterEachHooks = new ArrayList<>();
+    private final List<Hook> hooks = new ArrayList<>();
     private final List<Test> tests = new ArrayList<>();
 
     TestBlockBuilder(Behaviour behaviour, Class<?> testClass, String description, Options options) {
@@ -55,22 +52,22 @@ final class TestBlockBuilder {
     }
 
     TestBlockBuilder addBefore(Optional<String> description, HookFunction function) {
-        beforeHooks.add(new Hook(BEFORE, description, function));
+        hooks.add(new Hook(BEFORE, description, function));
         return this;
     }
 
     TestBlockBuilder addAfter(Optional<String> description, HookFunction function) {
-        afterAfter.add(new Hook(AFTER, description, function));
+        hooks.add(new Hook(AFTER, description, function));
         return this;
     }
 
     TestBlockBuilder addBeforeEach(Optional<String> description, HookFunction function) {
-        beforeEachHooks.add(new Hook(BEFORE_EACH, description, function));
+        hooks.add(new Hook(BEFORE_EACH, description, function));
         return this;
     }
 
     TestBlockBuilder addAfterEach(Optional<String> description, HookFunction function) {
-        afterEachHooks.add(new Hook(AFTER_EACH, description, function));
+        hooks.add(new Hook(AFTER_EACH, description, function));
         return this;
     }
 
@@ -80,7 +77,6 @@ final class TestBlockBuilder {
     }
 
     TestBlock build() {
-        return new TestBlock(behaviour, testClass, description, testBlocks, beforeHooks, afterAfter, beforeEachHooks,
-                afterEachHooks, tests, options);
+        return new TestBlock(behaviour, testClass, description, testBlocks, hooks, tests, options);
     }
 }

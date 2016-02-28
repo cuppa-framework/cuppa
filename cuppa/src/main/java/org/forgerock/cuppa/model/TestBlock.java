@@ -18,6 +18,7 @@ package org.forgerock.cuppa.model;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import com.google.common.collect.ImmutableList;
 
@@ -50,22 +51,7 @@ public final class TestBlock {
     /**
      * Before hooks. Will be run once before any tests in this test block are executed.
      */
-    public final ImmutableList<Hook> beforeHooks;
-
-    /**
-     * After hooks. Will be run once after all tests in this test block are executed.
-     */
-    public final ImmutableList<Hook> afterHooks;
-
-    /**
-     * Before each hooks. Will run before each test in this test block is executed.
-     */
-    public final ImmutableList<Hook> beforeEachHooks;
-
-    /**
-     * After each hooks. Will run after each test in this test block is executed.
-     */
-    public final ImmutableList<Hook> afterEachHooks;
+    public final ImmutableList<Hook> hooks;
 
     /**
      * Nested tests.
@@ -84,34 +70,24 @@ public final class TestBlock {
      * @param testClass The class that the test block was defined in.
      * @param description The description of the test block. Will be used for reporting.
      * @param testBlocks Nested test blocks.
-     * @param beforeHooks Before hooks. Will be run once before any tests in this test block are executed.
-     * @param afterHooks After hooks. Will be run once after all tests in this test block are executed.
-     * @param beforeEachHooks Before each hooks. Will run before each test in this test block is executed.
-     * @param afterEachHooks After each hooks. Will run after each test in this test block is executed.
+     * @param hooks Hooks associated with this test block.
      * @param tests Nested tests.
      * @param options The set of options applied to the block.
      */
     public TestBlock(Behaviour behaviour, Class<?> testClass, String description, List<TestBlock> testBlocks,
-            List<Hook> beforeHooks, List<Hook> afterHooks, List<Hook> beforeEachHooks, List<Hook> afterEachHooks,
-            List<Test> tests, Options options) {
+            List<Hook> hooks, List<Test> tests, Options options) {
         Objects.requireNonNull(behaviour, "TestBlock must have a behaviour");
         Objects.requireNonNull(testClass, "TestBlock must have a testClass");
         Objects.requireNonNull(description, "TestBlock must have a description");
         Objects.requireNonNull(testBlocks, "TestBlock must have testBlocks");
-        Objects.requireNonNull(beforeHooks, "TestBlock must have beforeHooks");
-        Objects.requireNonNull(afterHooks, "TestBlock must have afterHook");
-        Objects.requireNonNull(beforeEachHooks, "TestBlock must have beforeEachHooks");
-        Objects.requireNonNull(afterEachHooks, "TestBlock must have afterEachHooks");
+        Objects.requireNonNull(hooks, "TestBlock must have hooks");
         Objects.requireNonNull(tests, "TestBlock must have tests");
         Objects.requireNonNull(options, "TestBlock must have options");
         this.behaviour = behaviour;
         this.testClass = testClass;
         this.description = description;
         this.testBlocks = ImmutableList.copyOf(testBlocks);
-        this.beforeHooks = ImmutableList.copyOf(beforeHooks);
-        this.afterHooks = ImmutableList.copyOf(afterHooks);
-        this.beforeEachHooks = ImmutableList.copyOf(beforeEachHooks);
-        this.afterEachHooks = ImmutableList.copyOf(afterEachHooks);
+        this.hooks = ImmutableList.copyOf(hooks);
         this.tests = ImmutableList.copyOf(tests);
         this.options = Options.immutableCopyOf(options);
     }
@@ -131,18 +107,14 @@ public final class TestBlock {
             && Objects.equals(testClass, testBlock.testClass)
             && Objects.equals(description, testBlock.description)
             && Objects.equals(testBlocks, testBlock.testBlocks)
-            && Objects.equals(beforeHooks, testBlock.beforeHooks)
-            && Objects.equals(afterHooks, testBlock.afterHooks)
-            && Objects.equals(beforeEachHooks, testBlock.beforeEachHooks)
-            && Objects.equals(afterEachHooks, testBlock.afterEachHooks)
+            && Objects.equals(hooks, testBlock.hooks)
             && Objects.equals(tests, testBlock.tests)
             && Objects.equals(options, testBlock.options);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(behaviour, testClass, description, testBlocks, beforeHooks, afterHooks, beforeEachHooks,
-                afterEachHooks, tests, options);
+        return Objects.hash(behaviour, testClass, description, testBlocks, hooks, tests, options);
     }
 
     @Override
@@ -152,12 +124,21 @@ public final class TestBlock {
             + ", testClass=" + testClass
             + ", description='" + description + '\''
             + ", testBlocks=" + testBlocks
-            + ", beforeHooks=" + beforeHooks
-            + ", afterHooks=" + afterHooks
-            + ", beforeEachHooks=" + beforeEachHooks
-            + ", afterEachHooks=" + afterEachHooks
+            + ", hooks=" + hooks
             + ", tests=" + tests
             + ", options=" + options
             + '}';
+    }
+
+    /**
+     * Get all the registered hooks of the given type, in the order they were defined.
+     *
+     * @param type The type of hook to filter on.
+     * @return An immutable list of hooks.
+     */
+    public ImmutableList<Hook> hooksOfType(HookType type) {
+        return hooks.stream()
+                .filter(h -> h.type == type)
+                .collect(Collectors.collectingAndThen(Collectors.toList(), ImmutableList::copyOf));
     }
 }

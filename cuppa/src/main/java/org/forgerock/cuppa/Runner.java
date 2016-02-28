@@ -16,6 +16,8 @@
 
 package org.forgerock.cuppa;
 
+import static org.forgerock.cuppa.model.HookType.*;
+
 import java.util.Iterator;
 import java.util.List;
 import java.util.ServiceLoader;
@@ -138,7 +140,7 @@ public final class Runner {
         TestWrapper testWrapper = createWrapper(testBlock, outerTestWrapper, reporter);
         try {
             reporter.describeStart(testBlock);
-            for (Hook hook : testBlock.beforeHooks) {
+            for (Hook hook : testBlock.hooksOfType(BEFORE)) {
                 try {
                     hook.function.apply();
                 } catch (Exception e) {
@@ -188,7 +190,7 @@ public final class Runner {
     private TestWrapper createWrapper(TestBlock testBlock, TestWrapper outerTestRunner, Reporter reporter) {
         return outerTestRunner.compose((f) -> {
             try {
-                for (Hook hook : testBlock.beforeEachHooks) {
+                for (Hook hook : testBlock.hooksOfType(BEFORE_EACH)) {
                     try {
                         hook.function.apply();
                     } catch (Exception e) {
@@ -198,7 +200,7 @@ public final class Runner {
                 }
                 f.apply();
             } finally {
-                for (Hook hook : testBlock.afterEachHooks) {
+                for (Hook hook : testBlock.hooksOfType(AFTER_EACH)) {
                     try {
                         hook.function.apply();
                     } catch (Exception e) {
@@ -211,7 +213,7 @@ public final class Runner {
     }
 
     private void runAfterHooks(TestBlock testBlock, Reporter reporter) {
-        for (Hook hook : testBlock.afterHooks) {
+        for (Hook hook : testBlock.hooksOfType(AFTER)) {
             try {
                 hook.function.apply();
             } catch (Exception e) {
