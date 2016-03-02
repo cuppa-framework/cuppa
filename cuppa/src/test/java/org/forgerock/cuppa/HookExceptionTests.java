@@ -782,4 +782,33 @@ public class HookExceptionTests extends AbstractTest {
         //Then
         verify(reporter).hookError(eq(findHook("hook")), isA(Exception.class));
     }
+
+    @DataProvider
+    private Iterator<Object[]> hooksThrowThrowable() {
+        return ALL_HOOKS.stream()
+                .map(f -> (TestBlockFunction) () -> f.accept("hook", () -> {
+                    throw new AssertionError();
+                }))
+                .map(f -> new Object[]{f})
+                .iterator();
+    }
+
+    @Test(dataProvider = "hooksThrowThrowable")
+    public void shouldAllowHookToThrowThrowable(TestBlockFunction hook) throws Exception {
+
+        //Given
+        Reporter reporter = mock(Reporter.class);
+        {
+            describe("before blocks", () -> {
+                hook.apply();
+                it("a test", TestFunction.identity());
+            });
+        }
+
+        //When
+        runTests(reporter);
+
+        //Then
+        verify(reporter).hookError(eq(findHook("hook")), isA(AssertionError.class));
+    }
 }

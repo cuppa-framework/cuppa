@@ -143,7 +143,7 @@ public final class Runner {
             for (Hook hook : testBlock.hooksOfType(BEFORE)) {
                 try {
                     hook.function.apply();
-                } catch (Exception e) {
+                } catch (Throwable e) {
                     reporter.hookError(hook, e);
                     return;
                 }
@@ -157,7 +157,7 @@ public final class Runner {
             if (e.getTestBlock() != testBlock) {
                 throw e;
             }
-        } catch (Exception e) {
+        } catch (Throwable e) {
             // This should never happen if the test framework is correct because
             // all exceptions from user code should've been caught by now.
             throw new RuntimeException(e);
@@ -177,7 +177,7 @@ public final class Runner {
                 reporter.testPass(test);
             } catch (AssertionError e) {
                 reporter.testFail(test, e);
-            } catch (Exception e) {
+            } catch (Throwable e) {
                 reporter.testError(test, e);
             } finally {
                 reporter.testEnd(test);
@@ -193,7 +193,7 @@ public final class Runner {
                 for (Hook hook : testBlock.hooksOfType(BEFORE_EACH)) {
                     try {
                         hook.function.apply();
-                    } catch (Exception e) {
+                    } catch (Throwable e) {
                         reporter.hookError(hook, e);
                         throw new HookException(testBlock, e);
                     }
@@ -203,7 +203,7 @@ public final class Runner {
                 for (Hook hook : testBlock.hooksOfType(AFTER_EACH)) {
                     try {
                         hook.function.apply();
-                    } catch (Exception e) {
+                    } catch (Throwable e) {
                         reporter.hookError(hook, e);
                         throw new HookException(testBlock, e);
                     }
@@ -216,7 +216,7 @@ public final class Runner {
         for (Hook hook : testBlock.hooksOfType(AFTER)) {
             try {
                 hook.function.apply();
-            } catch (Exception e) {
+            } catch (Throwable e) {
                 reporter.hookError(hook, e);
                 return;
             }
