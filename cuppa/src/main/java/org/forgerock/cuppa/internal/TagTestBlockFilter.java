@@ -68,7 +68,7 @@ public final class TagTestBlockFilter implements Function<TestBlock, TestBlock> 
     }
 
     private boolean shouldInclude(Set<String> testTags) {
-        return !intersection(testTags, runTags.tags).isEmpty();
+        return runTags.tags.isEmpty() || !intersection(testTags, runTags.tags).isEmpty();
     }
 
     private boolean shouldExclude(Set<String> testTags) {

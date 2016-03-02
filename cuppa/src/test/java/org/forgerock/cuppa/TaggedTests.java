@@ -331,6 +331,31 @@ public class TaggedTests extends AbstractTest {
     }
 
     @Test
+    public void shouldRunTestsWhichDoNotMatchExcludedTags() throws Exception {
+
+        //Given
+        Reporter reporter = mock(Reporter.class);
+        TestFunction taggedFunction = mock(TestFunction.class);
+        TestFunction untaggedFunction = mock(TestFunction.class);
+        Set<String> excludedTags = Collections.singleton("smoke");
+        {
+            with(tags("something")).
+            describe("tagged tests", () -> {
+                with(tags("smoke")).
+                it("excludes the tagged test", taggedFunction);
+                it("runs the untagged test", untaggedFunction);
+            });
+        }
+
+        //When
+        runTests(reporter, Tags.excludedTags(excludedTags));
+
+        //Then
+        verify(taggedFunction, never()).apply();
+        verify(untaggedFunction).apply();
+    }
+
+    @Test
     public void shouldNotRunTestsWhichMatchBothRunTagsAndExcludedTags() throws Exception {
 
         //Given
