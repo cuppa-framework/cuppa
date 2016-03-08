@@ -38,6 +38,7 @@ import org.forgerock.cuppa.model.Behaviour;
 import org.forgerock.cuppa.model.Hook;
 import org.forgerock.cuppa.model.Options;
 import org.forgerock.cuppa.model.Tags;
+import org.forgerock.cuppa.model.Test;
 import org.forgerock.cuppa.model.TestBlock;
 import org.forgerock.cuppa.reporters.Reporter;
 
@@ -159,8 +160,8 @@ public final class Runner {
                     return;
                 }
             }
-            for (org.forgerock.cuppa.model.Test t : testBlock.tests) {
-                testWrapper.apply(() -> runTest(t, combinedBehaviour, reporter));
+            for (Test t : testBlock.tests) {
+                runTest(t, testWrapper, combinedBehaviour, reporter);
             }
             testBlock.testBlocks.stream()
                     .forEach((d) -> runTests(d, combinedBehaviour, reporter, testWrapper));
@@ -178,19 +179,21 @@ public final class Runner {
         }
     }
 
-    private void runTest(org.forgerock.cuppa.model.Test test, Behaviour behaviour, Reporter reporter) {
+    private void runTest(Test test, TestWrapper testWrapper, Behaviour behaviour, Reporter reporter) throws Exception {
         if (!test.function.isPresent()) {
             reporter.testPending(test);
         } else if (behaviour.combine(test.behaviour) != Behaviour.SKIP) {
-            try {
-                reporter.testStart(test);
-                test.function.get().apply();
-                reporter.testPass(test);
-            } catch (Throwable e) {
-                reporter.testFail(test, e);
-            } finally {
-                reporter.testEnd(test);
-            }
+            testWrapper.apply(() -> {
+                try {
+                    reporter.testStart(test);
+                    test.function.get().apply();
+                    reporter.testPass(test);
+                } catch (Throwable e) {
+                    reporter.testFail(test, e);
+                } finally {
+                    reporter.testEnd(test);
+                }
+            });
         } else {
             reporter.testSkip(test);
         }

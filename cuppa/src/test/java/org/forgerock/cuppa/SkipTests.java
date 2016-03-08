@@ -23,6 +23,7 @@ import static org.forgerock.cuppa.TestCuppaSupport.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
+import org.forgerock.cuppa.functions.HookFunction;
 import org.forgerock.cuppa.functions.TestFunction;
 import org.forgerock.cuppa.model.TestBlock;
 import org.forgerock.cuppa.reporters.Reporter;
@@ -274,5 +275,111 @@ public class SkipTests {
 
         //Then
         verify(testFunction, never()).apply();
+    }
+
+    @Test
+    public void shouldNotRunEachHooksIfTestIsMarkedAsSkip() throws Exception {
+
+        //Given
+        HookFunction hookFunction = mock(HookFunction.class);
+        TestBlock rootBlock = defineTests(() -> {
+            describe("describe", () -> {
+                beforeEach(hookFunction);
+                afterEach(hookFunction);
+                skip().it("test", TestFunction.identity());
+            });
+        });
+
+        //When
+        runTests(rootBlock, mock(Reporter.class));
+
+        //Then
+        verify(hookFunction, never()).apply();
+    }
+
+    @Test
+    public void shouldRunOneTimeHooksIfTestIsMarkedAsSkip() throws Exception {
+
+        //Given
+        HookFunction hookFunction = mock(HookFunction.class);
+        TestBlock rootBlock = defineTests(() -> {
+            describe("describe", () -> {
+                before(hookFunction);
+                after(hookFunction);
+                skip().it("test", TestFunction.identity());
+            });
+        });
+
+        //When
+        runTests(rootBlock, mock(Reporter.class));
+
+        //Then
+        verify(hookFunction, times(2)).apply();
+    }
+
+    @Test
+    public void shouldNotRunEachHooksIfTestBlockIsMarkedAsSkip() throws Exception {
+
+        //Given
+        HookFunction hookFunction = mock(HookFunction.class);
+        TestBlock rootBlock = defineTests(() -> {
+            skip().describe("describe", () -> {
+                beforeEach(hookFunction);
+                afterEach(hookFunction);
+                it("test", TestFunction.identity());
+            });
+        });
+
+        //When
+        runTests(rootBlock, mock(Reporter.class));
+
+        //Then
+        verify(hookFunction, never()).apply();
+    }
+
+    @Test
+    public void shouldNotRunEachHooksIfAnotherTestIsMarkedAsOnly() throws Exception {
+
+        //Given
+        HookFunction hookFunction = mock(HookFunction.class);
+        TestBlock rootBlock = defineTests(() -> {
+            describe("describe", () -> {
+                beforeEach(hookFunction);
+                afterEach(hookFunction);
+                it("skipped test", TestFunction.identity());
+            });
+            describe("another describe", () -> {
+                only().it("test", TestFunction.identity());
+            });
+        });
+
+        //When
+        runTests(rootBlock, mock(Reporter.class));
+
+        //Then
+        verify(hookFunction, never()).apply();
+    }
+
+    @Test
+    public void shouldNotRunEachHooksIfAnotherTestBlockIsMarkedAsOnly() throws Exception {
+
+        //Given
+        HookFunction hookFunction = mock(HookFunction.class);
+        TestBlock rootBlock = defineTests(() -> {
+            describe("describe", () -> {
+                beforeEach(hookFunction);
+                afterEach(hookFunction);
+                it("skipped test", TestFunction.identity());
+            });
+            only().describe("another describe", () -> {
+                it("test", TestFunction.identity());
+            });
+        });
+
+        //When
+        runTests(rootBlock, mock(Reporter.class));
+
+        //Then
+        verify(hookFunction, never()).apply();
     }
 }
