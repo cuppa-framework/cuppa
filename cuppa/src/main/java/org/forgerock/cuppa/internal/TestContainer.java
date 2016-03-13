@@ -92,6 +92,7 @@ public enum TestContainer {
      * @param function The 'when' block.
      */
     public void when(String description, TestBlockFunction function) {
+        assertNotRunningTests("when");
         new TestBuilderImpl().when(description, function);
     }
 
@@ -112,7 +113,7 @@ public enum TestContainer {
      */
     public void before(String description, HookFunction function) {
         assertNotRunningTests("before");
-        assertNotRootDescribeBlock("when", "describe");
+        assertNotRootDescribeBlock("before");
         getCurrentDescribeBlock().addBefore(Optional.ofNullable(description), function);
     }
 
@@ -133,7 +134,7 @@ public enum TestContainer {
      */
     public void after(String description, HookFunction function) {
         assertNotRunningTests("after");
-        assertNotRootDescribeBlock("when", "describe");
+        assertNotRootDescribeBlock("after");
         getCurrentDescribeBlock().addAfter(Optional.ofNullable(description), function);
     }
 
@@ -154,7 +155,7 @@ public enum TestContainer {
      */
     public void beforeEach(String description, HookFunction function) {
         assertNotRunningTests("beforeEach");
-        assertNotRootDescribeBlock("when", "describe");
+        assertNotRootDescribeBlock("beforeEach");
         getCurrentDescribeBlock().addBeforeEach(Optional.ofNullable(description), function);
     }
 
@@ -175,7 +176,7 @@ public enum TestContainer {
      */
     public void afterEach(String description, HookFunction function) {
         assertNotRunningTests("afterEach");
-        assertNotRootDescribeBlock("when", "describe");
+        assertNotRootDescribeBlock("afterEach");
         getCurrentDescribeBlock().addAfterEach(Optional.ofNullable(description), function);
     }
 
@@ -211,7 +212,7 @@ public enum TestContainer {
      */
     public void it(Behaviour behaviour, String description, Optional<TestFunction> function, Options options) {
         assertNotRunningTests("it");
-        assertNotRootDescribeBlock("it", "when", "describe");
+        assertNotRootDescribeBlock("it");
         getCurrentDescribeBlock().addTest(new Test(behaviour, testClass, description, function, options));
     }
 
@@ -298,15 +299,13 @@ public enum TestContainer {
 
     private void assertNotRunningTests(String blockType) {
         if (runningTests) {
-            throw new CuppaException(new IllegalStateException("Cannot declare new '" + blockType
-                    + "' block whilst running tests"));
+            throw new CuppaException("'" + blockType + "' may only be nested within a 'describe' or 'when' block");
         }
     }
 
-    private void assertNotRootDescribeBlock(String blockType, String... allowedBlockTypes) {
+    private void assertNotRootDescribeBlock(String blockType) {
         if (getCurrentDescribeBlock().equals(rootBuilder)) {
-            throw new CuppaException(new IllegalStateException("A '" + blockType + "' must be nested within a "
-                    + String.join(", ", allowedBlockTypes) + " function"));
+            throw new CuppaException("'" + blockType + "' must be nested within a 'describe' or 'when' block");
         }
     }
 

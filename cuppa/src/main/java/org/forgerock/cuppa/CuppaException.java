@@ -17,17 +17,27 @@
 package org.forgerock.cuppa;
 
 /**
- * Thrown to indicate that a failure whilst running Cuppa tests.
+ * Thrown to indicate that an error occurred whilst running Cuppa tests.
  */
 public final class CuppaException extends RuntimeException {
 
     /**
-     * Constructs a new Cuppa exception with the specified cause.
+     * Constructs a new Cuppa exception with the given message and cause.
      *
+     * @param message the String that contains a detailed message.
      * @param cause The cause. (A {@code null} value is permitted, and indicates that the cause
      *         is nonexistent or unknown.)
      */
-    public CuppaException(Throwable cause) {
-        super(cause);
+    public CuppaException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
+    /**
+     * Constructs a new Cuppa exception with the given message.
+     *
+     * @param message the String that contains a detailed message.
+     */
+    public CuppaException(String message) {
+        super(message);
     }
 }

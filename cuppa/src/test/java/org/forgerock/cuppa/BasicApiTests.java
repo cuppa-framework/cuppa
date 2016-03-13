@@ -28,6 +28,7 @@ import java.util.stream.Stream;
 
 import org.forgerock.cuppa.functions.TestFunction;
 import org.forgerock.cuppa.reporters.Reporter;
+import org.mockito.ArgumentCaptor;
 import org.testng.annotations.Test;
 
 public class BasicApiTests extends AbstractTest {
@@ -146,7 +147,8 @@ public class BasicApiTests extends AbstractTest {
 
         //When/Then
         assertThatThrownBy(() -> it("basic API usage", testFunction))
-                .hasCauseInstanceOf(IllegalStateException.class);
+                .isExactlyInstanceOf(CuppaException.class)
+                .hasMessage("'it' must be nested within a 'describe' or 'when' block");
         verify(testFunction, never()).apply();
     }
 
@@ -170,7 +172,11 @@ public class BasicApiTests extends AbstractTest {
         runTests(reporter);
 
         //Then
-        verify(reporter).testFail(eq(findTest("runs the test, which errors")), isA(CuppaException.class));
+        ArgumentCaptor<Throwable> captor = ArgumentCaptor.forClass(Throwable.class);
+        verify(reporter).testFail(eq(findTest("runs the test, which errors")), captor.capture());
+        assertThat(captor.getValue())
+                .isExactlyInstanceOf(CuppaException.class)
+                .hasMessage("'describe' may only be nested within a 'describe' or 'when' block");
     }
 
     @Test
@@ -193,7 +199,38 @@ public class BasicApiTests extends AbstractTest {
         runTests(reporter);
 
         //Then
-        verify(reporter).testFail(eq(findTest("runs the test, which errors")), isA(CuppaException.class));
+        ArgumentCaptor<Throwable> captor = ArgumentCaptor.forClass(Throwable.class);
+        verify(reporter).testFail(eq(findTest("runs the test, which errors")), captor.capture());
+        assertThat(captor.getValue())
+                .isExactlyInstanceOf(CuppaException.class)
+                .hasMessage("'when' may only be nested within a 'describe' or 'when' block");
+    }
+
+    @Test
+    public void basicApiUsageShouldReportTestErrorWithTestNestedUnderItBlock() {
+
+        //Given
+        Reporter reporter = mock(Reporter.class);
+        {
+            describe("basic API usage", () -> {
+                when("the 'when' block is run", () -> {
+                    it("runs the test, which errors", () -> {
+                        it("invalid use of 'it'", () -> {
+                        });
+                    });
+                });
+            });
+        }
+
+        //When
+        runTests(reporter);
+
+        //Then
+        ArgumentCaptor<Throwable> captor = ArgumentCaptor.forClass(Throwable.class);
+        verify(reporter).testFail(eq(findTest("runs the test, which errors")), captor.capture());
+        assertThat(captor.getValue())
+                .isExactlyInstanceOf(CuppaException.class)
+                .hasMessage("'it' may only be nested within a 'describe' or 'when' block");
     }
 
     @Test

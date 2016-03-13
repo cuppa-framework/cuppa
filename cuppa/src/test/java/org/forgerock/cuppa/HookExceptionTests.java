@@ -16,33 +16,35 @@
 
 package org.forgerock.cuppa;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.forgerock.cuppa.Cuppa.*;
 import static org.forgerock.cuppa.ModelFinder.findHook;
 import static org.forgerock.cuppa.ModelFinder.findTest;
 import static org.mockito.Mockito.*;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
+import java.util.Map;
 import java.util.function.BiConsumer;
 
 import org.forgerock.cuppa.functions.HookFunction;
 import org.forgerock.cuppa.functions.TestBlockFunction;
 import org.forgerock.cuppa.functions.TestFunction;
 import org.forgerock.cuppa.reporters.Reporter;
+import org.mockito.ArgumentCaptor;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 public class HookExceptionTests extends AbstractTest {
 
-    private static final List<BiConsumer<String, HookFunction>> ALL_HOOKS =
-            new ArrayList<BiConsumer<String, HookFunction>>() {
+    private static final Map<String, BiConsumer<String, HookFunction>> ALL_HOOKS =
+            new HashMap<String, BiConsumer<String, HookFunction>>() {
         {
-            add(Cuppa::before);
-            add(Cuppa::after);
-            add(Cuppa::beforeEach);
-            add(Cuppa::afterEach);
+            put("before", Cuppa::before);
+            put("after", Cuppa::after);
+            put("beforeEach", Cuppa::beforeEach);
+            put("afterEach", Cuppa::afterEach);
         }
     };
 
@@ -668,9 +670,10 @@ public class HookExceptionTests extends AbstractTest {
 
     @DataProvider
     private Iterator<Object[]> testInHooks() {
-        return ALL_HOOKS.stream()
-                .map(f -> (TestBlockFunction) () -> f.accept("hook", () -> it("", TestFunction.identity())))
-                .map(f -> new Object[]{f})
+        return ALL_HOOKS.values().stream()
+                .map(f -> new Object[] {
+                        (TestBlockFunction) () -> f.accept("hook", () -> it("", TestFunction.identity())),
+                })
                 .iterator();
     }
 
@@ -690,24 +693,32 @@ public class HookExceptionTests extends AbstractTest {
         runTests(reporter);
 
         //Then
-        verify(reporter).hookError(eq(findHook("hook")), isA(CuppaException.class));
+        ArgumentCaptor<Throwable> captor = ArgumentCaptor.forClass(Throwable.class);
+        verify(reporter).hookError(eq(findHook("hook")), captor.capture());
+        assertThat(captor.getValue())
+                .isExactlyInstanceOf(CuppaException.class)
+                .hasMessageMatching("'it' may only be nested within a 'describe' or 'when' block");
     }
 
     @DataProvider
     private Iterator<Object[]> hooks() {
-        return ALL_HOOKS.stream()
-                .map(f -> (TestFunction) () -> f.accept("hook", HookFunction.identity()))
-                .map(f -> new Object[]{f})
+        return ALL_HOOKS.entrySet().stream()
+                .map(e -> new Object[]{
+                        e.getKey(),
+                        (TestFunction) () -> e.getValue().accept("hook", HookFunction.identity()),
+                })
                 .iterator();
     }
 
     @Test(dataProvider = "hooks")
-    public void addingHookAtTopLevelShouldThrowException(TestFunction hook) {
-        assertThatThrownBy(hook::apply).hasCauseInstanceOf(IllegalStateException.class);
+    public void addingHookAtTopLevelShouldThrowException(String hookName, TestFunction hook) {
+        assertThatThrownBy(hook::apply)
+                .isExactlyInstanceOf(CuppaException.class)
+                .hasMessageMatching("'" + hookName + "' must be nested within a 'describe' or 'when' block");
     }
 
     @Test(dataProvider = "hooks")
-    public void addingHookInTestShouldThrowException(TestFunction hook) {
+    public void addingHookInTestShouldThrowException(String hookName, TestFunction hook) {
 
         //Given
         Reporter reporter = mock(Reporter.class);
@@ -721,22 +732,27 @@ public class HookExceptionTests extends AbstractTest {
         runTests(reporter);
 
         //Then
-        verify(reporter).testFail(eq(findTest("will cause the test to throw an error")), isA(CuppaException.class));
+        ArgumentCaptor<Throwable> captor = ArgumentCaptor.forClass(Throwable.class);
+        verify(reporter).testFail(eq(findTest("will cause the test to throw an error")), captor.capture());
+        assertThat(captor.getValue())
+                .isExactlyInstanceOf(CuppaException.class)
+                .hasMessageMatching("'" + hookName + "' may only be nested within a 'describe' or 'when' block");
     }
 
     @DataProvider
     private Iterator<Object[]> hooksInHooks() {
-        return ALL_HOOKS.stream()
+        return ALL_HOOKS.values().stream()
                 .flatMap(f ->
-                        ALL_HOOKS.stream().map(g ->
+                        ALL_HOOKS.entrySet().stream().map(e -> new Object[] {
+                                e.getKey(),
                                 (TestBlockFunction) () -> f.accept("hook",
-                                        () -> g.accept("", HookFunction.identity()))))
-                .map(f -> new Object[]{f})
+                                        () -> e.getValue().accept("", HookFunction.identity())),
+                        }))
                 .iterator();
     }
 
     @Test(dataProvider = "hooksInHooks")
-    public void addingNestedHookInHookShouldThrowException(TestBlockFunction nestedHook) {
+    public void addingNestedHookInHookShouldThrowException(String hookName, TestBlockFunction nestedHook) {
 
         //Given
         Reporter reporter = mock(Reporter.class);
@@ -751,12 +767,16 @@ public class HookExceptionTests extends AbstractTest {
         runTests(reporter);
 
         //Then
-        verify(reporter).hookError(eq(findHook("hook")), isA(CuppaException.class));
+        ArgumentCaptor<Throwable> captor = ArgumentCaptor.forClass(Throwable.class);
+        verify(reporter).hookError(eq(findHook("hook")), captor.capture());
+        assertThat(captor.getValue())
+                .isExactlyInstanceOf(CuppaException.class)
+                .hasMessageMatching("'" + hookName + "' may only be nested within a 'describe' or 'when' block");
     }
 
     @DataProvider
     private Iterator<Object[]> hooksThrowExceptions() {
-        return ALL_HOOKS.stream()
+        return ALL_HOOKS.values().stream()
                 .map(f -> (TestBlockFunction) () -> f.accept("hook", () -> {
                     throw new Exception();
                 }))
@@ -785,7 +805,7 @@ public class HookExceptionTests extends AbstractTest {
 
     @DataProvider
     private Iterator<Object[]> hooksThrowThrowable() {
-        return ALL_HOOKS.stream()
+        return ALL_HOOKS.values().stream()
                 .map(f -> (TestBlockFunction) () -> f.accept("hook", () -> {
                     throw new AssertionError();
                 }))

@@ -109,7 +109,7 @@ public final class Runner {
             } catch (CuppaException e) {
                 throw e;
             } catch (Exception e) {
-                throw new IllegalStateException("Must be able to instantiate test class", e);
+                throw new CuppaException("Failed to instantiate test class", e);
             }
         }
         return TestContainer.INSTANCE.getRootTestBlock();
@@ -121,7 +121,7 @@ public final class Runner {
         if (iterator.hasNext()) {
             ConfigurationProvider configurationProvider = iterator.next();
             if (iterator.hasNext()) {
-                throw new IllegalStateException("There must only be a single configuration provider available on the"
+                throw new CuppaException("There must only be a single configuration provider available on the "
                         + "classpath");
             }
             configurationProvider.configure(configuration);
