@@ -16,11 +16,10 @@
 
 package org.forgerock.cuppa.model;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-
-import com.google.common.collect.ImmutableMap;
 
 /**
  * A set of options. Options allow Cuppa's data model to be extended to include additional metadata about tests and test
@@ -46,7 +45,7 @@ public final class Options {
      * @return An immutable set of options.
      */
     public static Options immutableCopyOf(Options options) {
-        return new Options(ImmutableMap.copyOf(options.options));
+        return new Options(Collections.unmodifiableMap(new HashMap<>(options.options)));
     }
 
     /**

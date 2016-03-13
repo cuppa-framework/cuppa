@@ -19,11 +19,12 @@ package org.forgerock.cuppa.internal;
 import static org.forgerock.cuppa.model.Behaviour.NORMAL;
 
 import java.util.ArrayDeque;
+import java.util.Arrays;
 import java.util.Deque;
+import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
-import com.google.common.collect.ImmutableSet;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.forgerock.cuppa.Cuppa;
 import org.forgerock.cuppa.CuppaException;
@@ -256,7 +257,9 @@ public enum TestContainer {
      * @return An option.
      */
     public Option tags(String tag, String... tags) {
-        Set<String> set = ImmutableSet.<String>builder().add(tag).add(tags).build();
+        Set<String> set = new HashSet<>();
+        set.add(tag);
+        set.addAll(Arrays.asList(tags));
         return new TagsOption(set);
     }
 

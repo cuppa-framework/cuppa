@@ -16,9 +16,9 @@
 
 package org.forgerock.cuppa.model;
 
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Set;
-
-import com.google.common.collect.ImmutableSet;
 
 /**
  * An option for tagging tests and test blocks. Tags can be used to group tests together to be included or excluded from
@@ -31,6 +31,6 @@ public final class TagsOption extends Option<Set<String>> {
      * @param value A set of tags.
      */
     public TagsOption(Set<String> value) {
-        super(ImmutableSet.copyOf(value));
+        super(Collections.unmodifiableSet(new HashSet<>(value)));
     }
 }

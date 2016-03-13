@@ -16,10 +16,8 @@
 
 package org.forgerock.cuppa.internal;
 
-import static com.google.common.collect.Sets.intersection;
-import static com.google.common.collect.Sets.union;
-
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
@@ -81,5 +79,17 @@ public final class TagTestBlockFilter implements Function<TestBlock, TestBlock> 
 
     private Set<String> getTags(Options options) {
         return options.get(TagsOption.class).orElse(Collections.emptySet());
+    }
+
+    private <T> Set<T> union(Set<T> a, Set<T> b) {
+        Set<T> union = new HashSet<>(a);
+        union.addAll(b);
+        return union;
+    }
+
+    private <T> Set<T> intersection(Set<T> a, Set<T> b) {
+        Set<T> intersection = new HashSet<>(a);
+        intersection.retainAll(b);
+        return intersection;
     }
 }

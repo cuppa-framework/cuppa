@@ -16,11 +16,11 @@
 
 package org.forgerock.cuppa.model;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
-
-import com.google.common.collect.ImmutableList;
 
 /**
  * Encapsulates the 'describe' and 'when' function blocks and all nested 'describe', 'when' and
@@ -46,17 +46,17 @@ public final class TestBlock {
     /**
      * Nested test blocks.
      */
-    public final ImmutableList<TestBlock> testBlocks;
+    public final List<TestBlock> testBlocks;
 
     /**
      * Before hooks. Will be run once before any tests in this test block are executed.
      */
-    public final ImmutableList<Hook> hooks;
+    public final List<Hook> hooks;
 
     /**
      * Nested tests.
      */
-    public final ImmutableList<Test> tests;
+    public final List<Test> tests;
 
     /**
      * The set of options applied to the block.
@@ -86,9 +86,9 @@ public final class TestBlock {
         this.behaviour = behaviour;
         this.testClass = testClass;
         this.description = description;
-        this.testBlocks = ImmutableList.copyOf(testBlocks);
-        this.hooks = ImmutableList.copyOf(hooks);
-        this.tests = ImmutableList.copyOf(tests);
+        this.testBlocks = Collections.unmodifiableList(new ArrayList<>(testBlocks));
+        this.hooks = Collections.unmodifiableList(new ArrayList<>(hooks));
+        this.tests = Collections.unmodifiableList(new ArrayList<>(tests));
         this.options = Options.immutableCopyOf(options);
     }
 
@@ -136,9 +136,9 @@ public final class TestBlock {
      * @param type The type of hook to filter on.
      * @return An immutable list of hooks.
      */
-    public ImmutableList<Hook> hooksOfType(HookType type) {
+    public List<Hook> hooksOfType(HookType type) {
         return hooks.stream()
                 .filter(h -> h.type == type)
-                .collect(Collectors.collectingAndThen(Collectors.toList(), ImmutableList::copyOf));
+                .collect(Collectors.toList());
     }
 }

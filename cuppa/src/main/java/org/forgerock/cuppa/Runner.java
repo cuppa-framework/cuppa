@@ -18,15 +18,13 @@ package org.forgerock.cuppa;
 
 import static org.forgerock.cuppa.model.HookType.*;
 
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ServiceLoader;
 import java.util.function.Function;
-import java.util.stream.StreamSupport;
+import java.util.stream.Stream;
 
-import com.google.common.annotations.VisibleForTesting;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Iterables;
 import org.forgerock.cuppa.functions.TestFunction;
 import org.forgerock.cuppa.internal.EmptyTestBlockFilter;
 import org.forgerock.cuppa.internal.HookException;
@@ -46,7 +44,7 @@ public final class Runner {
     private static final ServiceLoader<ConfigurationProvider> CONFIGURATION_PROVIDER_LOADER
             = ServiceLoader.load(ConfigurationProvider.class);
 
-    private final ImmutableList<Function<TestBlock, TestBlock>> coreTestTransforms;
+    private final List<Function<TestBlock, TestBlock>> coreTestTransforms;
     private final Configuration configuration;
 
     /**
@@ -63,9 +61,8 @@ public final class Runner {
      */
     public Runner(Tags runTags) {
         configuration = getConfiguration();
-        coreTestTransforms =
-                ImmutableList.of(new OnlyTestBlockFilter(), new TagTestBlockFilter(runTags),
-                        new EmptyTestBlockFilter());
+        coreTestTransforms = Arrays.asList(new OnlyTestBlockFilter(), new TagTestBlockFilter(runTags),
+                new EmptyTestBlockFilter());
     }
 
     /**
@@ -78,7 +75,7 @@ public final class Runner {
         run(rootBlock, reporter, configuration);
     }
 
-    @VisibleForTesting
+    // Visible for testing
     void run(TestBlock rootBlock, Reporter reporter, Configuration configuration) {
         TestContainer.INSTANCE.setRunningTests(true);
         try {
@@ -130,7 +127,7 @@ public final class Runner {
     }
 
     private TestBlock transformTests(TestBlock rootBlock, List<Function<TestBlock, TestBlock>> transforms) {
-        return StreamSupport.stream(Iterables.concat(transforms, coreTestTransforms).spliterator(), false)
+        return Stream.concat(transforms.stream(), coreTestTransforms.stream())
                 .reduce(Function.identity(), Function::andThen)
                 .apply(rootBlock);
     }
