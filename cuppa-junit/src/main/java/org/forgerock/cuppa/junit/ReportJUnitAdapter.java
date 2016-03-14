@@ -22,7 +22,6 @@ import java.util.stream.Collectors;
 
 import org.forgerock.cuppa.ReporterSupport;
 import org.forgerock.cuppa.model.Hook;
-import org.forgerock.cuppa.model.HookType;
 import org.forgerock.cuppa.model.Test;
 import org.forgerock.cuppa.model.TestBlock;
 import org.forgerock.cuppa.reporters.Reporter;
@@ -72,7 +71,7 @@ final class ReportJUnitAdapter implements Reporter {
     @Override
     public void hookError(Hook hook, Throwable cause) {
         ReporterSupport.filterStackTrace(cause);
-        String description = "\"" + getHookType(hook.type) + "\" hook";
+        String description = "\"" + hook.type.description + "\" hook";
         if (hook.description.isPresent()) {
             description += " \"" + hook.description.get() + "\"";
         }
@@ -118,20 +117,5 @@ final class ReportJUnitAdapter implements Reporter {
                 .collect(Collectors.joining());
         String uniqueId = blockId + description;
         return Description.createTestDescription(testClass.getName(), description, uniqueId);
-    }
-
-    private String getHookType(HookType type) {
-        switch (type) {
-            case BEFORE:
-                return "before";
-            case BEFORE_EACH:
-                return "before each";
-            case AFTER_EACH:
-                return "after each";
-            case AFTER:
-                return "after";
-            default:
-                throw new IllegalStateException("unknown hook type");
-        }
     }
 }

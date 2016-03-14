@@ -29,7 +29,6 @@ import java.util.stream.Stream;
 
 import org.forgerock.cuppa.ReporterSupport;
 import org.forgerock.cuppa.model.Hook;
-import org.forgerock.cuppa.model.HookType;
 import org.forgerock.cuppa.model.Test;
 import org.forgerock.cuppa.model.TestBlock;
 
@@ -117,7 +116,7 @@ public final class DefaultReporter implements Reporter {
 
     @Override
     public void hookError(Hook hook, Throwable cause) {
-        String description = "\"" + getHookType(hook.type) + "\" hook";
+        String description = "\"" + hook.type.description + "\" hook";
         if (hook.description.isPresent()) {
             description += " \"" + hook.description.get() + "\"";
         }
@@ -161,21 +160,6 @@ public final class DefaultReporter implements Reporter {
 
     private String getIndent() {
         return Stream.generate(() -> "  ").limit(blockStack.size()).collect(Collectors.joining());
-    }
-
-    private String getHookType(HookType type) {
-        switch (type) {
-            case BEFORE:
-                return "before";
-            case BEFORE_EACH:
-                return "before each";
-            case AFTER_EACH:
-                return "after each";
-            case AFTER:
-                return "after";
-            default:
-                throw new IllegalStateException("unknown hook type");
-        }
     }
 
     private static final class TestFailure {

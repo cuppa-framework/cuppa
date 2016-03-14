@@ -313,13 +313,13 @@ public class DefaultReporterTest {
                 "",
                 "  describe",
                 "    when when",
-                "      1) \"before each\" hook",
+                "      1) \"beforeEach\" hook",
                 "",
                 "",
                 "  0 passing",
                 "  1 failing",
                 "",
-                "  1) describe when when \"before each\" hook:",
+                "  1) describe when when \"beforeEach\" hook:",
                 "     java.lang.RuntimeException",
         };
         String expectedOutput = String.join(System.lineSeparator(), expectedLines);
@@ -354,13 +354,13 @@ public class DefaultReporterTest {
                 "",
                 "  describe",
                 "    when when",
-                "      1) \"before each\" hook \"my hook\"",
+                "      1) \"beforeEach\" hook \"my hook\"",
                 "",
                 "",
                 "  0 passing",
                 "  1 failing",
                 "",
-                "  1) describe when when \"before each\" hook \"my hook\":",
+                "  1) describe when when \"beforeEach\" hook \"my hook\":",
                 "     java.lang.RuntimeException",
         };
         String expectedOutput = String.join(System.lineSeparator(), expectedLines);

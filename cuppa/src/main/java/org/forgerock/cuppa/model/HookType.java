@@ -25,20 +25,29 @@ public enum HookType {
     /**
      * Run once before all tests in the current and nested blocks.
      */
-    BEFORE,
+    BEFORE("before"),
 
     /**
      * Run before each test in the current and nested blocks.
      */
-    BEFORE_EACH,
+    BEFORE_EACH("beforeEach"),
 
     /**
      * Run after each test in the current and nested blocks.
      */
-    AFTER_EACH,
+    AFTER_EACH("afterEach"),
 
     /**
      * Run once after all tests in the current and nested blocks.
      */
-    AFTER
+    AFTER("after");
+
+    /**
+     * The method name of the hook.
+     */
+    public final String description;
+
+    HookType(String description) {
+        this.description = description;
+    }
 }
