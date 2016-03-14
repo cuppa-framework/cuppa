@@ -27,8 +27,10 @@ public interface Reporter {
 
     /**
      * Called before suite is run.
+     *
+     * @param rootBlock The root test block containing all the tests that will be run.
      */
-    void start();
+    void start(TestBlock rootBlock);
 
     /**
      * Called after suite run has completed.

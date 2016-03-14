@@ -77,7 +77,7 @@ public final class DefaultReporter implements Reporter {
     }
 
     @Override
-    public void start() {
+    public void start(TestBlock rootBlock) {
         stream.println();
     }
 

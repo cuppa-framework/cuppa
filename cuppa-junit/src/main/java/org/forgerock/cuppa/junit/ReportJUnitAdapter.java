@@ -52,7 +52,7 @@ final class ReportJUnitAdapter implements Reporter {
     }
 
     @Override
-    public void start() {
+    public void start(TestBlock rootBlock) {
     }
 
     @Override

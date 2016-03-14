@@ -43,7 +43,7 @@ public class ReportingTests {
         runTests(rootBlock, reporter);
 
         //Then
-        verify(reporter).start();
+        verify(reporter).start(rootBlock);
     }
 
     @Test
@@ -162,7 +162,7 @@ public class ReportingTests {
 
         //Then
         InOrder inOrder = inOrder(reporter);
-        inOrder.verify(reporter).start();
+        inOrder.verify(reporter).start(rootBlock);
         inOrder.verify(reporter).describeStart(findTestBlock(rootBlock, "describe"));
         inOrder.verify(reporter).describeStart(findTestBlock(rootBlock, "when when"));
         inOrder.verify(reporter).testPass(findTest(rootBlock, "test"));

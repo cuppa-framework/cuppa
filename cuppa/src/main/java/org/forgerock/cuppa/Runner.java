@@ -90,7 +90,7 @@ public final class Runner {
      */
     public void run(TestBlock rootBlock, Reporter reporter) {
         TestContainer.INSTANCE.runTests(() -> {
-            reporter.start();
+            reporter.start(rootBlock);
             TestBlock transformedRootBlock = transformTests(rootBlock, configuration.testTransforms);
             runTests(transformedRootBlock, transformedRootBlock.behaviour, reporter, TestFunction::apply);
             reporter.end();

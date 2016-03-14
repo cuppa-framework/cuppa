@@ -48,7 +48,7 @@ final class CuppaSurefireReporter implements Reporter {
     }
 
     @Override
-    public void start() {
+    public void start(TestBlock rootBlock) {
         listener.testSetStarting(new SimpleReportEntry(CuppaSurefireProvider.class.getName(), "Cuppa"));
     }
 
