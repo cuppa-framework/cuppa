@@ -151,7 +151,7 @@ public final class Runner {
         Behaviour combinedBehaviour = behaviour.combine(testBlock.behaviour);
         TestWrapper testWrapper = createWrapper(testBlock, outerTestWrapper, reporter);
         try {
-            reporter.describeStart(testBlock);
+            reporter.testBlockStart(testBlock);
             for (Hook hook : testBlock.hooksOfType(BEFORE)) {
                 try {
                     hook.function.apply();
@@ -175,7 +175,7 @@ public final class Runner {
             throw new RuntimeException(e);
         } finally {
             runAfterHooks(testBlock, reporter);
-            reporter.describeEnd(testBlock);
+            reporter.testBlockEnd(testBlock);
         }
     }
 

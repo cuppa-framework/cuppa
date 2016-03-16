@@ -59,12 +59,12 @@ final class ReportJUnitAdapter implements Reporter {
     }
 
     @Override
-    public void describeStart(TestBlock testBlock) {
+    public void testBlockStart(TestBlock testBlock) {
         testBlockDeque.addLast(testBlock);
     }
 
     @Override
-    public void describeEnd(TestBlock testBlock) {
+    public void testBlockEnd(TestBlock testBlock) {
         testBlockDeque.removeLast();
     }
 

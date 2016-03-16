@@ -121,7 +121,7 @@ public class ReportingTests {
         runTests(rootBlock, reporter);
 
         //Then
-        verify(reporter).describeStart(findTestBlock(rootBlock, "describe"));
+        verify(reporter).testBlockStart(findTestBlock(rootBlock, "describe"));
     }
 
     @Test
@@ -140,7 +140,7 @@ public class ReportingTests {
         runTests(rootBlock, reporter);
 
         //Then
-        verify(reporter).describeEnd(findTestBlock(rootBlock, "describe"));
+        verify(reporter).testBlockEnd(findTestBlock(rootBlock, "describe"));
     }
 
     @Test
@@ -163,11 +163,11 @@ public class ReportingTests {
         //Then
         InOrder inOrder = inOrder(reporter);
         inOrder.verify(reporter).start(rootBlock);
-        inOrder.verify(reporter).describeStart(findTestBlock(rootBlock, "describe"));
-        inOrder.verify(reporter).describeStart(findTestBlock(rootBlock, "when when"));
+        inOrder.verify(reporter).testBlockStart(findTestBlock(rootBlock, "describe"));
+        inOrder.verify(reporter).testBlockStart(findTestBlock(rootBlock, "when when"));
         inOrder.verify(reporter).testPass(findTest(rootBlock, "test"));
-        inOrder.verify(reporter).describeEnd(findTestBlock(rootBlock, "when when"));
-        inOrder.verify(reporter).describeEnd(findTestBlock(rootBlock, "describe"));
+        inOrder.verify(reporter).testBlockEnd(findTestBlock(rootBlock, "when when"));
+        inOrder.verify(reporter).testBlockEnd(findTestBlock(rootBlock, "describe"));
         inOrder.verify(reporter).end();
     }
 }

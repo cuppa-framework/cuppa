@@ -104,13 +104,13 @@ public final class DefaultReporter implements Reporter {
     }
 
     @Override
-    public void describeStart(TestBlock testBlock) {
+    public void testBlockStart(TestBlock testBlock) {
         stream.println(getIndent() + testBlock.description);
         blockStack.addLast(testBlock.description);
     }
 
     @Override
-    public void describeEnd(TestBlock testBlock) {
+    public void testBlockEnd(TestBlock testBlock) {
         blockStack.removeLast();
     }
 

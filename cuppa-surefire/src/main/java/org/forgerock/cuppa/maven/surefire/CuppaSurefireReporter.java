@@ -57,12 +57,12 @@ final class CuppaSurefireReporter implements Reporter {
     }
 
     @Override
-    public void describeStart(TestBlock testBlock) {
+    public void testBlockStart(TestBlock testBlock) {
         blockStack.addLast(testBlock);
     }
 
     @Override
-    public void describeEnd(TestBlock testBlock) {
+    public void testBlockEnd(TestBlock testBlock) {
         blockStack.removeLast();
     }
 

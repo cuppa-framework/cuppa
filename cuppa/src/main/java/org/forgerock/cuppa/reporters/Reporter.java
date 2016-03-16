@@ -26,30 +26,30 @@ import org.forgerock.cuppa.model.TestBlock;
 public interface Reporter {
 
     /**
-     * Called before suite is run.
+     * Called before any tests are run.
      *
      * @param rootBlock The root test block containing all the tests that will be run.
      */
     void start(TestBlock rootBlock);
 
     /**
-     * Called after suite run has completed.
+     * Called after all tests have been run.
      */
     void end();
 
     /**
-     * Called before any tests are run in a describe block.
+     * Called before any tests are run in a test block.
      *
      * @param testBlock The test block.
      */
-    void describeStart(TestBlock testBlock);
+    void testBlockStart(TestBlock testBlock);
 
     /**
-     * Called after all tests, in a describe block, have completed.
+     * Called after all tests in a test block have completed.
      *
      * @param testBlock The test block.
      */
-    void describeEnd(TestBlock testBlock);
+    void testBlockEnd(TestBlock testBlock);
 
     /**
      * Called after a hook due to it throwing an exception.
