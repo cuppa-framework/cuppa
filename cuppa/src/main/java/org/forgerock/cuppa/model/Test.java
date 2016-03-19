@@ -84,19 +84,22 @@ public final class Test {
         }
         Test test = (Test) o;
         return Objects.equals(behaviour, test.behaviour)
+            && Objects.equals(testClass, test.testClass)
             && Objects.equals(description, test.description)
+            && Objects.equals(function, test.function)
             && Objects.equals(options, test.options);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(behaviour, description, function, options);
+        return Objects.hash(behaviour, testClass, description, function, options);
     }
 
     @Override
     public String toString() {
         return "Test{"
             + "behaviour=" + behaviour
+            + ", testClass=" + testClass
             + ", description='" + description + '\''
             + ", options=" + options
             + '}';

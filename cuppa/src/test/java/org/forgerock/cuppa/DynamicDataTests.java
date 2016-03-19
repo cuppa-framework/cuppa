@@ -20,8 +20,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.forgerock.cuppa.Cuppa.describe;
 import static org.forgerock.cuppa.Cuppa.it;
 import static org.forgerock.cuppa.TestCuppaSupport.*;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
+import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
@@ -52,8 +51,9 @@ public class DynamicDataTests {
         runTests(rootBlock, reporter);
 
         //Then
-        verify(reporter).testPass(findTest(rootBlock, "test 1"));
-        verify(reporter).testPass(findTest(rootBlock, "test 2"));
-        verify(reporter).testFail(eq(findTest(rootBlock, "test 3")), any(AssertionError.class));
+        verify(reporter).testPass(eq(findTest(rootBlock, "test 1")), anyListOf(TestBlock.class));
+        verify(reporter).testPass(eq(findTest(rootBlock, "test 2")), anyListOf(TestBlock.class));
+        verify(reporter).testFail(eq(findTest(rootBlock, "test 3")), anyListOf(TestBlock.class),
+                any(AssertionError.class));
     }
 }

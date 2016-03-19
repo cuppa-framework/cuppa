@@ -16,11 +16,7 @@
 
 package org.forgerock.cuppa.maven.surefire;
 
-import static org.forgerock.cuppa.model.TestBlockType.WHEN;
-
-import java.util.ArrayDeque;
-import java.util.Deque;
-import java.util.stream.Collectors;
+import java.util.List;
 
 import org.apache.maven.surefire.report.PojoStackTraceWriter;
 import org.apache.maven.surefire.report.RunListener;
@@ -37,7 +33,6 @@ import org.forgerock.cuppa.reporters.Reporter;
 final class CuppaSurefireReporter implements Reporter {
 
     private final RunListener listener;
-    private final Deque<TestBlock> blockStack = new ArrayDeque<>();
 
     /**
      * Constructs a reporter that adapts events to Surefire.
@@ -59,68 +54,55 @@ final class CuppaSurefireReporter implements Reporter {
     }
 
     @Override
-    public void testBlockStart(TestBlock testBlock) {
-        blockStack.addLast(testBlock);
+    public void testBlockStart(TestBlock testBlock, List<TestBlock> parents) {
     }
 
     @Override
-    public void testBlockEnd(TestBlock testBlock) {
-        blockStack.removeLast();
+    public void testBlockEnd(TestBlock testBlock, List<TestBlock> parents) {
     }
 
     @Override
-    public void hookError(Hook hook, Throwable cause) {
+    public void hookError(Hook hook, List<TestBlock> parents, Throwable cause) {
         ReporterSupport.filterStackTrace(cause);
-        String description = "\"" + hook.type.description + "\" hook";
-        if (hook.description.isPresent()) {
-            description += " \"" + hook.description.get() + "\"";
-        }
-        String fullDescription = getFullDescription(description);
-        String className = blockStack.getLast().testClass.getCanonicalName();
+        String fullDescription = ReporterSupport.getFullDescription(hook, parents);
+        String className = hook.testClass.getCanonicalName();
         listener.testError(new SimpleReportEntry(className, fullDescription,
                 new PojoStackTraceWriter(className, fullDescription, cause), 0));
     }
 
     @Override
-    public void testStart(Test test) {
+    public void testStart(Test test, List<TestBlock> parents) {
         listener.testStarting(new SimpleReportEntry(test.testClass.getCanonicalName(),
-                getFullDescription(test.description)));
+                ReporterSupport.getFullDescription(test, parents)));
     }
 
     @Override
-    public void testEnd(Test test) {
+    public void testEnd(Test test, List<TestBlock> parents) {
     }
 
     @Override
-    public void testPass(Test test) {
+    public void testPass(Test test, List<TestBlock> parents) {
         listener.testSucceeded(new SimpleReportEntry(test.testClass.getCanonicalName(),
-                getFullDescription(test.description)));
+                ReporterSupport.getFullDescription(test, parents)));
     }
 
     @Override
-    public void testFail(Test test, Throwable cause) {
+    public void testFail(Test test, List<TestBlock> parents, Throwable cause) {
         ReporterSupport.filterStackTrace(cause);
-        String description = getFullDescription(test.description);
+        String description = ReporterSupport.getFullDescription(test, parents);
         listener.testFailed(new SimpleReportEntry(test.testClass.getCanonicalName(), description,
                 new PojoStackTraceWriter(test.testClass.getCanonicalName(), description, cause), 0));
     }
 
     @Override
-    public void testPending(Test test) {
+    public void testPending(Test test, List<TestBlock> parents) {
         listener.testSkipped(new SimpleReportEntry(test.testClass.getCanonicalName(),
-                getFullDescription(test.description)));
+                ReporterSupport.getFullDescription(test, parents)));
     }
 
     @Override
-    public void testSkip(Test test) {
+    public void testSkip(Test test, List<TestBlock> parents) {
         listener.testSkipped(new SimpleReportEntry(test.testClass.getCanonicalName(),
-                getFullDescription(test.description)));
-    }
-
-    private String getFullDescription(String description) {
-        return (blockStack.stream()
-                .map(b -> (b.type == WHEN) ? "when " + b.description : b.description)
-                .collect(Collectors.joining(" ")) + " " + description)
-                .trim();
+                ReporterSupport.getFullDescription(test, parents)));
     }
 }

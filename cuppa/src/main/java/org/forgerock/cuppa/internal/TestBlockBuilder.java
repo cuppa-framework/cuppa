@@ -55,22 +55,22 @@ final class TestBlockBuilder {
     }
 
     TestBlockBuilder addBefore(Optional<String> description, HookFunction function) {
-        hooks.add(new Hook(BEFORE, description, function));
+        hooks.add(new Hook(BEFORE, testClass, description, function));
         return this;
     }
 
     TestBlockBuilder addAfter(Optional<String> description, HookFunction function) {
-        hooks.add(new Hook(AFTER, description, function));
+        hooks.add(new Hook(AFTER, testClass, description, function));
         return this;
     }
 
     TestBlockBuilder addBeforeEach(Optional<String> description, HookFunction function) {
-        hooks.add(new Hook(BEFORE_EACH, description, function));
+        hooks.add(new Hook(BEFORE_EACH, testClass, description, function));
         return this;
     }
 
     TestBlockBuilder addAfterEach(Optional<String> description, HookFunction function) {
-        hooks.add(new Hook(AFTER_EACH, description, function));
+        hooks.add(new Hook(AFTER_EACH, testClass, description, function));
         return this;
     }
 

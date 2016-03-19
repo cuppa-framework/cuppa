@@ -327,7 +327,8 @@ public class CuppaRunnerTest {
         });
         jUnit.run(CuppaRunnerTest.TestsAndTestBlocks.class);
 
-        List<Description> rootDescriptionChildren = suiteDescription.getChildren().get(0).getChildren().get(0).getChildren();
+        List<Description> rootDescriptionChildren = suiteDescription
+                .getChildren().get(0).getChildren().get(0).getChildren();
         assertThat(rootDescriptionChildren).hasSize(3);
         assertThat(rootDescriptionChildren.get(0).getDisplayName()).startsWith("a");
         assertThat(rootDescriptionChildren.get(1).getDisplayName()).startsWith("b");

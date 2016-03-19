@@ -53,7 +53,7 @@ public class TaggedTests {
 
         //Then
         verify(testFunction).apply();
-        verify(reporter).testPass(any());
+        verify(reporter).testPass(any(), anyListOf(TestBlock.class));
     }
 
     @Test
@@ -75,7 +75,7 @@ public class TaggedTests {
 
         //Then
         verify(testFunction).apply();
-        verify(reporter).testPass(any());
+        verify(reporter).testPass(any(), anyListOf(TestBlock.class));
     }
 
     @Test
@@ -101,7 +101,7 @@ public class TaggedTests {
         //Then
         verify(testOneFunction).apply();
         verify(testTwoFunction, never()).apply();
-        verify(reporter).testPass(any());
+        verify(reporter).testPass(any(), anyListOf(TestBlock.class));
     }
 
     @Test
@@ -131,7 +131,7 @@ public class TaggedTests {
         //Then
         verify(testOneFunction).apply();
         verify(testTwoFunction, never()).apply();
-        verify(reporter).testPass(any());
+        verify(reporter).testPass(any(), anyListOf(TestBlock.class));
     }
 
     @Test
@@ -159,7 +159,7 @@ public class TaggedTests {
         //Then
         verify(testOneFunction).apply();
         verify(testTwoFunction, never()).apply();
-        verify(reporter).testPass(any());
+        verify(reporter).testPass(any(), anyListOf(TestBlock.class));
     }
 
     @Test
@@ -185,7 +185,7 @@ public class TaggedTests {
         //Then
         verify(testOneFunction).apply();
         verify(testTwoFunction).apply();
-        verify(reporter, times(2)).testPass(any());
+        verify(reporter, times(2)).testPass(any(), anyListOf(TestBlock.class));
     }
 
     @Test
@@ -215,7 +215,7 @@ public class TaggedTests {
         //Then
         verify(testOneFunction).apply();
         verify(testTwoFunction).apply();
-        verify(reporter, times(2)).testPass(any());
+        verify(reporter, times(2)).testPass(any(), anyListOf(TestBlock.class));
     }
 
     @Test
@@ -243,7 +243,7 @@ public class TaggedTests {
         //Then
         verify(testOneFunction).apply();
         verify(testTwoFunction).apply();
-        verify(reporter, times(2)).testPass(any());
+        verify(reporter, times(2)).testPass(any(), anyListOf(TestBlock.class));
     }
 
     @DataProvider
@@ -274,7 +274,7 @@ public class TaggedTests {
 
         //Then
         verify(testOneFunction).apply();
-        verify(reporter).testPass(any());
+        verify(reporter).testPass(any(), anyListOf(TestBlock.class));
     }
 
     @Test

@@ -50,8 +50,9 @@ public class PendingTestTests {
         runTests(rootBlock, reporter);
 
         //Then
-        verify(reporter, times(2)).testPass(any());
-        verify(reporter).testPending(findTest(rootBlock, "marks the second test as pending"));
+        verify(reporter, times(2)).testPass(any(), anyListOf(TestBlock.class));
+        verify(reporter).testPending(eq(findTest(rootBlock, "marks the second test as pending")),
+                anyListOf(TestBlock.class));
     }
 
     @Test

@@ -21,6 +21,10 @@ import static org.forgerock.cuppa.Cuppa.when;
 import static org.forgerock.cuppa.TestCuppaSupport.*;
 import static org.mockito.Mockito.*;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
 import org.forgerock.cuppa.model.TestBlock;
 import org.forgerock.cuppa.reporters.Reporter;
 import org.mockito.InOrder;
@@ -76,12 +80,13 @@ public class ReportingTests {
                 });
             });
         });
+        List<TestBlock> parents = Arrays.asList(rootBlock, rootBlock.testBlocks.get(0));
 
         //When
         runTests(rootBlock, reporter);
 
         //Then
-        verify(reporter).testPass(findTest(rootBlock, "test"));
+        verify(reporter).testPass(eq(findTest(rootBlock, "test")), eq(parents));
     }
 
     @Test
@@ -97,12 +102,13 @@ public class ReportingTests {
                 });
             });
         });
+        List<TestBlock> parents = Arrays.asList(rootBlock, rootBlock.testBlocks.get(0));
 
         //When
         runTests(rootBlock, reporter);
 
         //Then
-        verify(reporter).testFail(findTest(rootBlock, "test"), exception);
+        verify(reporter).testFail(eq(findTest(rootBlock, "test")), eq(parents), eq(exception));
     }
 
     @Test
@@ -116,12 +122,13 @@ public class ReportingTests {
                 });
             });
         });
+        List<TestBlock> parents = Collections.singletonList(rootBlock);
 
         //When
         runTests(rootBlock, reporter);
 
         //Then
-        verify(reporter).testBlockStart(findTestBlock(rootBlock, "describe"));
+        verify(reporter).testBlockStart(eq(findTestBlock(rootBlock, "describe")), eq(parents));
     }
 
     @Test
@@ -135,12 +142,13 @@ public class ReportingTests {
                 });
             });
         });
+        List<TestBlock> parents = Collections.singletonList(rootBlock);
 
         //When
         runTests(rootBlock, reporter);
 
         //Then
-        verify(reporter).testBlockEnd(findTestBlock(rootBlock, "describe"));
+        verify(reporter).testBlockEnd(eq(findTestBlock(rootBlock, "describe")), eq(parents));
     }
 
     @Test
@@ -156,18 +164,50 @@ public class ReportingTests {
                 });
             });
         });
+        TestBlock describeBlock = rootBlock.testBlocks.get(0);
+        TestBlock whenBlock = describeBlock.testBlocks.get(0);
+        List<TestBlock> describeBlockParents = Collections.singletonList(rootBlock);
+        List<TestBlock> whenBlockParents = Arrays.asList(rootBlock, describeBlock);
+        List<TestBlock> testParents = Arrays.asList(rootBlock, describeBlock, whenBlock);
 
         //When
         runTests(rootBlock, reporter);
 
         //Then
+
         InOrder inOrder = inOrder(reporter);
         inOrder.verify(reporter).start(rootBlock);
-        inOrder.verify(reporter).testBlockStart(findTestBlock(rootBlock, "describe"));
-        inOrder.verify(reporter).testBlockStart(findTestBlock(rootBlock, "when"));
-        inOrder.verify(reporter).testPass(findTest(rootBlock, "test"));
-        inOrder.verify(reporter).testBlockEnd(findTestBlock(rootBlock, "when"));
-        inOrder.verify(reporter).testBlockEnd(findTestBlock(rootBlock, "describe"));
+        inOrder.verify(reporter).testBlockStart(eq(findTestBlock(rootBlock, "describe")), eq(describeBlockParents));
+        inOrder.verify(reporter).testBlockStart(eq(findTestBlock(rootBlock, "when")), eq(whenBlockParents));
+        inOrder.verify(reporter).testPass(eq(findTest(rootBlock, "test")), eq(testParents));
+        inOrder.verify(reporter).testBlockEnd(eq(findTestBlock(rootBlock, "when")), eq(whenBlockParents));
+        inOrder.verify(reporter).testBlockEnd(eq(findTestBlock(rootBlock, "describe")), eq(describeBlockParents));
         inOrder.verify(reporter).end();
+    }
+
+    @Test
+    public void reporterShouldBeNotifiedOfHookFailure() {
+
+        //Given
+        RuntimeException exception = new RuntimeException();
+        Reporter reporter = mock(Reporter.class);
+        TestBlock rootBlock = defineTests(() -> {
+            describe("describe", () -> {
+                beforeEach("hook", () -> {
+                    throw exception;
+                });
+                when("when", () -> {
+                    it("test", () -> {
+                    });
+                });
+            });
+        });
+        List<TestBlock> parents = Arrays.asList(rootBlock, rootBlock.testBlocks.get(0));
+
+        //When
+        runTests(rootBlock, reporter);
+
+        //Then
+        verify(reporter).hookError(eq(findHook(rootBlock, "hook")), eq(parents), eq(exception));
     }
 }

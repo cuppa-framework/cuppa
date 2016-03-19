@@ -70,7 +70,7 @@ public class HookExceptionTests {
         runTests(rootBlock, reporter);
 
         //Then
-        verify(reporter).hookError(findHook(rootBlock, "hook"), exception);
+        verify(reporter).hookError(eq(findHook(rootBlock, "hook")), anyListOf(TestBlock.class), eq(exception));
     }
 
     @Test
@@ -230,7 +230,7 @@ public class HookExceptionTests {
         runTests(rootBlock, reporter);
 
         //Then
-        verify(reporter).hookError(findHook(rootBlock, "hook"), exception);
+        verify(reporter).hookError(eq(findHook(rootBlock, "hook")), anyListOf(TestBlock.class), eq(exception));
     }
 
     @Test
@@ -453,9 +453,9 @@ public class HookExceptionTests {
         runTests(rootBlock, reporter);
 
         //Then
-        verify(reporter).hookError(findHook(rootBlock, "hook"), exception);
-        verify(reporter, never()).testFail(any(), any());
-        verify(reporter, never()).testPass(any());
+        verify(reporter).hookError(eq(findHook(rootBlock, "hook")), anyListOf(TestBlock.class), eq(exception));
+        verify(reporter, never()).testFail(any(), anyListOf(TestBlock.class), any());
+        verify(reporter, never()).testPass(any(), anyListOf(TestBlock.class));
     }
 
     @Test
@@ -477,7 +477,7 @@ public class HookExceptionTests {
         runTests(rootBlock, reporter);
 
         //Then
-        verify(reporter).hookError(findHook(rootBlock, "hook"), exception);
+        verify(reporter).hookError(eq(findHook(rootBlock, "hook")), anyListOf(TestBlock.class), eq(exception));
     }
 
     @Test
@@ -499,9 +499,9 @@ public class HookExceptionTests {
         runTests(rootBlock, reporter);
 
         //Then
-        verify(reporter).hookError(findHook(rootBlock, "hook"), exception);
-        verify(reporter, never()).testFail(any(), any());
-        verify(reporter, never()).testPass(any());
+        verify(reporter).hookError(eq(findHook(rootBlock, "hook")), anyListOf(TestBlock.class), eq(exception));
+        verify(reporter, never()).testFail(any(), anyListOf(TestBlock.class), any());
+        verify(reporter, never()).testPass(any(), anyListOf(TestBlock.class));
     }
 
     @Test
@@ -523,7 +523,7 @@ public class HookExceptionTests {
         runTests(rootBlock, reporter);
 
         //Then
-        verify(reporter).hookError(findHook(rootBlock, "hook"), exception);
+        verify(reporter).hookError(eq(findHook(rootBlock, "hook")), anyListOf(TestBlock.class), eq(exception));
     }
 
     @Test
@@ -549,11 +549,13 @@ public class HookExceptionTests {
         runTests(rootBlock, reporter);
 
         //Then
-        verify(reporter).hookError(findHook(rootBlock, "beforeEach"), beforeEachException);
-        verify(reporter).hookError(findHook(rootBlock, "afterEach"), afterEachException);
-        verify(reporter, times(2)).hookError(any(), any());
-        verify(reporter, never()).testFail(any(), any());
-        verify(reporter, never()).testPass(any());
+        verify(reporter).hookError(eq(findHook(rootBlock, "beforeEach")), anyListOf(TestBlock.class),
+                eq(beforeEachException));
+        verify(reporter).hookError(eq(findHook(rootBlock, "afterEach")), anyListOf(TestBlock.class),
+                eq(afterEachException));
+        verify(reporter, times(2)).hookError(any(), anyListOf(TestBlock.class), any());
+        verify(reporter, never()).testFail(any(), anyListOf(TestBlock.class), any());
+        verify(reporter, never()).testPass(any(), anyListOf(TestBlock.class));
     }
 
     @Test
@@ -694,7 +696,7 @@ public class HookExceptionTests {
 
         //Then
         ArgumentCaptor<Throwable> captor = ArgumentCaptor.forClass(Throwable.class);
-        verify(reporter).hookError(eq(findHook(rootBlock, "hook")), captor.capture());
+        verify(reporter).hookError(eq(findHook(rootBlock, "hook")), anyListOf(TestBlock.class), captor.capture());
         assertThat(captor.getValue())
                 .isExactlyInstanceOf(CuppaException.class)
                 .hasMessage("'it' may only be nested within a 'describe' or 'when' block");
@@ -733,7 +735,8 @@ public class HookExceptionTests {
 
         //Then
         ArgumentCaptor<Throwable> captor = ArgumentCaptor.forClass(Throwable.class);
-        verify(reporter).testFail(eq(findTest(rootBlock, "will cause the test to throw an error")), captor.capture());
+        verify(reporter).testFail(eq(findTest(rootBlock, "will cause the test to throw an error")),
+                anyListOf(TestBlock.class), captor.capture());
         assertThat(captor.getValue())
                 .isExactlyInstanceOf(CuppaException.class)
                 .hasMessage("'" + hookName + "' may only be nested within a 'describe' or 'when' block");
@@ -768,7 +771,7 @@ public class HookExceptionTests {
 
         //Then
         ArgumentCaptor<Throwable> captor = ArgumentCaptor.forClass(Throwable.class);
-        verify(reporter).hookError(eq(findHook(rootBlock, "hook")), captor.capture());
+        verify(reporter).hookError(eq(findHook(rootBlock, "hook")), anyListOf(TestBlock.class), captor.capture());
         assertThat(captor.getValue())
                 .isExactlyInstanceOf(CuppaException.class)
                 .hasMessage("'" + hookName + "' may only be nested within a 'describe' or 'when' block");
@@ -800,7 +803,7 @@ public class HookExceptionTests {
         runTests(rootBlock, reporter);
 
         //Then
-        verify(reporter).hookError(eq(findHook(rootBlock, "hook")), isA(Exception.class));
+        verify(reporter).hookError(eq(findHook(rootBlock, "hook")), anyListOf(TestBlock.class), isA(Exception.class));
     }
 
     @DataProvider
@@ -829,6 +832,7 @@ public class HookExceptionTests {
         runTests(rootBlock, reporter);
 
         //Then
-        verify(reporter).hookError(eq(findHook(rootBlock, "hook")), isA(AssertionError.class));
+        verify(reporter).hookError(eq(findHook(rootBlock, "hook")), anyListOf(TestBlock.class),
+                isA(AssertionError.class));
     }
 }

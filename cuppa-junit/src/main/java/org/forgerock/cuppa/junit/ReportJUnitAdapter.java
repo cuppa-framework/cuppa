@@ -16,11 +16,7 @@
 
 package org.forgerock.cuppa.junit;
 
-import static org.forgerock.cuppa.model.TestBlockType.WHEN;
-
-import java.util.ArrayDeque;
-import java.util.Deque;
-import java.util.stream.Collectors;
+import java.util.List;
 
 import org.forgerock.cuppa.ReporterSupport;
 import org.forgerock.cuppa.model.Hook;
@@ -37,18 +33,14 @@ import org.junit.runner.notification.RunNotifier;
  */
 final class ReportJUnitAdapter implements Reporter {
 
-    private final Class<?> testClass;
     private final RunNotifier notifier;
-    private final Deque<TestBlock> testBlockDeque = new ArrayDeque<>();
 
     /**
      * Constructs a reporter that adapts events to JUnit.
      *
-     * @param testClass The class containing the test defintions.
      * @param notifier The JUnit {@link RunNotifier} instance.
      */
-    ReportJUnitAdapter(Class<?> testClass, RunNotifier notifier) {
-        this.testClass = testClass;
+    ReportJUnitAdapter(RunNotifier notifier) {
         this.notifier = notifier;
     }
 
@@ -61,65 +53,52 @@ final class ReportJUnitAdapter implements Reporter {
     }
 
     @Override
-    public void testBlockStart(TestBlock testBlock) {
-        testBlockDeque.addLast(testBlock);
+    public void testBlockStart(TestBlock testBlock, List<TestBlock> parents) {
     }
 
     @Override
-    public void testBlockEnd(TestBlock testBlock) {
-        testBlockDeque.removeLast();
+    public void testBlockEnd(TestBlock testBlock, List<TestBlock> parents) {
     }
 
     @Override
-    public void hookError(Hook hook, Throwable cause) {
+    public void hookError(Hook hook, List<TestBlock> parents, Throwable cause) {
         ReporterSupport.filterStackTrace(cause);
-        String description = "\"" + hook.type.description + "\" hook";
-        if (hook.description.isPresent()) {
-            description += " \"" + hook.description.get() + "\"";
-        }
-        description += " for \"";
-        description += testBlockDeque.stream()
-                .map(b -> (b.type == WHEN) ? "when " + b.description : b.description)
-                .collect(Collectors.joining(" ")).trim();
-        description += "\"";
-        notifier.fireTestFailure(new Failure(getDescription(description), cause));
+        notifier.fireTestFailure(new Failure(Description.createTestDescription(hook.testClass.getName(),
+                ReporterSupport.getFullDescription(hook, parents)), cause));
     }
 
     @Override
-    public void testStart(Test test) {
-        notifier.fireTestStarted(getDescription(test.description));
+    public void testStart(Test test, List<TestBlock> parents) {
+        notifier.fireTestStarted(getDescription(test, parents));
     }
 
     @Override
-    public void testEnd(Test test) {
-        notifier.fireTestFinished(getDescription(test.description));
+    public void testEnd(Test test, List<TestBlock> parents) {
+        notifier.fireTestFinished(getDescription(test, parents));
     }
 
     @Override
-    public void testPass(Test test) {
+    public void testPass(Test test, List<TestBlock> parents) {
     }
 
     @Override
-    public void testFail(Test test, Throwable e) {
+    public void testFail(Test test, List<TestBlock> parents, Throwable e) {
         ReporterSupport.filterStackTrace(e);
-        notifier.fireTestFailure(new Failure(getDescription(test.description), e));
+        notifier.fireTestFailure(new Failure(getDescription(test, parents), e));
     }
 
     @Override
-    public void testPending(Test test) {
-        notifier.fireTestIgnored(getDescription(test.description));
+    public void testPending(Test test, List<TestBlock> parents) {
+        notifier.fireTestIgnored(getDescription(test, parents));
     }
 
     @Override
-    public void testSkip(Test test) {
-        notifier.fireTestIgnored(getDescription(test.description));
+    public void testSkip(Test test, List<TestBlock> parents) {
+        notifier.fireTestIgnored(getDescription(test, parents));
     }
 
-    private Description getDescription(String description) {
-        String blockId = testBlockDeque.stream()
-                .map(b -> (b.type == WHEN) ? "when " + b.description : b.description)
-                .collect(Collectors.joining());
-        String uniqueId = blockId + description;
-        return Description.createTestDescription(testClass.getName(), description, uniqueId);
+    private Description getDescription(Test test, List<TestBlock> parents) {
+        return Description.createTestDescription(test.testClass.getName(), test.description,
+                ReporterSupport.getFullDescription(test, parents));
     }
 }

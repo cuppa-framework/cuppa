@@ -94,7 +94,8 @@ public final class Runner {
         TestContainer.INSTANCE.runTests(() -> {
             reporter.start(rootBlock);
             TestBlock transformedRootBlock = transformTests(rootBlock, configuration.testTransforms);
-            runTests(transformedRootBlock, transformedRootBlock.behaviour, reporter, TestFunction::apply);
+            runTests(transformedRootBlock, Collections.emptyList(), transformedRootBlock.behaviour, reporter,
+                    TestFunction::apply);
             reporter.end();
         });
     }
@@ -149,24 +150,26 @@ public final class Runner {
                 .apply(rootBlock);
     }
 
-    private void runTests(TestBlock testBlock, Behaviour behaviour, Reporter reporter, TestWrapper outerTestWrapper) {
+    private void runTests(TestBlock testBlock, List<TestBlock> parents, Behaviour behaviour, Reporter reporter,
+            TestWrapper outerTestWrapper) {
         Behaviour combinedBehaviour = behaviour.combine(testBlock.behaviour);
-        TestWrapper testWrapper = createWrapper(testBlock, outerTestWrapper, reporter);
+        List<TestBlock> newParents = Stream.concat(parents.stream(), Stream.of(testBlock)).collect(Collectors.toList());
+        TestWrapper testWrapper = createWrapper(testBlock, newParents, outerTestWrapper, reporter);
         try {
-            reporter.testBlockStart(testBlock);
+            reporter.testBlockStart(testBlock, parents);
             for (Hook hook : testBlock.hooksOfType(BEFORE)) {
                 try {
                     hook.function.apply();
                 } catch (Throwable e) {
-                    reporter.hookError(hook, e);
+                    reporter.hookError(hook, newParents, e);
                     return;
                 }
             }
             for (Test t : testBlock.tests) {
-                runTest(t, testWrapper, combinedBehaviour, reporter);
+                runTest(t, newParents, testWrapper, combinedBehaviour, reporter);
             }
             testBlock.testBlocks.stream()
-                    .forEach((d) -> runTests(d, combinedBehaviour, reporter, testWrapper));
+                    .forEach((d) -> runTests(d, newParents, combinedBehaviour, reporter, testWrapper));
         } catch (HookException e) {
             if (e.getTestBlock() != testBlock) {
                 throw e;
@@ -176,39 +179,41 @@ public final class Runner {
             // all exceptions from user code should've been caught by now.
             throw new RuntimeException(e);
         } finally {
-            runAfterHooks(testBlock, reporter);
-            reporter.testBlockEnd(testBlock);
+            runAfterHooks(testBlock, parents, reporter);
+            reporter.testBlockEnd(testBlock, parents);
         }
     }
 
-    private void runTest(Test test, TestWrapper testWrapper, Behaviour behaviour, Reporter reporter) throws Exception {
+    private void runTest(Test test, List<TestBlock> parents, TestWrapper testWrapper, Behaviour behaviour,
+            Reporter reporter) throws Exception {
         if (!test.function.isPresent()) {
-            reporter.testPending(test);
+            reporter.testPending(test, parents);
         } else if (behaviour.combine(test.behaviour) != Behaviour.SKIP) {
             testWrapper.apply(() -> {
                 try {
-                    reporter.testStart(test);
+                    reporter.testStart(test, parents);
                     test.function.get().apply();
-                    reporter.testPass(test);
+                    reporter.testPass(test, parents);
                 } catch (Throwable e) {
-                    reporter.testFail(test, e);
+                    reporter.testFail(test, parents, e);
                 } finally {
-                    reporter.testEnd(test);
+                    reporter.testEnd(test, parents);
                 }
             });
         } else {
-            reporter.testSkip(test);
+            reporter.testSkip(test, parents);
         }
     }
 
-    private TestWrapper createWrapper(TestBlock testBlock, TestWrapper outerTestRunner, Reporter reporter) {
+    private TestWrapper createWrapper(TestBlock testBlock, List<TestBlock> parents, TestWrapper outerTestRunner,
+            Reporter reporter) {
         return outerTestRunner.compose((f) -> {
             try {
                 for (Hook hook : testBlock.hooksOfType(BEFORE_EACH)) {
                     try {
                         hook.function.apply();
                     } catch (Throwable e) {
-                        reporter.hookError(hook, e);
+                        reporter.hookError(hook, parents, e);
                         throw new HookException(testBlock, e);
                     }
                 }
@@ -218,7 +223,7 @@ public final class Runner {
                     try {
                         hook.function.apply();
                     } catch (Throwable e) {
-                        reporter.hookError(hook, e);
+                        reporter.hookError(hook, parents, e);
                         throw new HookException(testBlock, e);
                     }
                 }
@@ -226,12 +231,12 @@ public final class Runner {
         });
     }
 
-    private void runAfterHooks(TestBlock testBlock, Reporter reporter) {
+    private void runAfterHooks(TestBlock testBlock, List<TestBlock> parents, Reporter reporter) {
         for (Hook hook : testBlock.hooksOfType(AFTER)) {
             try {
                 hook.function.apply();
             } catch (Throwable e) {
-                reporter.hookError(hook, e);
+                reporter.hookError(hook, parents, e);
                 return;
             }
         }

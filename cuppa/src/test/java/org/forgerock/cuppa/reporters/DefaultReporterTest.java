@@ -366,4 +366,45 @@ public class DefaultReporterTest {
         String expectedOutput = String.join(System.lineSeparator(), expectedLines);
         assertThat(output).startsWith(expectedOutput);
     }
+
+    @Test
+    public void reporterShouldReportParentsOfFailingHook() {
+
+        //Given
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        Reporter reporter = new DefaultReporter(outputStream);
+        TestBlock rootBlock = defineTests(() -> {
+            describe("describe", () -> {
+                beforeEach(() -> {
+                    throw new RuntimeException();
+                });
+                when("when", () -> {
+                    it("passing test", () -> {
+                    });
+                });
+            });
+        });
+
+        //When
+        runTests(rootBlock, reporter);
+
+        //Then
+        String output = new String(outputStream.toByteArray(), UTF_8);
+        String[] expectedLines = {
+                "",
+                "",
+                "  describe",
+                "    when when",
+                "      1) \"beforeEach\" hook",
+                "",
+                "",
+                "  0 passing",
+                "  1 failing",
+                "",
+                "  1) describe \"beforeEach\" hook:",
+                "     java.lang.RuntimeException",
+        };
+        String expectedOutput = String.join(System.lineSeparator(), expectedLines);
+        assertThat(output).startsWith(expectedOutput);
+    }
 }

@@ -68,7 +68,7 @@ public class SkipTests {
         runTests(rootBlock, reporter);
 
         //Then
-        verify(reporter).testSkip(findTest(rootBlock, "test"));
+        verify(reporter).testSkip(eq(findTest(rootBlock, "test")), anyListOf(TestBlock.class));
     }
 
     @Test
@@ -114,8 +114,8 @@ public class SkipTests {
         runTests(rootBlock, reporter);
 
         //Then
-        verify(reporter).testSkip(findTest(rootBlock, "test1"));
-        verify(reporter).testSkip(findTest(rootBlock, "test2"));
+        verify(reporter).testSkip(eq(findTest(rootBlock, "test1")), anyListOf(TestBlock.class));
+        verify(reporter).testSkip(eq(findTest(rootBlock, "test2")), anyListOf(TestBlock.class));
     }
 
     @Test
@@ -163,8 +163,8 @@ public class SkipTests {
         runTests(rootBlock, reporter);
 
         //Then
-        verify(reporter).testPass(any());
-        verify(reporter).testPass(findTest(rootBlock, "test"));
+        verify(reporter).testPass(any(), anyListOf(TestBlock.class));
+        verify(reporter).testPass(eq(findTest(rootBlock, "test")), anyListOf(TestBlock.class));
     }
 
     @Test

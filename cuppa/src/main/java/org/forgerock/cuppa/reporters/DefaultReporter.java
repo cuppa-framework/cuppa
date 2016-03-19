@@ -16,15 +16,11 @@
 
 package org.forgerock.cuppa.reporters;
 
-import static org.forgerock.cuppa.model.TestBlockType.WHEN;
-
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
-import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Deque;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -40,7 +36,7 @@ import org.forgerock.cuppa.model.TestBlock;
 public final class DefaultReporter implements Reporter {
     private final PrintStream stream;
     private final List<TestFailure> failures = new ArrayList<>();
-    private final Deque<String> blockStack = new ArrayDeque<>();
+    private int depth;
     private int passed;
     private int failed;
     private int pending;
@@ -97,7 +93,7 @@ public final class DefaultReporter implements Reporter {
             stream.println();
             for (int i = 0; i < failures.size(); i++) {
                 TestFailure failure = failures.get(i);
-                stream.println("  " + (i + 1) + ")" + failure.description + ":");
+                stream.println("  " + (i + 1) + ") " + failure.description + ":");
                 stream.print("     ");
                 ReporterSupport.filterStackTrace(failure.cause);
                 failure.cause.printStackTrace(stream);
@@ -106,63 +102,58 @@ public final class DefaultReporter implements Reporter {
     }
 
     @Override
-    public void testBlockStart(TestBlock testBlock) {
-        String description = (testBlock.type == WHEN) ? "when " + testBlock.description : testBlock.description;
-        stream.println(getIndent() + description);
-        blockStack.addLast(description);
+    public void testBlockStart(TestBlock testBlock, List<TestBlock> parents) {
+        stream.println(getIndent() + ReporterSupport.getDescription(testBlock));
+        depth++;
     }
 
     @Override
-    public void testBlockEnd(TestBlock testBlock) {
-        blockStack.removeLast();
+    public void testBlockEnd(TestBlock testBlock, List<TestBlock> parents) {
+        depth--;
     }
 
     @Override
-    public void hookError(Hook hook, Throwable cause) {
-        String description = "\"" + hook.type.description + "\" hook";
-        if (hook.description.isPresent()) {
-            description += " \"" + hook.description.get() + "\"";
-        }
+    public void hookError(Hook hook, List<TestBlock> parents, Throwable cause) {
         failed++;
-        failures.add(new TestFailure(String.join(" ", blockStack) + " " + description, cause));
-        stream.println(getIndent() + failures.size() + ") " + description);
+        failures.add(new TestFailure(ReporterSupport.getFullDescription(hook, parents), cause));
+        stream.println(getIndent() + failures.size() + ") " + ReporterSupport.getDescription(hook));
     }
 
     @Override
-    public void testStart(Test test) {
+    public void testStart(Test test, List<TestBlock> parents) {
     }
 
     @Override
-    public void testEnd(Test test) {
+    public void testEnd(Test test, List<TestBlock> parents) {
     }
 
     @Override
-    public void testPass(Test test) {
+    public void testPass(Test test, List<TestBlock> parents) {
         passed++;
         stream.println(getIndent() + "✓ " + test.description);
     }
 
     @Override
-    public void testFail(Test test, Throwable cause) {
+    public void testFail(Test test, List<TestBlock> parents, Throwable cause) {
         failed++;
-        failures.add(new TestFailure(String.join(" ", blockStack) + " " + test.description, cause));
+        failures.add(new TestFailure(ReporterSupport.getFullDescription(test, parents), cause));
         stream.println(getIndent() + failures.size() + ") " + test.description);
     }
 
     @Override
-    public void testPending(Test test) {
+    public void testPending(Test test, List<TestBlock> parents) {
         pending++;
         stream.println(getIndent() + "- " + test.description);
     }
 
     @Override
-    public void testSkip(Test test) {
+    public void testSkip(Test test, List<TestBlock> parents) {
         skipped++;
         stream.println(getIndent() + "- " + test.description);
     }
 
     private String getIndent() {
-        return Stream.generate(() -> "  ").limit(blockStack.size()).collect(Collectors.joining());
+        return Stream.generate(() -> "  ").limit(depth).collect(Collectors.joining());
     }
 
     private static final class TestFailure {

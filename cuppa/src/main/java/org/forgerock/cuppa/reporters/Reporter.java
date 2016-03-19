@@ -16,6 +16,8 @@
 
 package org.forgerock.cuppa.reporters;
 
+import java.util.List;
+
 import org.forgerock.cuppa.model.Hook;
 import org.forgerock.cuppa.model.Test;
 import org.forgerock.cuppa.model.TestBlock;
@@ -41,64 +43,73 @@ public interface Reporter {
      * Called before any tests are run in a test block.
      *
      * @param testBlock The test block.
+     * @param parents The ancestor test blocks, starting with the root block and ending with the immediate parent.
      */
-    void testBlockStart(TestBlock testBlock);
+    void testBlockStart(TestBlock testBlock, List<TestBlock> parents);
 
     /**
      * Called after all tests in a test block have completed.
      *
      * @param testBlock The test block.
+     * @param parents The ancestor test blocks, starting with the root block and ending with the immediate parent.
      */
-    void testBlockEnd(TestBlock testBlock);
+    void testBlockEnd(TestBlock testBlock, List<TestBlock> parents);
 
     /**
      * Called after a hook due to it throwing an exception.
      *
      * @param hook The hook that threw an exception.
+     * @param parents The ancestor test blocks, starting with the root block and ending with the immediate parent.
      * @param cause The throwable that the hook threw.
      */
-    void hookError(Hook hook, Throwable cause);
+    void hookError(Hook hook, List<TestBlock> parents, Throwable cause);
 
     /**
      * Called before a test is run.
      *
      * @param test The test that is being run.
+     * @param parents The ancestor test blocks, starting with the root block and ending with the immediate parent.
      */
-    void testStart(Test test);
+    void testStart(Test test, List<TestBlock> parents);
 
     /**
      * Called after a test is run.
      *
      * @param test The test that has been run.
+     * @param parents The ancestor test blocks, starting with the root block and ending with the immediate parent.
      */
-    void testEnd(Test test);
+    void testEnd(Test test, List<TestBlock> parents);
 
     /**
      * Called after a test has successfully executed without throwing an exception.
      *
      * @param test The test that passed.
+     * @param parents The ancestor test blocks, starting with the root block and ending with the immediate parent.
      */
-    void testPass(Test test);
+    void testPass(Test test, List<TestBlock> parents);
 
     /**
      * Called after a test has failed due to it throwing an exception.
      *
      * @param test The test that failed.
+     * @param parents The ancestor test blocks, starting with the root block and ending with the immediate parent.
      * @param cause The assertion error that the test threw.
      */
-    void testFail(Test test, Throwable cause);
+    void testFail(Test test, List<TestBlock> parents, Throwable cause);
 
     /**
      * Called when a test cannot be run as it has not yet been implemented.
      *
      * @param test The pending test.
+     * @param parents The ancestor test blocks, starting with the root block and ending with the immediate parent.
      */
-    void testPending(Test test);
+    void testPending(Test test, List<TestBlock> parents);
 
     /**
      * Called when a test has been skipped.
      *
      * @param test The skipped test.
+     * @param parents The ancestor test blocks, starting with the root block and ending with the immediate parent.
      */
-    void testSkip(Test test);
+    void testSkip(Test test, List<TestBlock> parents);
 }

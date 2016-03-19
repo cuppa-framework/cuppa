@@ -176,7 +176,8 @@ public class BasicApiTests {
 
         //Then
         ArgumentCaptor<Throwable> captor = ArgumentCaptor.forClass(Throwable.class);
-        verify(reporter).testFail(eq(findTest(rootBlock, "runs the test, which errors")), captor.capture());
+        verify(reporter).testFail(eq(findTest(rootBlock, "runs the test, which errors")), anyListOf(TestBlock.class),
+                captor.capture());
         assertThat(captor.getValue())
                 .isExactlyInstanceOf(CuppaException.class)
                 .hasMessage("'describe' may only be nested within a 'describe' or 'when' block");
@@ -203,7 +204,8 @@ public class BasicApiTests {
 
         //Then
         ArgumentCaptor<Throwable> captor = ArgumentCaptor.forClass(Throwable.class);
-        verify(reporter).testFail(eq(findTest(rootBlock, "runs the test, which errors")), captor.capture());
+        verify(reporter).testFail(eq(findTest(rootBlock, "runs the test, which errors")), anyListOf(TestBlock.class),
+                captor.capture());
         assertThat(captor.getValue())
                 .isExactlyInstanceOf(CuppaException.class)
                 .hasMessage("'when' may only be nested within a 'describe' or 'when' block");
@@ -230,7 +232,8 @@ public class BasicApiTests {
 
         //Then
         ArgumentCaptor<Throwable> captor = ArgumentCaptor.forClass(Throwable.class);
-        verify(reporter).testFail(eq(findTest(rootBlock, "runs the test, which errors")), captor.capture());
+        verify(reporter).testFail(eq(findTest(rootBlock, "runs the test, which errors")), anyListOf(TestBlock.class),
+                captor.capture());
         assertThat(captor.getValue())
                 .isExactlyInstanceOf(CuppaException.class)
                 .hasMessage("'it' may only be nested within a 'describe' or 'when' block");
@@ -258,8 +261,10 @@ public class BasicApiTests {
         runTests(rootBlock, reporter);
 
         //Then
-        verify(reporter).testFail(eq(findTest(rootBlock, "runs the first test, which errors")), isA(Throwable.class));
-        verify(reporter).testPass(findTest(rootBlock, "runs the second test, which passes"));
+        verify(reporter).testFail(eq(findTest(rootBlock, "runs the first test, which errors")),
+                anyListOf(TestBlock.class), isA(Throwable.class));
+        verify(reporter).testPass(eq(findTest(rootBlock, "runs the second test, which passes")),
+                anyListOf(TestBlock.class));
     }
 
     @Test
@@ -282,7 +287,8 @@ public class BasicApiTests {
         runTests(rootBlock, reporter);
 
         //Then
-        verify(reporter).testFail(eq(findTest(rootBlock, "runs the test, which fails")), eq(exception));
+        verify(reporter).testFail(eq(findTest(rootBlock, "runs the test, which fails")), anyListOf(TestBlock.class),
+                eq(exception));
     }
 
     @Test
@@ -306,8 +312,10 @@ public class BasicApiTests {
         runTests(rootBlock, reporter);
 
         //Then
-        verify(reporter).testFail(eq(findTest(rootBlock, "runs the first test, which fails")), any(Throwable.class));
-        verify(reporter).testPass(findTest(rootBlock, "runs the second test, which passes"));
+        verify(reporter).testFail(eq(findTest(rootBlock, "runs the first test, which fails")),
+                anyListOf(TestBlock.class), any(Throwable.class));
+        verify(reporter).testPass(eq(findTest(rootBlock, "runs the second test, which passes")),
+                anyListOf(TestBlock.class));
     }
 
     @Test
@@ -330,7 +338,7 @@ public class BasicApiTests {
         runTests(rootBlock, reporter);
 
         //Then
-        verify(reporter).testFail(findTest(rootBlock, "runs the test"), exception);
+        verify(reporter).testFail(eq(findTest(rootBlock, "runs the test")), anyListOf(TestBlock.class), eq(exception));
     }
 
     @Test

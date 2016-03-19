@@ -46,7 +46,7 @@ public class ModelTests {
                 ModelTests.class, "", Optional.empty(), new Options())))
                 .isExactlyInstanceOf(UnsupportedOperationException.class);
 
-        assertThatThrownBy(() -> testBlock.hooks.add(new Hook(HookType.BEFORE, Optional.empty(),
+        assertThatThrownBy(() -> testBlock.hooks.add(new Hook(HookType.BEFORE, ModelTests.class, Optional.empty(),
                 HookFunction.identity())))
                 .isExactlyInstanceOf(UnsupportedOperationException.class);
 
@@ -67,7 +67,7 @@ public class ModelTests {
         originalTestBlocks.add(testBlock);
         originalTests.add(new org.forgerock.cuppa.model.Test(NORMAL,
                 ModelTests.class, "", Optional.empty(), new Options()));
-        originalHooks.add(new Hook(HookType.BEFORE, Optional.empty(), HookFunction.identity()));
+        originalHooks.add(new Hook(HookType.BEFORE, ModelTests.class, Optional.empty(), HookFunction.identity()));
         originalOptions.set(new TestOption("a"));
 
         assertThat(testBlock.testBlocks).hasSize(0);

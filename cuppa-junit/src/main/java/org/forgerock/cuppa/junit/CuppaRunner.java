@@ -16,12 +16,15 @@
 
 package org.forgerock.cuppa.junit;
 
-import static org.forgerock.cuppa.model.TestBlockType.WHEN;
 import static org.junit.runner.Description.createSuiteDescription;
 import static org.junit.runner.Description.createTestDescription;
 
 import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import org.forgerock.cuppa.ReporterSupport;
 import org.forgerock.cuppa.model.TestBlock;
 import org.junit.runner.Description;
 import org.junit.runner.Runner;
@@ -50,22 +53,22 @@ public final class CuppaRunner extends Runner {
     public Description getDescription() {
         Description description = createSuiteDescription(testClass.getName(), rootBlock.description);
         rootBlock.testBlocks.forEach(b ->
-                description.addChild(getDescriptionOfDescribeBlock(b, rootBlock.description)));
+                description.addChild(getDescriptionOfDescribeBlock(b, Collections.singletonList(rootBlock))));
         return description;
     }
 
-    private Description getDescriptionOfDescribeBlock(TestBlock testBlock, String ancestorsDescription) {
-        String blockDescription = (testBlock.type == WHEN) ? "when " + testBlock.description : testBlock.description;
-        String fullBlockDescription = ancestorsDescription + blockDescription;
-        Description description = createSuiteDescription(blockDescription, fullBlockDescription);
-        testBlock.tests.forEach(test -> description.addChild(createTestDescription(testClass.getName(),
-                test.description, fullBlockDescription + test.description)));
-        testBlock.testBlocks.forEach(b -> description.addChild(getDescriptionOfDescribeBlock(b, fullBlockDescription)));
+    private Description getDescriptionOfDescribeBlock(TestBlock testBlock, List<TestBlock> parents) {
+        Description description = createSuiteDescription(ReporterSupport.getDescription(testBlock),
+                ReporterSupport.getFullDescription(testBlock, parents));
+        List<TestBlock> newParents = Stream.concat(parents.stream(), Stream.of(testBlock)).collect(Collectors.toList());
+        testBlock.tests.forEach(test -> description.addChild(createTestDescription(test.testClass.getName(),
+                test.description, ReporterSupport.getFullDescription(test, newParents))));
+        testBlock.testBlocks.forEach(b -> description.addChild(getDescriptionOfDescribeBlock(b, newParents)));
         return description;
     }
 
     @Override
     public void run(RunNotifier notifier) {
-        runner.run(rootBlock, new ReportJUnitAdapter(testClass, notifier));
+        runner.run(rootBlock, new ReportJUnitAdapter(notifier));
     }
 }
