@@ -19,7 +19,7 @@ To use the runner, your project will need to depend on `org.forgerock.cuppa:cupp
 Simply annotate your class with JUnit's `@RunWith` annotation instead of Cuppa's `@Test` annotation:
 
 ```java
-@RunWith(CuppaTestRunner.class)
+@RunWith(CuppaRunner.class)
 public class MyCuppaTests {
     {
         describe("something", () -> {
