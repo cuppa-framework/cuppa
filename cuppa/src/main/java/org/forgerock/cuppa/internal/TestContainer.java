@@ -17,6 +17,7 @@
 package org.forgerock.cuppa.internal;
 
 import static org.forgerock.cuppa.model.Behaviour.NORMAL;
+import static org.forgerock.cuppa.model.TestBlockType.ROOT;
 
 import java.util.ArrayDeque;
 import java.util.Arrays;
@@ -37,6 +38,7 @@ import org.forgerock.cuppa.model.Options;
 import org.forgerock.cuppa.model.TagsOption;
 import org.forgerock.cuppa.model.Test;
 import org.forgerock.cuppa.model.TestBlock;
+import org.forgerock.cuppa.model.TestBlockType;
 
 /**
  * Singleton container for user-defined tests.
@@ -62,13 +64,16 @@ public enum TestContainer {
     /**
      * Returns a builder for registering a described suite of tests to be run.
      *
+     * @param type The type of the test block.
      * @param behaviour If {@link Behaviour#SKIP} then this test will be skipped.
      * @param description The description of the 'describe' block.
      * @param options The set of options applied to the test block.
      */
-    void describe(Behaviour behaviour, String description, TestBlockFunction function, Options options) {
+    void testBlock(TestBlockType type, Behaviour behaviour, String description, TestBlockFunction function,
+            Options options) {
         TestDefinitionContext context = assertIsInTestDefinitionContext("describe");
-        TestBlockBuilder testBlockBuilder = new TestBlockBuilder(behaviour, context.testClass, description, options);
+        TestBlockBuilder testBlockBuilder = new TestBlockBuilder(type, behaviour, context.testClass, description,
+                options);
         context.stack.addLast(testBlockBuilder);
         try {
             function.apply();
@@ -318,7 +323,7 @@ public enum TestContainer {
 
         private TestDefinitionContext(Class<?> testClass) {
             this.testClass = testClass;
-            rootBuilder = new TestBlockBuilder(NORMAL, testClass, "", new Options());
+            rootBuilder = new TestBlockBuilder(ROOT, NORMAL, testClass, "", new Options());
             stack.addLast(rootBuilder);
         }
 

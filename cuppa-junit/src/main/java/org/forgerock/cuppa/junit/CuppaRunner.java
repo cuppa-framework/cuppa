@@ -16,6 +16,7 @@
 
 package org.forgerock.cuppa.junit;
 
+import static org.forgerock.cuppa.model.TestBlockType.WHEN;
 import static org.junit.runner.Description.createSuiteDescription;
 import static org.junit.runner.Description.createTestDescription;
 
@@ -53,12 +54,13 @@ public final class CuppaRunner extends Runner {
         return description;
     }
 
-    private Description getDescriptionOfDescribeBlock(TestBlock testBlock, String parentDescription) {
-        String blockDescription = parentDescription + testBlock.description;
-        Description description = createSuiteDescription(testBlock.description, blockDescription);
-        testBlock.testBlocks.forEach(b -> description.addChild(getDescriptionOfDescribeBlock(b, blockDescription)));
+    private Description getDescriptionOfDescribeBlock(TestBlock testBlock, String ancestorsDescription) {
+        String blockDescription = (testBlock.type == WHEN) ? "when " + testBlock.description : testBlock.description;
+        String fullBlockDescription = ancestorsDescription + blockDescription;
+        Description description = createSuiteDescription(blockDescription, fullBlockDescription);
+        testBlock.testBlocks.forEach(b -> description.addChild(getDescriptionOfDescribeBlock(b, fullBlockDescription)));
         testBlock.tests.forEach(test -> description.addChild(createTestDescription(testClass.getName(),
-                test.description, blockDescription + test.description)));
+                test.description, fullBlockDescription + test.description)));
         return description;
     }
 

@@ -16,6 +16,9 @@
 
 package org.forgerock.cuppa.internal;
 
+import static org.forgerock.cuppa.model.TestBlockType.DESCRIBE;
+import static org.forgerock.cuppa.model.TestBlockType.WHEN;
+
 import java.util.Optional;
 
 import org.forgerock.cuppa.TestBuilder;
@@ -52,12 +55,12 @@ final class TestBuilderImpl implements TestBuilder {
 
     @Override
     public void describe(String description, TestBlockFunction function) {
-        TestContainer.INSTANCE.describe(behaviour, description, function, options);
+        TestContainer.INSTANCE.testBlock(DESCRIBE, behaviour, description, function, options);
     }
 
     @Override
     public void when(String description, TestBlockFunction function) {
-        TestContainer.INSTANCE.describe(behaviour, "when " + description, function, options);
+        TestContainer.INSTANCE.testBlock(WHEN, behaviour, description, function, options);
     }
 
     @Override

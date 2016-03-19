@@ -16,6 +16,8 @@
 
 package org.forgerock.cuppa.reporters;
 
+import static org.forgerock.cuppa.model.TestBlockType.WHEN;
+
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
@@ -105,8 +107,9 @@ public final class DefaultReporter implements Reporter {
 
     @Override
     public void testBlockStart(TestBlock testBlock) {
-        stream.println(getIndent() + testBlock.description);
-        blockStack.addLast(testBlock.description);
+        String description = (testBlock.type == WHEN) ? "when " + testBlock.description : testBlock.description;
+        stream.println(getIndent() + description);
+        blockStack.addLast(description);
     }
 
     @Override

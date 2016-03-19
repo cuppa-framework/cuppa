@@ -29,11 +29,11 @@ public final class EmptyTestBlockFilter implements Function<TestBlock, TestBlock
     @Override
     public TestBlock apply(TestBlock testBlock) {
         List<TestBlock> testBlocks = testBlock.testBlocks.stream()
-                .map(this::apply)
+                .map(this)
                 .filter(b -> !isEmpty(b))
                 .collect(Collectors.toList());
-        return new TestBlock(testBlock.behaviour, testBlock.testClass, testBlock.description, testBlocks,
-                testBlock.hooks, testBlock.tests, testBlock.options);
+        return new TestBlock(testBlock.type, testBlock.behaviour, testBlock.testClass, testBlock.description,
+                testBlocks, testBlock.hooks, testBlock.tests, testBlock.options);
     }
 
     private boolean isEmpty(TestBlock testBlock) {

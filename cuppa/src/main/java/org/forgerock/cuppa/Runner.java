@@ -16,7 +16,9 @@
 
 package org.forgerock.cuppa;
 
+import static org.forgerock.cuppa.model.Behaviour.NORMAL;
 import static org.forgerock.cuppa.model.HookType.*;
+import static org.forgerock.cuppa.model.TestBlockType.ROOT;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -48,7 +50,7 @@ import org.forgerock.cuppa.reporters.Reporter;
 public final class Runner {
     private static final ServiceLoader<ConfigurationProvider> CONFIGURATION_PROVIDER_LOADER
             = ServiceLoader.load(ConfigurationProvider.class);
-    private static final TestBlock EMPTY_TEST_BLOCK = new TestBlock(Behaviour.NORMAL, Cuppa.class, "",
+    private static final TestBlock EMPTY_TEST_BLOCK = new TestBlock(ROOT, NORMAL, Cuppa.class, "",
             Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), new Options());
 
     private final List<Function<TestBlock, TestBlock>> coreTestTransforms;
@@ -122,7 +124,7 @@ public final class Runner {
     }
 
     private TestBlock mergeRootTestBlocks(TestBlock testBlock1, TestBlock testBlock2) {
-        return new TestBlock(Behaviour.NORMAL, Cuppa.class, "", Stream.concat(testBlock1.testBlocks.stream(),
+        return new TestBlock(ROOT, NORMAL, Cuppa.class, "", Stream.concat(testBlock1.testBlocks.stream(),
                 testBlock2.testBlocks.stream()).collect(Collectors.toList()), Collections.emptyList(),
                 Collections.emptyList(), new Options());
     }

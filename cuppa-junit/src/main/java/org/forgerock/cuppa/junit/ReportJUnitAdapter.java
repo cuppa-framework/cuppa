@@ -16,6 +16,8 @@
 
 package org.forgerock.cuppa.junit;
 
+import static org.forgerock.cuppa.model.TestBlockType.WHEN;
+
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.stream.Collectors;
@@ -76,7 +78,9 @@ final class ReportJUnitAdapter implements Reporter {
             description += " \"" + hook.description.get() + "\"";
         }
         description += " for \"";
-        description += testBlockDeque.stream().map(tb -> tb.description).collect(Collectors.joining(" ")).trim();
+        description += testBlockDeque.stream()
+                .map(b -> (b.type == WHEN) ? "when " + b.description : b.description)
+                .collect(Collectors.joining(" ")).trim();
         description += "\"";
         notifier.fireTestFailure(new Failure(getDescription(description), cause));
     }
@@ -113,7 +117,7 @@ final class ReportJUnitAdapter implements Reporter {
 
     private Description getDescription(String description) {
         String blockId = testBlockDeque.stream()
-                .map(b -> b.description)
+                .map(b -> (b.type == WHEN) ? "when " + b.description : b.description)
                 .collect(Collectors.joining());
         String uniqueId = blockId + description;
         return Description.createTestDescription(testClass.getName(), description, uniqueId);

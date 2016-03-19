@@ -29,6 +29,11 @@ import java.util.stream.Collectors;
 public final class TestBlock {
 
     /**
+     * The type of the test block.
+     */
+    public final TestBlockType type;
+
+    /**
      * Controls how the test block and its descendants behave.
      */
     public final Behaviour behaviour;
@@ -66,6 +71,7 @@ public final class TestBlock {
     /**
      * Constructs a new TestBlock. Will convert mutable lists to immutable lists.
      *
+     * @param type The type of the test block.
      * @param behaviour Controls how the test block and its descendants behave.
      * @param testClass The class that the test block was defined in.
      * @param description The description of the test block. Will be used for reporting.
@@ -74,8 +80,9 @@ public final class TestBlock {
      * @param tests Nested tests.
      * @param options The set of options applied to the block.
      */
-    public TestBlock(Behaviour behaviour, Class<?> testClass, String description, List<TestBlock> testBlocks,
-            List<Hook> hooks, List<Test> tests, Options options) {
+    public TestBlock(TestBlockType type, Behaviour behaviour, Class<?> testClass, String description,
+            List<TestBlock> testBlocks, List<Hook> hooks, List<Test> tests, Options options) {
+        Objects.requireNonNull(type, "TestBlock must have a type");
         Objects.requireNonNull(behaviour, "TestBlock must have a behaviour");
         Objects.requireNonNull(testClass, "TestBlock must have a testClass");
         Objects.requireNonNull(description, "TestBlock must have a description");
@@ -83,6 +90,7 @@ public final class TestBlock {
         Objects.requireNonNull(hooks, "TestBlock must have hooks");
         Objects.requireNonNull(tests, "TestBlock must have tests");
         Objects.requireNonNull(options, "TestBlock must have options");
+        this.type = type;
         this.behaviour = behaviour;
         this.testClass = testClass;
         this.description = description;
@@ -103,7 +111,8 @@ public final class TestBlock {
 
         TestBlock testBlock = (TestBlock) o;
 
-        return Objects.equals(behaviour, testBlock.behaviour)
+        return Objects.equals(type, testBlock.type)
+            && Objects.equals(behaviour, testBlock.behaviour)
             && Objects.equals(testClass, testBlock.testClass)
             && Objects.equals(description, testBlock.description)
             && Objects.equals(testBlocks, testBlock.testBlocks)
@@ -114,13 +123,14 @@ public final class TestBlock {
 
     @Override
     public int hashCode() {
-        return Objects.hash(behaviour, testClass, description, testBlocks, hooks, tests, options);
+        return Objects.hash(type, behaviour, testClass, description, testBlocks, hooks, tests, options);
     }
 
     @Override
     public String toString() {
         return "TestBlock{"
-            + "behaviour=" + behaviour
+            + "type=" + type
+            + ", behaviour=" + behaviour
             + ", testClass=" + testClass
             + ", description='" + description + '\''
             + ", testBlocks=" + testBlocks

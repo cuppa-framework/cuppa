@@ -18,13 +18,14 @@ package org.forgerock.cuppa;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.forgerock.cuppa.model.Behaviour.NORMAL;
+import static org.forgerock.cuppa.model.TestBlockType.ROOT;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import org.forgerock.cuppa.functions.HookFunction;
-import org.forgerock.cuppa.model.Behaviour;
 import org.forgerock.cuppa.model.Hook;
 import org.forgerock.cuppa.model.HookType;
 import org.forgerock.cuppa.model.Option;
@@ -35,13 +36,13 @@ import org.testng.annotations.Test;
 public class ModelTests {
     @Test
     public void testBlockShouldBeImmutable() {
-        TestBlock testBlock = new TestBlock(Behaviour.NORMAL, ModelTests.class, "", new ArrayList<>(),
+        TestBlock testBlock = new TestBlock(ROOT, NORMAL, ModelTests.class, "", new ArrayList<>(),
                 new ArrayList<>(), new ArrayList<>(), new Options());
 
         assertThatThrownBy(() -> testBlock.testBlocks.add(testBlock))
                 .isExactlyInstanceOf(UnsupportedOperationException.class);
 
-        assertThatThrownBy(() -> testBlock.tests.add(new org.forgerock.cuppa.model.Test(Behaviour.NORMAL,
+        assertThatThrownBy(() -> testBlock.tests.add(new org.forgerock.cuppa.model.Test(NORMAL,
                 ModelTests.class, "", Optional.empty(), new Options())))
                 .isExactlyInstanceOf(UnsupportedOperationException.class);
 
@@ -60,11 +61,11 @@ public class ModelTests {
         List<Hook> originalHooks = new ArrayList<>();
         Options originalOptions = new Options();
 
-        TestBlock testBlock = new TestBlock(Behaviour.NORMAL, ModelTests.class, "", originalTestBlocks,
+        TestBlock testBlock = new TestBlock(ROOT, NORMAL, ModelTests.class, "", originalTestBlocks,
                 originalHooks, originalTests, originalOptions);
 
         originalTestBlocks.add(testBlock);
-        originalTests.add(new org.forgerock.cuppa.model.Test(Behaviour.NORMAL,
+        originalTests.add(new org.forgerock.cuppa.model.Test(NORMAL,
                 ModelTests.class, "", Optional.empty(), new Options()));
         originalHooks.add(new Hook(HookType.BEFORE, Optional.empty(), HookFunction.identity()));
         originalOptions.set(new TestOption("a"));
@@ -77,7 +78,7 @@ public class ModelTests {
 
     @Test
     public void testShouldBeImmutable() {
-        org.forgerock.cuppa.model.Test test = new org.forgerock.cuppa.model.Test(Behaviour.NORMAL, ModelTests.class, "",
+        org.forgerock.cuppa.model.Test test = new org.forgerock.cuppa.model.Test(NORMAL, ModelTests.class, "",
                 Optional.empty(), new Options());
 
         assertThatThrownBy(() -> test.options.set(new TestOption("a")))
@@ -88,7 +89,7 @@ public class ModelTests {
     public void testShouldTakeDefensiveCopiesOfMutableObjects() {
         Options originalOptions = new Options();
 
-        org.forgerock.cuppa.model.Test test = new org.forgerock.cuppa.model.Test(Behaviour.NORMAL, ModelTests.class, "",
+        org.forgerock.cuppa.model.Test test = new org.forgerock.cuppa.model.Test(NORMAL, ModelTests.class, "",
                 Optional.empty(), originalOptions);
 
         originalOptions.set(new TestOption("a"));

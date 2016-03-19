@@ -164,9 +164,9 @@ public class ReportingTests {
         InOrder inOrder = inOrder(reporter);
         inOrder.verify(reporter).start(rootBlock);
         inOrder.verify(reporter).testBlockStart(findTestBlock(rootBlock, "describe"));
-        inOrder.verify(reporter).testBlockStart(findTestBlock(rootBlock, "when when"));
+        inOrder.verify(reporter).testBlockStart(findTestBlock(rootBlock, "when"));
         inOrder.verify(reporter).testPass(findTest(rootBlock, "test"));
-        inOrder.verify(reporter).testBlockEnd(findTestBlock(rootBlock, "when when"));
+        inOrder.verify(reporter).testBlockEnd(findTestBlock(rootBlock, "when"));
         inOrder.verify(reporter).testBlockEnd(findTestBlock(rootBlock, "describe"));
         inOrder.verify(reporter).end();
     }

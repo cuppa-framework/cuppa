@@ -16,6 +16,8 @@
 
 package org.forgerock.cuppa.maven.surefire;
 
+import static org.forgerock.cuppa.model.TestBlockType.WHEN;
+
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.stream.Collectors;
@@ -116,7 +118,9 @@ final class CuppaSurefireReporter implements Reporter {
     }
 
     private String getFullDescription(String description) {
-        return (blockStack.stream().map(b -> b.description).collect(Collectors.joining(" ")) + " " + description)
+        return (blockStack.stream()
+                .map(b -> (b.type == WHEN) ? "when " + b.description : b.description)
+                .collect(Collectors.joining(" ")) + " " + description)
                 .trim();
     }
 }

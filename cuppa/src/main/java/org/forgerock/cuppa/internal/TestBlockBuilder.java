@@ -28,9 +28,11 @@ import org.forgerock.cuppa.model.Hook;
 import org.forgerock.cuppa.model.Options;
 import org.forgerock.cuppa.model.Test;
 import org.forgerock.cuppa.model.TestBlock;
+import org.forgerock.cuppa.model.TestBlockType;
 
 final class TestBlockBuilder {
 
+    private final TestBlockType type;
     private final Behaviour behaviour;
     private final Class<?> testClass;
     private final String description;
@@ -39,7 +41,8 @@ final class TestBlockBuilder {
     private final List<Hook> hooks = new ArrayList<>();
     private final List<Test> tests = new ArrayList<>();
 
-    TestBlockBuilder(Behaviour behaviour, Class<?> testClass, String description, Options options) {
+    TestBlockBuilder(TestBlockType type, Behaviour behaviour, Class<?> testClass, String description, Options options) {
+        this.type = type;
         this.behaviour = behaviour;
         this.testClass = testClass;
         this.description = description;
@@ -77,6 +80,6 @@ final class TestBlockBuilder {
     }
 
     TestBlock build() {
-        return new TestBlock(behaviour, testClass, description, testBlocks, hooks, tests, options);
+        return new TestBlock(type, behaviour, testClass, description, testBlocks, hooks, tests, options);
     }
 }
