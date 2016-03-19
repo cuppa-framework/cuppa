@@ -31,11 +31,11 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import org.forgerock.cuppa.functions.TestFunction;
-import org.forgerock.cuppa.internal.EmptyTestBlockFilter;
 import org.forgerock.cuppa.internal.HookException;
-import org.forgerock.cuppa.internal.OnlyTestBlockFilter;
-import org.forgerock.cuppa.internal.TagTestBlockFilter;
 import org.forgerock.cuppa.internal.TestContainer;
+import org.forgerock.cuppa.internal.filters.EmptyTestBlockFilter;
+import org.forgerock.cuppa.internal.filters.OnlyTestBlockFilter;
+import org.forgerock.cuppa.internal.filters.TagTestBlockFilter;
 import org.forgerock.cuppa.model.Behaviour;
 import org.forgerock.cuppa.model.Hook;
 import org.forgerock.cuppa.model.Options;
