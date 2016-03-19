@@ -316,6 +316,25 @@ public class CuppaRunnerTest {
         assertThat(when1Description).isNotEqualTo(when2Description);
     }
 
+    @Test
+    public void shouldReportDescriptionsinCorrectOrder() {
+        JUnitCore jUnit = new JUnitCore();
+        jUnit.addListener(new RunListener() {
+            @Override
+            public void testRunStarted(Description description) throws Exception {
+                suiteDescription = description;
+            }
+        });
+        jUnit.run(CuppaRunnerTest.TestsAndTestBlocks.class);
+
+        List<Description> rootDescriptionChildren = suiteDescription.getChildren().get(0).getChildren().get(0).getChildren();
+        assertThat(rootDescriptionChildren).hasSize(3);
+        assertThat(rootDescriptionChildren.get(0).getDisplayName()).startsWith("a");
+        assertThat(rootDescriptionChildren.get(1).getDisplayName()).startsWith("b");
+        assertThat(rootDescriptionChildren.get(2).getDisplayName()).startsWith("when c");
+        assertThat(rootDescriptionChildren.get(2).getChildren().get(0).getDisplayName()).startsWith("d");
+    }
+
     @RunWith(CuppaRunner.class)
     public static class PassingTest {
         {
@@ -457,6 +476,19 @@ public class CuppaRunnerTest {
                 when("duplicate test blocks", () -> {
                     it("supports tests in both blocks but different names", TestFunction.identity());
                 });
+            });
+        }
+    }
+
+    @RunWith(CuppaRunner.class)
+    public static class TestsAndTestBlocks {
+        {
+            describe("Cuppa", () -> {
+                it("a", TestFunction.identity());
+                when("c", () -> {
+                    it("d", TestFunction.identity());
+                });
+                it("b", TestFunction.identity());
             });
         }
     }

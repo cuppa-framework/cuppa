@@ -58,9 +58,9 @@ public final class CuppaRunner extends Runner {
         String blockDescription = (testBlock.type == WHEN) ? "when " + testBlock.description : testBlock.description;
         String fullBlockDescription = ancestorsDescription + blockDescription;
         Description description = createSuiteDescription(blockDescription, fullBlockDescription);
-        testBlock.testBlocks.forEach(b -> description.addChild(getDescriptionOfDescribeBlock(b, fullBlockDescription)));
         testBlock.tests.forEach(test -> description.addChild(createTestDescription(testClass.getName(),
                 test.description, fullBlockDescription + test.description)));
+        testBlock.testBlocks.forEach(b -> description.addChild(getDescriptionOfDescribeBlock(b, fullBlockDescription)));
         return description;
     }
 
