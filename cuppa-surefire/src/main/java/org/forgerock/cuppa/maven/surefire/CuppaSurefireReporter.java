@@ -54,14 +54,6 @@ final class CuppaSurefireReporter implements Reporter {
     }
 
     @Override
-    public void testBlockStart(TestBlock testBlock, List<TestBlock> parents) {
-    }
-
-    @Override
-    public void testBlockEnd(TestBlock testBlock, List<TestBlock> parents) {
-    }
-
-    @Override
     public void hookError(Hook hook, List<TestBlock> parents, Throwable cause) {
         ReporterSupport.filterStackTrace(cause);
         String fullDescription = ReporterSupport.getFullDescription(hook, parents);
@@ -74,10 +66,6 @@ final class CuppaSurefireReporter implements Reporter {
     public void testStart(Test test, List<TestBlock> parents) {
         listener.testStarting(new SimpleReportEntry(test.testClass.getCanonicalName(),
                 ReporterSupport.getFullDescription(test, parents)));
-    }
-
-    @Override
-    public void testEnd(Test test, List<TestBlock> parents) {
     }
 
     @Override

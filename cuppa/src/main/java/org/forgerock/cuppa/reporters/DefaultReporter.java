@@ -120,14 +120,6 @@ public final class DefaultReporter implements Reporter {
     }
 
     @Override
-    public void testStart(Test test, List<TestBlock> parents) {
-    }
-
-    @Override
-    public void testEnd(Test test, List<TestBlock> parents) {
-    }
-
-    @Override
     public void testPass(Test test, List<TestBlock> parents) {
         passed++;
         stream.println(getIndent() + "✓ " + test.description);

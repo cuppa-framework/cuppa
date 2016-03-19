@@ -32,12 +32,14 @@ public interface Reporter {
      *
      * @param rootBlock The root test block containing all the tests that will be run.
      */
-    void start(TestBlock rootBlock);
+    default void start(TestBlock rootBlock) {
+    }
 
     /**
      * Called after all tests have been run.
      */
-    void end();
+    default void end() {
+    }
 
     /**
      * Called before any tests are run in a test block.
@@ -45,7 +47,8 @@ public interface Reporter {
      * @param testBlock The test block.
      * @param parents The ancestor test blocks, starting with the root block and ending with the immediate parent.
      */
-    void testBlockStart(TestBlock testBlock, List<TestBlock> parents);
+    default void testBlockStart(TestBlock testBlock, List<TestBlock> parents) {
+    }
 
     /**
      * Called after all tests in a test block have completed.
@@ -53,7 +56,8 @@ public interface Reporter {
      * @param testBlock The test block.
      * @param parents The ancestor test blocks, starting with the root block and ending with the immediate parent.
      */
-    void testBlockEnd(TestBlock testBlock, List<TestBlock> parents);
+    default void testBlockEnd(TestBlock testBlock, List<TestBlock> parents) {
+    }
 
     /**
      * Called after a hook due to it throwing an exception.
@@ -62,7 +66,8 @@ public interface Reporter {
      * @param parents The ancestor test blocks, starting with the root block and ending with the immediate parent.
      * @param cause The throwable that the hook threw.
      */
-    void hookError(Hook hook, List<TestBlock> parents, Throwable cause);
+    default void hookError(Hook hook, List<TestBlock> parents, Throwable cause) {
+    }
 
     /**
      * Called before a test is run.
@@ -70,7 +75,8 @@ public interface Reporter {
      * @param test The test that is being run.
      * @param parents The ancestor test blocks, starting with the root block and ending with the immediate parent.
      */
-    void testStart(Test test, List<TestBlock> parents);
+    default void testStart(Test test, List<TestBlock> parents) {
+    }
 
     /**
      * Called after a test is run.
@@ -78,7 +84,8 @@ public interface Reporter {
      * @param test The test that has been run.
      * @param parents The ancestor test blocks, starting with the root block and ending with the immediate parent.
      */
-    void testEnd(Test test, List<TestBlock> parents);
+    default void testEnd(Test test, List<TestBlock> parents) {
+    }
 
     /**
      * Called after a test has successfully executed without throwing an exception.
@@ -86,7 +93,8 @@ public interface Reporter {
      * @param test The test that passed.
      * @param parents The ancestor test blocks, starting with the root block and ending with the immediate parent.
      */
-    void testPass(Test test, List<TestBlock> parents);
+    default void testPass(Test test, List<TestBlock> parents) {
+    }
 
     /**
      * Called after a test has failed due to it throwing an exception.
@@ -95,7 +103,8 @@ public interface Reporter {
      * @param parents The ancestor test blocks, starting with the root block and ending with the immediate parent.
      * @param cause The assertion error that the test threw.
      */
-    void testFail(Test test, List<TestBlock> parents, Throwable cause);
+    default void testFail(Test test, List<TestBlock> parents, Throwable cause) {
+    }
 
     /**
      * Called when a test cannot be run as it has not yet been implemented.
@@ -103,7 +112,8 @@ public interface Reporter {
      * @param test The pending test.
      * @param parents The ancestor test blocks, starting with the root block and ending with the immediate parent.
      */
-    void testPending(Test test, List<TestBlock> parents);
+    default void testPending(Test test, List<TestBlock> parents) {
+    }
 
     /**
      * Called when a test has been skipped.
@@ -111,5 +121,6 @@ public interface Reporter {
      * @param test The skipped test.
      * @param parents The ancestor test blocks, starting with the root block and ending with the immediate parent.
      */
-    void testSkip(Test test, List<TestBlock> parents);
+    default void testSkip(Test test, List<TestBlock> parents) {
+    }
 }

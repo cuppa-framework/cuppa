@@ -45,22 +45,6 @@ final class ReportJUnitAdapter implements Reporter {
     }
 
     @Override
-    public void start(TestBlock rootBlock) {
-    }
-
-    @Override
-    public void end() {
-    }
-
-    @Override
-    public void testBlockStart(TestBlock testBlock, List<TestBlock> parents) {
-    }
-
-    @Override
-    public void testBlockEnd(TestBlock testBlock, List<TestBlock> parents) {
-    }
-
-    @Override
     public void hookError(Hook hook, List<TestBlock> parents, Throwable cause) {
         ReporterSupport.filterStackTrace(cause);
         notifier.fireTestFailure(new Failure(Description.createTestDescription(hook.testClass.getName(),
@@ -75,10 +59,6 @@ final class ReportJUnitAdapter implements Reporter {
     @Override
     public void testEnd(Test test, List<TestBlock> parents) {
         notifier.fireTestFinished(getDescription(test, parents));
-    }
-
-    @Override
-    public void testPass(Test test, List<TestBlock> parents) {
     }
 
     @Override
