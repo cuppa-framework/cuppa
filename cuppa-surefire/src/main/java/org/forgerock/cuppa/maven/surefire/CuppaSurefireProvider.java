@@ -18,9 +18,7 @@ package org.forgerock.cuppa.maven.surefire;
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Properties;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -49,16 +47,16 @@ public final class CuppaSurefireProvider extends AbstractProvider {
      */
     public CuppaSurefireProvider(ProviderParameters parameters) {
         this.providerParameters = parameters;
-        Properties properties = parameters.getProviderProperties();
+        Map<String, String> properties = parameters.getProviderProperties();
         tags = new Tags(getTags(properties), getExcludedTags(properties));
     }
 
-    private Set<String> getTags(Properties properties) {
-        String groups = properties.getProperty("groups");
+    private Set<String> getTags(Map<String, String> properties) {
+        String groups = properties.get("groups");
         if (groups == null) {
             groups = System.getProperty("groups");
         }
-        String tags = properties.getProperty("tags");
+        String tags = properties.get("tags");
         String overrideTags = System.getProperty("tags");
         return getTags(groups, overrideTags == null ? tags : overrideTags);
     }
@@ -76,12 +74,12 @@ public final class CuppaSurefireProvider extends AbstractProvider {
         }
     }
 
-    private Set<String> getExcludedTags(Properties properties) {
-        String excludedGroups = properties.getProperty("excludedGroups");
+    private Set<String> getExcludedTags(Map<String, String> properties) {
+        String excludedGroups = properties.get("excludedGroups");
         if (excludedGroups == null) {
             excludedGroups = System.getProperty("excludedGroups");
         }
-        String excludedTags = properties.getProperty("excludedTags");
+        String excludedTags = properties.get("excludedTags");
         String overrideExcludedTags = System.getProperty("excludedTags");
         return getTags(excludedGroups, overrideExcludedTags == null ? excludedTags : overrideExcludedTags);
     }
@@ -95,17 +93,13 @@ public final class CuppaSurefireProvider extends AbstractProvider {
         ReporterFactory reporterFactory = providerParameters.getReporterFactory();
         RunListener listener = reporterFactory.createReporter();
         Runner runner = new Runner(tags);
-        TestBlock rootBlock = runner.defineTests(scanClasspathForTests());
+        TestBlock rootBlock = runner.defineTests(getSuites());
         runner.run(rootBlock, new CuppaSurefireReporter(listener));
         return reporterFactory.close();
     }
 
     @Override
-    public Iterator getSuites() {
-        return scanClasspathForTests().iterator();
-    }
-
-    private List<Class<?>> scanClasspathForTests() {
+    public Iterable<Class<?>> getSuites() {
         return Arrays.asList(providerParameters.getScanResult()
                 .applyFilter(clazz -> Arrays.stream(clazz.getAnnotations())
                                 .anyMatch(annotation -> Test.class.equals(annotation.annotationType())),

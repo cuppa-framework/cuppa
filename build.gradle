@@ -1,4 +1,4 @@
-allprojects  {
+allprojects {
   apply plugin: 'maven'
 
   group = 'org.forgerock.cuppa'
@@ -18,8 +18,22 @@ subprojects {
     mavenCentral()
   }
 
+  configurations {
+    provided
+  }
+
+  sourceSets {
+    main {
+      compileClasspath += configurations.provided
+    }
+    test {
+      compileClasspath += configurations.provided
+    }
+  }
+
   javadoc {
     options.stylesheetFile = new File(rootDir, "docs/css/javadoc.css")
+    classpath += configurations.provided
   }
 
   dependencies {
