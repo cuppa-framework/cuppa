@@ -35,9 +35,9 @@ final class CuppaSurefireReporter implements Reporter {
     private final RunListener listener;
 
     /**
-     * Constructs a reporter that adapts events to Surefire.
+     * Constructs a reporter that adapts events to Surefire's {@link RunListener}.
      *
-     * @param listener The JUnit {@link RunListener} instance.
+     * @param listener The {@link RunListener} instance.
      */
     CuppaSurefireReporter(RunListener listener) {
         this.listener = listener;
@@ -84,8 +84,7 @@ final class CuppaSurefireReporter implements Reporter {
 
     @Override
     public void testPending(Test test, List<TestBlock> parents) {
-        listener.testSkipped(new SimpleReportEntry(test.testClass.getCanonicalName(),
-                ReporterSupport.getFullDescription(test, parents)));
+        testSkip(test, parents);
     }
 
     @Override
