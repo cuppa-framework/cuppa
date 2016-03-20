@@ -26,5 +26,6 @@
     <extensions defaultExtensionNs="com.intellij">
         <stacktrace.fold substring="at org.forgerock.cuppa."/>
         <cantBeStatic implementation="org.forgerock.cuppa.intellij.CuppaCantBeStaticExtension"/>
+        <deadCode implementation="org.forgerock.cuppa.intellij.CuppaEntryPoint"/>
     </extensions>
 </idea-plugin>
