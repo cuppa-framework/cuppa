@@ -17,40 +17,40 @@
 <templateSet group="Cuppa">
     <template name="a" value="org.forgerock.cuppa.Cuppa.after(() -&gt; {&#10;    $END$$SELECTION$&#10;});" description="Surround with an after block" toReformat="true" toShortenFQNames="true" useStaticImport="true">
         <context>
-            <option name="JAVA_STATEMENT" value="true" />
+            <option name="CUPPA_TEST_STATEMENT" value="true" />
         </context>
     </template>
     <template name="ae" value="org.forgerock.cuppa.Cuppa.afterEach(() -&gt; {&#10;    $END$$SELECTION$&#10;});" description="Surround with an afterEach block" toReformat="true" toShortenFQNames="true" useStaticImport="true">
         <context>
-            <option name="JAVA_STATEMENT" value="true" />
+            <option name="CUPPA_TEST_STATEMENT" value="true" />
         </context>
     </template>
     <template name="b" value="org.forgerock.cuppa.Cuppa.before(() -&gt; {&#10;    $END$$SELECTION$&#10;});" description="Surround with a before block" toReformat="true" toShortenFQNames="true" useStaticImport="true">
         <context>
-            <option name="JAVA_STATEMENT" value="true" />
+            <option name="CUPPA_TEST_STATEMENT" value="true" />
         </context>
     </template>
     <template name="be" value="org.forgerock.cuppa.Cuppa.beforeEach(() -&gt; {&#10;    $END$$SELECTION$&#10;});" description="Surround with a beforeEach block" toReformat="true" toShortenFQNames="true" useStaticImport="true">
         <context>
-            <option name="JAVA_STATEMENT" value="true" />
+            <option name="CUPPA_TEST_STATEMENT" value="true" />
         </context>
     </template>
     <template name="d" value="org.forgerock.cuppa.Cuppa.describe(&quot;$DESCRIPTION$&quot;, () -&gt; {&#10;    $END$$SELECTION$&#10;});" description="Surround with a describe block" toReformat="true" toShortenFQNames="true" useStaticImport="true">
         <variable name="DESCRIPTION" expression="" defaultValue="" alwaysStopAt="true" />
         <context>
-            <option name="JAVA_STATEMENT" value="true" />
+            <option name="CUPPA_TEST_STATEMENT" value="true" />
         </context>
     </template>
     <template name="it" value="org.forgerock.cuppa.Cuppa.it(&quot;$DESCRIPTION$&quot;, () -&gt; {&#10;    $END$$SELECTION$&#10;});" description="Surround with an it block" toReformat="true" toShortenFQNames="true" useStaticImport="true">
         <variable name="DESCRIPTION" expression="" defaultValue="" alwaysStopAt="true" />
         <context>
-            <option name="JAVA_STATEMENT" value="true" />
+            <option name="CUPPA_TEST_STATEMENT" value="true" />
         </context>
     </template>
     <template name="w" value="org.forgerock.cuppa.Cuppa.when(&quot;$DESCRIPTION$&quot;, () -&gt; {&#10;    $END$$SELECTION$&#10;});" description="Surround with a when block" toReformat="true" toShortenFQNames="true" useStaticImport="true">
         <variable name="DESCRIPTION" expression="" defaultValue="" alwaysStopAt="true" />
         <context>
-            <option name="JAVA_STATEMENT" value="true" />
+            <option name="CUPPA_TEST_STATEMENT" value="true" />
         </context>
     </template>
 </templateSet>

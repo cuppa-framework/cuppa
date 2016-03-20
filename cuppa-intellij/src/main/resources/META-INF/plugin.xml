@@ -28,5 +28,6 @@
         <cantBeStatic implementation="org.forgerock.cuppa.intellij.CuppaCantBeStaticExtension"/>
         <deadCode implementation="org.forgerock.cuppa.intellij.CuppaEntryPoint"/>
         <defaultLiveTemplatesProvider implementation="org.forgerock.cuppa.intellij.CuppaLiveTemplatesProvider"/>
+        <liveTemplateContext implementation="org.forgerock.cuppa.intellij.CuppaLiveTemplateContext"/>
     </extensions>
 </idea-plugin>
