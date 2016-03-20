@@ -16,9 +16,7 @@
 
 package org.forgerock.cuppa.intellij;
 
-import com.intellij.codeInsight.AnnotationUtil;
 import com.intellij.openapi.util.Condition;
-import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiClassInitializer;
 import com.intellij.psi.PsiElement;
 
@@ -29,15 +27,6 @@ import com.intellij.psi.PsiElement;
 public final class CuppaCantBeStaticExtension implements Condition<PsiElement> {
     @Override
     public boolean value(PsiElement psiElement) {
-        if (psiElement instanceof PsiClassInitializer) {
-            PsiClass containingClass = ((PsiClassInitializer) psiElement).getContainingClass();
-            if (containingClass == null) {
-                return false;
-            }
-            if (AnnotationUtil.isAnnotated(containingClass, "org.forgerock.cuppa.Test", true)) {
-                return true;
-            }
-        }
-        return false;
+        return psiElement instanceof PsiClassInitializer && CuppaUtils.isCuppaClass(psiElement);
     }
 }

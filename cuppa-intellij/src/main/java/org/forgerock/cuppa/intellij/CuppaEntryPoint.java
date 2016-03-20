@@ -16,7 +16,6 @@
 
 package org.forgerock.cuppa.intellij;
 
-import com.intellij.codeInsight.AnnotationUtil;
 import com.intellij.codeInspection.reference.EntryPoint;
 import com.intellij.codeInspection.reference.RefElement;
 import com.intellij.openapi.util.InvalidDataException;
@@ -51,16 +50,7 @@ public final class CuppaEntryPoint extends EntryPoint {
 
     @Override
     public boolean isEntryPoint(@NotNull PsiElement psiElement) {
-        if (!isSelected) {
-            return false;
-        }
-        if (psiElement instanceof PsiClass) {
-            PsiClass clazz = (PsiClass) psiElement;
-            if (AnnotationUtil.isAnnotated(clazz, "org.forgerock.cuppa.Test", true)) {
-                return true;
-            }
-        }
-        return false;
+        return isSelected && psiElement instanceof PsiClass && CuppaUtils.isCuppaClass(psiElement);
     }
 
     @Override

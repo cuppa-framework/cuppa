@@ -16,12 +16,9 @@
 
 package org.forgerock.cuppa.intellij;
 
-import com.intellij.codeInsight.AnnotationUtil;
 import com.intellij.codeInsight.template.JavaCodeContextType;
-import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
-import com.intellij.psi.util.PsiTreeUtil;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -40,18 +37,11 @@ public final class CuppaLiveTemplateContext extends JavaCodeContextType {
 
     @Override
     public boolean isInContext(@NotNull PsiFile file, int offset) {
-        if (!statement.isInContext(file, offset)) {
-            return false;
-        }
-        return super.isInContext(file, offset);
+        return statement.isInContext(file, offset) && super.isInContext(file, offset);
     }
 
     @Override
     protected boolean isInContext(@NotNull PsiElement element) {
-        PsiClass containingClass = PsiTreeUtil.getParentOfType(element, PsiClass.class);
-        if (containingClass != null) {
-            return AnnotationUtil.isAnnotated(containingClass, "org.forgerock.cuppa.Test", true);
-        }
-        return false;
+        return CuppaUtils.isCuppaClass(element);
     }
 }
