@@ -1,2 +1,3 @@
 rootProject.name = 'cuppa-parent'
-include 'cuppa', 'cuppa-junit', 'cuppa-surefire'
+include 'cuppa', 'cuppa-junit', 'cuppa-surefire', 'cuppa-intellij'
+
