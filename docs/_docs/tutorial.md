@@ -4,6 +4,8 @@ title: Tutorial
 
 {::options parse_block_html="true" /}
 
+Start by cloning the [example Maven project](https://github.com/cuppa-framework/cuppa-maven-example).
+
 ## Our First Test
 
 Cuppa tests are defined at runtime, often in a class's initialiser block.
