@@ -251,7 +251,7 @@ The available hooks are:
 * `before` - Runs once before any tests in the same or nested blocks.
 * `beforeEach` - Runs for each test in the same or nested blocks.
 * `after` - Runs once after all tests in the same or nested blocks.
-* `afterEach` - Runs once after each test in the same or nested blocks.
+* `afterEach` - Runs after each test in the same or nested blocks.
 
 ## Well Done
 
