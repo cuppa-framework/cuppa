@@ -131,3 +131,8 @@ pre code {
 .highlight .nd {
     color: #314e97;
 }
+
+/* comment */
+.highlight .c1 {
+    color: #009000;
+}

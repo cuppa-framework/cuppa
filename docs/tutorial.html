@@ -26,8 +26,6 @@
     </nav>
     <div class="container">
     <div class="row">
-        <div class="alert alert-danger" role="alert"><strong>Cuppa has not been released yet.</strong> This
-        documentation is subject to change without notice.</div>
         <nav class="col-md-3 sidebar">
 
             <h3>Quick Start</h3>
@@ -46,6 +44,12 @@
         
                 <li>
                     <a href="/docs/tutorial" class="active">Tutorial</a>
+                </li>
+        
+    
+        
+                <li>
+                    <a href="/javadoc/">Javadoc</a>
                 </li>
         
     
@@ -93,39 +97,7 @@
         
         
                 <li>
-                    <a href="/docs/timeouts">Timeouts</a>
-                </li>
-        
-    
-        
-        
-        
-                <li>
-                    <a href="/docs/reporters">Reporters</a>
-                </li>
-        
-    
-        
-        
-        
-                <li>
-                    <a href="/docs/integrating-with-existing-tests">Integrating with Existing Tests</a>
-                </li>
-        
-    
-        
-        
-        
-                <li>
-                    <a href="/docs/using-guice">Using Guice with Cuppa</a>
-                </li>
-        
-    
-        
-        
-        
-                <li>
-                    <a href="/docs/writing-a-reporter">Writing a Reporter</a>
+                    <a href="/docs/extending-cuppa">Extending Cuppa</a>
                 </li>
         
     
@@ -134,24 +106,54 @@
             <hr>
     
 
-            <h3>Javadoc</h3>
+            <h3>Integrations</h3>
             <ul>
     
         
+        
+        
                 <li>
-                    <a href="/javadoc/cuppa/"><code>cuppa</code></a>
+                    <a href="/docs/maven-integration">Maven</a>
                 </li>
         
     
         
+        
+        
                 <li>
-                    <a href="/javadoc/cuppa-junit/"><code>cuppa-junit</code></a>
+                    <a href="/docs/gradle-integration">Gradle</a>
                 </li>
         
     
         
+        
+        
                 <li>
-                    <a href="/javadoc/cuppa-surefire/"><code>cuppa-surefire</code></a>
+                    <a href="/docs/junit-integration">JUnit</a>
+                </li>
+        
+    
+        
+        
+        
+                <li>
+                    <a href="/docs/testng-integration">TestNG</a>
+                </li>
+        
+    
+        
+        
+        
+                <li>
+                    <a href="/docs/guice-integration">Guice</a>
+                </li>
+        
+    
+        
+        
+        
+                <li>
+                    <a href="/docs/intellij-integration">IntelliJ</a>
                 </li>
         
     
@@ -164,6 +166,8 @@
                 Tutorial
                 <a href="https://github.com/cuppa-framework/cuppa/blob/master/docs/_docs/tutorial.md" class="edit-page">Edit on GitHub</a>
             </h1>
+
+<p>Start by cloning the <a href="https://github.com/cuppa-framework/cuppa-maven-example">example Maven project</a>.</p>
 
 <h2 id="our-first-test">Our First Test</h2>
 
@@ -343,7 +347,7 @@ on how you use <code class="highlighter-rouge">describe</code> blocks to add str
 
 <p>In this example, we have grouped together tests for an empty list.</p>
 
-<p><code class="highlighter-rouge">when</code> blocks are very similar to <code class="highlighter-rouge">describe</code> blocks and can be used interchangeable. The only difference is that Cuppa
+<p><code class="highlighter-rouge">when</code> blocks are very similar to <code class="highlighter-rouge">describe</code> blocks and can be used interchangeably. The only difference is that Cuppa
 adds the word “when” in reports:</p>
 
 <div class="highlighter-rouge"><pre class="highlight"><code>  List
@@ -410,7 +414,7 @@ It is also executed for any test that is in a nested <code class="highlighter-ro
   <li><code class="highlighter-rouge">before</code> - Runs once before any tests in the same or nested blocks.</li>
   <li><code class="highlighter-rouge">beforeEach</code> - Runs for each test in the same or nested blocks.</li>
   <li><code class="highlighter-rouge">after</code> - Runs once after all tests in the same or nested blocks.</li>
-  <li><code class="highlighter-rouge">afterEach</code> - Runs once after each test in the same or nested blocks.</li>
+  <li><code class="highlighter-rouge">afterEach</code> - Runs after each test in the same or nested blocks.</li>
 </ul>
 
 <h2 id="well-done">Well Done</h2>
@@ -440,7 +444,7 @@ then check out some of the guides, starting with <a href="/docs/parameterised-te
         
         
                     <li class="next">
-                        <a href="/docs/parameterised-tests" class="next">Next</a>
+                        <a href="" class="next">Next</a>
         
                     </li>
                 </ul>

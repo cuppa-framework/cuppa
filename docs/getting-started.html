@@ -26,8 +26,6 @@
     </nav>
     <div class="container">
     <div class="row">
-        <div class="alert alert-danger" role="alert"><strong>Cuppa has not been released yet.</strong> This
-        documentation is subject to change without notice.</div>
         <nav class="col-md-3 sidebar">
 
             <h3>Quick Start</h3>
@@ -46,6 +44,12 @@
         
                 <li>
                     <a href="/docs/tutorial">Tutorial</a>
+                </li>
+        
+    
+        
+                <li>
+                    <a href="/javadoc/">Javadoc</a>
                 </li>
         
     
@@ -93,39 +97,7 @@
         
         
                 <li>
-                    <a href="/docs/timeouts">Timeouts</a>
-                </li>
-        
-    
-        
-        
-        
-                <li>
-                    <a href="/docs/reporters">Reporters</a>
-                </li>
-        
-    
-        
-        
-        
-                <li>
-                    <a href="/docs/integrating-with-existing-tests">Integrating with Existing Tests</a>
-                </li>
-        
-    
-        
-        
-        
-                <li>
-                    <a href="/docs/using-guice">Using Guice with Cuppa</a>
-                </li>
-        
-    
-        
-        
-        
-                <li>
-                    <a href="/docs/writing-a-reporter">Writing a Reporter</a>
+                    <a href="/docs/extending-cuppa">Extending Cuppa</a>
                 </li>
         
     
@@ -134,24 +106,54 @@
             <hr>
     
 
-            <h3>Javadoc</h3>
+            <h3>Integrations</h3>
             <ul>
     
         
+        
+        
                 <li>
-                    <a href="/javadoc/cuppa/"><code>cuppa</code></a>
+                    <a href="/docs/maven-integration">Maven</a>
                 </li>
         
     
         
+        
+        
                 <li>
-                    <a href="/javadoc/cuppa-junit/"><code>cuppa-junit</code></a>
+                    <a href="/docs/gradle-integration">Gradle</a>
                 </li>
         
     
         
+        
+        
                 <li>
-                    <a href="/javadoc/cuppa-surefire/"><code>cuppa-surefire</code></a>
+                    <a href="/docs/junit-integration">JUnit</a>
+                </li>
+        
+    
+        
+        
+        
+                <li>
+                    <a href="/docs/testng-integration">TestNG</a>
+                </li>
+        
+    
+        
+        
+        
+                <li>
+                    <a href="/docs/guice-integration">Guice</a>
+                </li>
+        
+    
+        
+        
+        
+                <li>
+                    <a href="/docs/intellij-integration">IntelliJ</a>
                 </li>
         
     
@@ -174,53 +176,34 @@
 <div class="highlighter-rouge"><pre class="highlight"><code><span class="nt">&lt;dependency&gt;</span>
     <span class="nt">&lt;groupId&gt;</span>org.forgerock.cuppa<span class="nt">&lt;/groupId&gt;</span>
     <span class="nt">&lt;artifactId&gt;</span>cuppa<span class="nt">&lt;/artifactId&gt;</span>
-    <span class="nt">&lt;version&gt;</span>0.8.0-SNAPSHOT<span class="nt">&lt;/version&gt;</span>
+    <span class="nt">&lt;version&gt;</span>1.0.0<span class="nt">&lt;/version&gt;</span>
     <span class="nt">&lt;scope&gt;</span>test<span class="nt">&lt;/scope&gt;</span>
 <span class="nt">&lt;/dependency&gt;</span>
 </code></pre>
 </div>
 
-<p>To get Surefire (the Maven plugin that runs unit tests) to run Cuppa tests, you’ll need some additional configuration:</p>
-
-<div class="highlighter-rouge"><pre class="highlight"><code><span class="nt">&lt;plugins&gt;</span>
-    <span class="nt">&lt;plugin&gt;</span>
-        <span class="nt">&lt;groupId&gt;</span>org.apache.maven.plugins<span class="nt">&lt;/groupId&gt;</span>
-        <span class="nt">&lt;artifactId&gt;</span>maven-surefire-plugin<span class="nt">&lt;/artifactId&gt;</span>
-        <span class="nt">&lt;version&gt;</span>2.19.1<span class="nt">&lt;/version&gt;</span>
-        <span class="nt">&lt;dependencies&gt;</span>
-            <span class="nt">&lt;dependency&gt;</span>
-                <span class="nt">&lt;groupId&gt;</span>org.forgerock.cuppa<span class="nt">&lt;/groupId&gt;</span>
-                <span class="nt">&lt;artifactId&gt;</span>cuppa-surefire<span class="nt">&lt;/artifactId&gt;</span>
-                <span class="nt">&lt;version&gt;</span>0.8.0-SNAPSHOT<span class="nt">&lt;/version&gt;</span>
-            <span class="nt">&lt;/dependency&gt;</span>
-        <span class="nt">&lt;/dependencies&gt;</span>
-    <span class="nt">&lt;/plugin&gt;</span>
-<span class="nt">&lt;/plugins&gt;</span>
-</code></pre>
-</div>
-
-<p>If you want to use Cuppa to write integration tests, you’ll need to do the same thing for Failsafe.
-Add <code class="highlighter-rouge">cuppa-surefire</code> as a dependency of the <code class="highlighter-rouge">maven-failsafe-plugin</code> plugin.</p>
+<p>See the <a href="/docs/maven-integration">Maven integration guide</a> for details on how to get Maven to
+run the tests automatically.</p>
 
 <h3 id="gradle">Gradle</h3>
 
-<p>Add a test dependency for Cuppa in your project’s build file:</p>
-
-<div class="highlighter-rouge"><pre class="highlight"><code><span class="n">dependencies</span> <span class="o">{</span>
-    <span class="n">testCompile</span> <span class="s1">'org.forgerock.cuppa:cuppa:0.8.0-SNAPSHOT'</span>
-<span class="o">}</span>
-</code></pre>
-</div>
+<p>We don’t yet support Gradle. If you’d like to work on this, let us know on
+<a href="https://github.com/cuppa-framework/cuppa/issues/32">the issue</a>.</p>
 
 <h3 id="plain-old-jar-file">Plain Old Jar File</h3>
 
 <p>Alternatively, you can download binaries for the <a href="https://github.com/cuppa-framework/cuppa/releases/latest">latest release</a>.</p>
 
-<div class="alert alert-info" role="alert">
-  <h4 id="already-got-tests">Already got tests?</h4>
+<p>To run your Cuppa tests, use the Cuppa API:</p>
 
-  <p>If your project already contains tests that were written with another testing framework, there are
-<a href="/docs/integrating-with-existing-tests">several methods</a> to integrate Cuppa.</p>
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">EntryPoint</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="n">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">Runner</span> <span class="n">runner</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Runner</span><span class="o">();</span>
+        <span class="n">TestBlock</span> <span class="n">rootBlock</span> <span class="o">=</span> <span class="n">runner</span><span class="o">.</span><span class="na">defineTests</span><span class="o">(</span><span class="n">Collections</span><span class="o">.</span><span class="na">singletonList</span><span class="o">(</span><span class="n">MyTestClass</span><span class="o">.</span><span class="na">class</span><span class="o">));</span>
+        <span class="n">runner</span><span class="o">.</span><span class="na">run</span><span class="o">(</span><span class="n">rootBlock</span><span class="o">,</span> <span class="k">new</span> <span class="n">DefaultReporter</span><span class="o">());</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre>
 </div>
 
 <h2 id="next-steps">Next Steps</h2>

@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Extending Cuppa | Cuppa</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="/css/bootstrap.min.css" type="text/css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:400,700,300" type="text/css">
+    <link rel="stylesheet" href="/css/styles.css" type="text/css">
+</head>
+<body>
+    <nav class="navbar navbar-inverse navbar-static-top">
+        <div class="container">
+            <div class="navbar-header">
+                <a href="/" class="navbar-brand">Cuppa</a>
+            </div>
+            <ul class="nav navbar-nav">
+                <li class="active"><a href="/docs/getting-started">Docs</a></li>
+                <li><a href="/blog/">Blog</a></li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                <li><a href="https://github.com/cuppa-framework/cuppa">GitHub <img src="/img/GitHub-Mark-Light-32px.png" width="20" height="20" class="github-logo"></a></li>
+            </ul>
+        </div>
+    </nav>
+    <div class="container">
+    <div class="row">
+        <nav class="col-md-3 sidebar">
+
+            <h3>Quick Start</h3>
+            <ul>
+    
+        
+        
+        
+                <li>
+                    <a href="/docs/getting-started">Getting Started</a>
+                </li>
+        
+    
+        
+        
+        
+                <li>
+                    <a href="/docs/tutorial">Tutorial</a>
+                </li>
+        
+    
+        
+                <li>
+                    <a href="/javadoc/">Javadoc</a>
+                </li>
+        
+    
+            </ul>
+    
+            <hr>
+    
+
+            <h3>Guides</h3>
+            <ul>
+    
+        
+        
+        
+                <li>
+                    <a href="/docs/parameterised-tests">Parameterised Tests</a>
+                </li>
+        
+    
+        
+        
+        
+                <li>
+                    <a href="/docs/skipping-tests">Skipping Tests</a>
+                </li>
+        
+    
+        
+        
+        
+                <li>
+                    <a href="/docs/tagging-tests">Tagging Tests</a>
+                </li>
+        
+    
+        
+        
+        
+                <li>
+                    <a href="/docs/exceptions">Handling Exceptions</a>
+                </li>
+        
+    
+        
+        
+        
+                <li>
+                    <a href="/docs/extending-cuppa" class="active">Extending Cuppa</a>
+                </li>
+        
+    
+            </ul>
+    
+            <hr>
+    
+
+            <h3>Integrations</h3>
+            <ul>
+    
+        
+        
+        
+                <li>
+                    <a href="/docs/maven-integration">Maven</a>
+                </li>
+        
+    
+        
+        
+        
+                <li>
+                    <a href="/docs/gradle-integration">Gradle</a>
+                </li>
+        
+    
+        
+        
+        
+                <li>
+                    <a href="/docs/junit-integration">JUnit</a>
+                </li>
+        
+    
+        
+        
+        
+                <li>
+                    <a href="/docs/testng-integration">TestNG</a>
+                </li>
+        
+    
+        
+        
+        
+                <li>
+                    <a href="/docs/guice-integration">Guice</a>
+                </li>
+        
+    
+        
+        
+        
+                <li>
+                    <a href="/docs/intellij-integration">IntelliJ</a>
+                </li>
+        
+    
+            </ul>
+    
+
+        </nav>
+        <div class="col-md-9">
+            <h1>
+                Extending Cuppa
+                <a href="https://github.com/cuppa-framework/cuppa/blob/master/docs/_docs/extending-cuppa.md" class="edit-page">Edit on GitHub</a>
+            </h1>
+<p>Cuppa can be configured by implementing the <code class="highlighter-rouge">ConfigurationProvider</code> interface:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="kn">package</span> <span class="n">com</span><span class="o">.</span><span class="na">example</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">org.forgerock.cuppa.ConfigurationProvider</span><span class="o">;</span>
+
+<span class="kd">public</span> <span class="kd">final</span> <span class="kd">class</span> <span class="nc">MyConfigurationProvider</span> <span class="kd">implements</span> <span class="n">ConfigurationProvider</span> <span class="o">{</span>
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="n">configure</span><span class="o">(</span><span class="n">Configuration</span> <span class="n">configuration</span><span class="o">)</span> <span class="o">{</span>
+        <span class="c1">// call methods on configuration</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre>
+</div>
+
+<p>Cuppa uses a <a href="https://docs.oracle.com/javase/8/docs/api/java/util/ServiceLoader.html">ServiceLoader</a> to find the
+configuration provider.
+Hence, you need to provide a configuration file called <code class="highlighter-rouge">META-INF/services/org.forgerock.cuppa.ConfigurationProvider</code>
+that contains the fully-qualified class name of your class:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>com.example.MyConfigurationProvider
+</code></pre>
+</div>
+
+<p>Ensure that this file is on the classpath when running Cuppa.</p>
+
+<p>The configuration object allows you control:</p>
+
+<ul>
+  <li>How test classes are instantiated.</li>
+  <li>Transform the tests before they are run.</li>
+</ul>
+
+<h3 id="test-class-instantiation">Test Class Instantiation</h3>
+
+<p>By default, Cuppa will simply create an instance of the test class using the default no-arg constructor.
+If you would like to use an inversion of control container, you will need to use the injector’s mechanism for
+instantiating classes.
+See the <a href="/docs/guice-integration">Guice integration guide</a> as an example.</p>
+
+<h3 id="test-transformation">Test Transformation</h3>
+
+<p>Cuppa runs in two phases:</p>
+
+<ul>
+  <li>Instantiates the test classes to execute all test definitions, resulting in a <code class="highlighter-rouge">TestBlock</code> that represents the root
+node in a tree containing all the tests.</li>
+  <li>Recursively iterates over the test tree executing the tests.</li>
+</ul>
+
+<p>Test transformation happen between the first and second phase, offering a very general mechanism to control
+what tests will be run.
+Your test transformation function will be passed the root test block and returns a new root test block.
+The returned test block will be used as input for the second phase.
+Your transform can remove or alter existing tests or add new tests.</p>
+
+<p>Note that the test tree is immutable so your transform will need to create new instances of the
+<a href="/javadoc/cuppa/index.html?org/forgerock/cuppa/model/package-summary.html">model objects</a> if it
+wants to modify them.</p>
+
+<p>Cuppa itself uses this mechanism to implement filtering tests that have tags.</p>
+
+<h3 id="test-metadata">Test Metadata</h3>
+
+<p>Cuppa’s test model was designed with extensibility in mind.
+Each <a href="/javadoc/cuppa/index.html?org/forgerock/cuppa/model/Test.html"><code class="highlighter-rouge">Test</code></a> and
+<a href="/javadoc/cuppa/index.html?org/forgerock/cuppa/model/TestBlock.html"><code class="highlighter-rouge">TestBlock</code></a> has a
+<a href="/javadoc/cuppa/index.html?org/forgerock/cuppa/model/Options.html"><code class="highlighter-rouge">Options</code></a> object, which is a
+type-safe store for metadata.
+If you would like to decorate tests or test blocks with additional metadata, create a subclass of
+<a href="/javadoc/cuppa/index.html?org/forgerock/cuppa/model/Option.html"><code class="highlighter-rouge">Option</code></a> to hold your metadata and
+a static factory method.</p>
+
+<h3 id="example">Example</h3>
+
+<p>Let’s look at how Cuppa implements tags as an example. There is an <code class="highlighter-rouge">Option</code> subclass,
+<a href="/javadoc/cuppa/index.html?org/forgerock/cuppa/model/TagsOption.html"><code class="highlighter-rouge">TagsOption</code></a>, which stores a
+set of tags.
+There is a static factory method, <code class="highlighter-rouge">tags</code>, which creates instances of <code class="highlighter-rouge">TagsOption</code>.</p>
+
+<p>There is a test transform,
+<a href="/javadoc/cuppa/index.html?org/forgerock/cuppa/internal/TagTestBlockFilter.html"><code class="highlighter-rouge">TagTestBlockFilter</code></a>,
+which filters out any tests that do not have a matching <code class="highlighter-rouge">TagsOption</code>.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            <nav>
+                <ul class="pager">
+        
+        
+        
+        
+                    <li class="previous">
+                        <a href="/docs/exceptions" class="prev">Back</a>
+                    </li>
+        
+        
+        
+        
+        
+                    <li class="next">
+                        <a href="/docs/maven-integration" class="next">Next</a>
+        
+                    </li>
+                </ul>
+            </nav>
+            <div class="clear"></div>
+
+        </div>
+    </div>
+</div>
+    <div class="container">
+        <footer class="text-right">
+            © 2015–2016 ForgeRock AS.<br>
+            Documentation licensed under <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>.
+        </footer>
+    </div>
+    <script>
+        (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+                    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+                m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+        })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+        ga('create', 'UA-72837005-1', 'auto');
+        ga('send', 'pageview');
+    </script>
+</body>
+</html>
