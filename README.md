@@ -42,7 +42,7 @@ Add a test dependency for Cuppa in your project's POM:
 <dependency>
     <groupId>org.forgerock.cuppa</groupId>
     <artifactId>cuppa</artifactId>
-    <version>0.8.0-SNAPSHOT</version>
+    <version>1.0.0</version>
     <scope>test</scope>
 </dependency>
 ```
@@ -83,10 +83,6 @@ $ ./gradlew build
 ```
 
 Run `./gradlew tasks` to see a list of all available tasks.
-
-### Status
-
-Cuppa is still in active development and hasn't reached a stable state yet.
 
 ## License
 

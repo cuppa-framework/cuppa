@@ -46,10 +46,3 @@ public class EntryPoint {
 ## Next Steps
 
 Check out [the tutorial]({{ site.baseurl }}/docs/tutorial.html) to learn how to write tests.
-
-<div class="alert alert-info" role="alert">
-#### Already got tests?
-
-If your project already contains tests that were written with another testing framework, there are
-[several methods]({{ site.baseurl }}/docs/integrating-with-existing-tests) to integrate Cuppa.
-</div>

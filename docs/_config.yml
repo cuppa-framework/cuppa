@@ -32,6 +32,6 @@ kramdown:
   hard_wrap: false
 gems:
 - jekyll-paginate
-cuppa_version: 0.8.0-SNAPSHOT
+cuppa_version: 1.0.0
 surefire_version: 2.19.1
 github_url: https://github.com/cuppa-framework/cuppa

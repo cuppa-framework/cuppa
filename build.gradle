@@ -3,7 +3,7 @@ allprojects {
   apply plugin: 'signing'
 
   group = 'org.forgerock.cuppa'
-  version = '1.0.0'
+  version = '1.0.1-SNAPSHOT'
 }
 
 if (!project.hasProperty("sonatypeUsername") || !project.hasProperty("sonatypePassword")) {
