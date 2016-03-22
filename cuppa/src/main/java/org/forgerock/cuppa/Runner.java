@@ -85,6 +85,16 @@ public final class Runner {
     }
 
     /**
+     * Instantiates the test classes, which define tests as side effects, and return the root test block.
+     *
+     * @param testClasses The test classes that contain the tests to be executed.
+     * @return The root block that contains all other test blocks and their tests.
+     */
+    public TestBlock defineTests(Iterable<Class<?>> testClasses) {
+        return defineTestsWithConfiguration(testClasses, configuration.testInstantiator);
+    }
+
+    /**
      * Runs the tests contained in the provided test block and any nested test blocks, using the provided reporter.
      *
      * @param rootBlock The root test block that contains all tests to be run.
@@ -100,17 +110,7 @@ public final class Runner {
         });
     }
 
-    /**
-     * Instantiates the test classes, which define tests as side effects, and return the root test block.
-     *
-     * @param testClasses The test classes that contain the tests to be executed.
-     * @return The root block that contains all other test blocks and their tests.
-     */
-    public TestBlock defineTests(Iterable<Class<?>> testClasses) {
-        return defineTests(testClasses, configuration.testInstantiator);
-    }
-
-    private TestBlock defineTests(Iterable<Class<?>> testClasses, TestInstantiator testInstantiator) {
+    private TestBlock defineTestsWithConfiguration(Iterable<Class<?>> testClasses, TestInstantiator testInstantiator) {
         return StreamSupport.stream(testClasses.spliterator(), false)
                 .map(c -> TestContainer.INSTANCE.defineTests(c, () -> {
                     try {
