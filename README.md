@@ -47,42 +47,25 @@ Add a test dependency for Cuppa in your project's POM:
 </dependency>
 ```
 
-To get Surefire (the Maven plugin that runs unit tests) to run Cuppa tests, you'll need some additional configuration:
-
-```xml
-<plugins>
-    <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-surefire-plugin</artifactId>
-        <version>2.19.1</version>
-        <dependencies>
-            <dependency>
-                <groupId>org.forgerock.cuppa</groupId>
-                <artifactId>cuppa-surefire</artifactId>
-                <version>0.8.0-SNAPSHOT</version>
-            </dependency>
-        </dependencies>
-    </plugin>
-</plugins>
-```
-
-If you want to use Cuppa to write integration tests, you'll need to do the same thing for Failsafe.
-Add `cuppa-surefire` as a dependency of the `maven-failsafe-plugin` plugin.
-
-#### Gradle
-
-Add a test dependency for Cuppa in your project's build file:
-
-```groovy
-dependencies {
-    testCompile 'org.forgerock.cuppa:cuppa:0.8.0-SNAPSHOT'
-}
-```
+See the [Maven integration guide](http://cuppa.forgerock.org/docs/maven-integration) for details on how to get Maven to
+run the tests automatically.
 
 ### Plain Old Jar File
 
 Alternatively, you can download binaries for the
 [latest release](https://github.com/cuppa-framework/cuppa/releases/latest).
+
+To run your Cuppa tests, use the Cuppa API:
+
+```java
+public class EntryPoint {
+    public static void main(String[] args) {
+        Runner runner = new Runner();
+        TestBlock rootBlock = runner.defineTests(Collections.singletonList(MyTestClass.class));
+        runner.run(rootBlock, new DefaultReporter());
+    }
+}
+```
 
 ## Contribute
 

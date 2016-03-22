@@ -1,18 +1,12 @@
 ---
-title: Integrating with Existing Tests
+title: JUnit
 ---
 
 {::options parse_block_html="true" /}
 
-## Maven
-
-If you're using Maven, then Surefire/Failsafe will handle running Cuppa along side other test frameworks and aggregating
-the results automatically.
-
-## JUnit
-
-If you're not using Maven and are using JUnit, then Cuppa provides a JUnit runner that allows Cuppa tests to be included
-when running JUnit.
+Cuppa provides a JUnit runner, which is useful when you have existing JUnit tests and a build system that can run them.
+If you're using Maven, then we recommend you use Cuppa's
+[Maven integration]({{ site.baseurl }}/docs/maven-integration) instead.
 
 To use the runner, your project will need to depend on `org.forgerock.cuppa:cuppa-junit`
 ([download it here]({{ site.github_url }}/releases/latest)).
@@ -34,8 +28,3 @@ public class MyCuppaTests {
 
 You cannot mix JUnit and Cuppa tests in a class.
 </div>
-
-## TestNG
-
-Currently, Cuppa offers no way to integrate with TestNG without Maven. If you want to work on this, let us know
-your thoughts on [the issue]({{ site.github_url }}/issues/30).

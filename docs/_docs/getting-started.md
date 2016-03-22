@@ -19,41 +19,33 @@ Add a test dependency for Cuppa in your project's POM:
 </dependency>
 ```
 
-To get Surefire (the Maven plugin that runs unit tests) to run Cuppa tests, you'll need some additional configuration:
-
-```xml
-<plugins>
-    <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-surefire-plugin</artifactId>
-        <version>2.19.1</version>
-        <dependencies>
-            <dependency>
-                <groupId>org.forgerock.cuppa</groupId>
-                <artifactId>cuppa-surefire</artifactId>
-                <version>{{ site.cuppa_version }}</version>
-            </dependency>
-        </dependencies>
-    </plugin>
-</plugins>
-```
-
-If you want to use Cuppa to write integration tests, you'll need to do the same thing for Failsafe.
-Add `cuppa-surefire` as a dependency of the `maven-failsafe-plugin` plugin.
+See the [Maven integration guide]({{ site.baseurl }}/docs/maven-integration) for details on how to get Maven to
+run the tests automatically.
 
 ### Gradle
 
-Add a test dependency for Cuppa in your project's build file:
-
-```groovy
-dependencies {
-    testCompile 'org.forgerock.cuppa:cuppa:{{ site.cuppa_version }}'
-}
-```
+We don't yet support Gradle. If you'd like to work on this, let us know on
+[the issue](https://github.com/cuppa-framework/cuppa/issues/32).
 
 ### Plain Old Jar File
 
 Alternatively, you can download binaries for the [latest release]({{ site.github_url }}/releases/latest).
+
+To run your Cuppa tests, use the Cuppa API:
+
+```java
+public class EntryPoint {
+    public static void main(String[] args) {
+        Runner runner = new Runner();
+        TestBlock rootBlock = runner.defineTests(Collections.singletonList(MyTestClass.class));
+        runner.run(rootBlock, new DefaultReporter());
+    }
+}
+```
+
+## Next Steps
+
+Check out [the tutorial]({{ site.baseurl }}/docs/tutorial.html) to learn how to write tests.
 
 <div class="alert alert-info" role="alert">
 #### Already got tests?
@@ -61,7 +53,3 @@ Alternatively, you can download binaries for the [latest release]({{ site.github
 If your project already contains tests that were written with another testing framework, there are
 [several methods]({{ site.baseurl }}/docs/integrating-with-existing-tests) to integrate Cuppa.
 </div>
-
-## Next Steps
-
-Check out [the tutorial]({{ site.baseurl }}/docs/tutorial.html) to learn how to write tests.

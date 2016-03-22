@@ -1,11 +1,10 @@
 ---
-title: Using Guice with Cuppa
+title: Guice
 ---
 
-Cuppa provides a hook to allow you to customise how your test classes are instantiated.
-This keeps Cuppa agnostic about which inversion of control container you happen to be using.
-
-To do this, you need to write a class that implements `ConfigurationProvider` and sets the class instantiator:
+Cuppa is agnostic about which inversion of control container you happen to be using.
+As such, Cuppa provides a hook to allow you to customise how your test classes are instantiated.
+To use Guice, you need to write a class that implements `ConfigurationProvider` and sets the class instantiator:
 
 ```java
 package com.example;

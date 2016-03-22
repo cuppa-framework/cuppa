@@ -10,5 +10,12 @@
   - skipping-tests
   - tagging-tests
   - exceptions
-  - integrating-with-existing-tests
-  - using-guice
+  - extending-cuppa
+- title: Integrations
+  docs:
+  - maven-integration
+  - gradle-integration
+  - junit-integration
+  - testng-integration
+  - guice-integration
+  - intellij-integration
