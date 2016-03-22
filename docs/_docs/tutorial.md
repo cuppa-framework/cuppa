@@ -184,7 +184,7 @@ public class ListTest {
 
 In this example, we have grouped together tests for an empty list.
 
-`when` blocks are very similar to `describe` blocks and can be used interchangeable. The only difference is that Cuppa
+`when` blocks are very similar to `describe` blocks and can be used interchangeably. The only difference is that Cuppa
 adds the word "when" in reports:
 
 ```
