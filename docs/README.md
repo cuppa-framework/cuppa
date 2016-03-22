@@ -43,9 +43,7 @@ $ cd cuppa/docs
 $ bundle exec jekyll build -d ../../cuppa-gh-pages
 $ cd ..
 $ ./gradlew javadoc
-$ cp -r cuppa/build/docs/javadoc/ ../cuppa-gh-pages/javadoc/cuppa
-$ cp -r cuppa-junit/build/docs/javadoc/ ../cuppa-gh-pages/javadoc/cuppa-junit
-$ cp -r cuppa-surefire/build/docs/javadoc/ ../cuppa-gh-pages/javadoc/cuppa-surefire
+$ cp -r cuppa/build/docs/javadoc/ ../cuppa-gh-pages/javadoc
 ```
 
 Pushing `gh-pages` to GitHub will deploy the new content to the website. This should be done only when a new release

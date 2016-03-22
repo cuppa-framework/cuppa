@@ -2,22 +2,13 @@
   docs:
   - getting-started
   - tutorial
+  - title: Javadoc
+    url: /javadoc/
 - title: Guides
   docs:
   - parameterised-tests
   - skipping-tests
   - tagging-tests
   - exceptions
-  - timeouts
-  - reporters
   - integrating-with-existing-tests
   - using-guice
-  - writing-a-reporter
-- title: Javadoc
-  docs:
-  - title: cuppa
-    url: /javadoc/cuppa/
-  - title: cuppa-junit
-    url: /javadoc/cuppa-junit/
-  - title: cuppa-surefire
-    url: /javadoc/cuppa-surefire/
