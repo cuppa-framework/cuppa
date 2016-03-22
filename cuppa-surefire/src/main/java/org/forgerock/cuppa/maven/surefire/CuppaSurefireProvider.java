@@ -18,6 +18,7 @@ package org.forgerock.cuppa.maven.surefire;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -31,6 +32,9 @@ import org.forgerock.cuppa.Runner;
 import org.forgerock.cuppa.Test;
 import org.forgerock.cuppa.model.Tags;
 import org.forgerock.cuppa.model.TestBlock;
+import org.forgerock.cuppa.reporters.CompositeReporter;
+import org.forgerock.cuppa.reporters.DefaultReporter;
+import org.forgerock.cuppa.reporters.Reporter;
 
 /**
  * Maven Surefire and Failsafe provider for locating and running Cuppa tests.
@@ -94,7 +98,8 @@ public final class CuppaSurefireProvider extends AbstractProvider {
         RunListener listener = reporterFactory.createReporter();
         Runner runner = new Runner(tags);
         TestBlock rootBlock = runner.defineTests(getSuites());
-        runner.run(rootBlock, new CuppaSurefireReporter(listener));
+        List<Reporter> reporters = Arrays.asList(new DefaultReporter(), new CuppaSurefireReporter(listener));
+        runner.run(rootBlock, new CompositeReporter(reporters));
         return reporterFactory.close();
     }
 

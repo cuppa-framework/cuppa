@@ -88,7 +88,7 @@ Run `./gradlew tasks` to see a list of all available tasks.
 
 Cuppa is still in active development and hasn't reached a stable state yet.
 
-### License
+## License
 
 Cuppa is licensed under an [Apache 2.0 license](./LICENSE). The documentation is licensed under a
 [Creative Commons license](./LICENSE-docs).

@@ -3,5 +3,5 @@ description = 'Cuppa Maven Surefire Integration'
 dependencies {
     compile project(':cuppa')
     provided group: 'org.apache.maven.surefire', name: 'surefire-api', version: '2.19.1', transitive: false
-    provided group: 'org.apache.maven.surefire', name: 'common-java5', version: '2.19.1', transitive: false
+    compile group: 'org.apache.maven.surefire', name: 'common-java5', version: '2.19.1', transitive: false
 }
