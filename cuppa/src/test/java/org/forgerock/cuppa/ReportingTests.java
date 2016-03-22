@@ -208,6 +208,6 @@ public class ReportingTests {
         runTests(rootBlock, reporter);
 
         //Then
-        verify(reporter).hookError(eq(findHook(rootBlock, "hook")), eq(parents), eq(exception));
+        verify(reporter).hookFail(eq(findHook(rootBlock, "hook")), eq(parents), eq(exception));
     }
 }

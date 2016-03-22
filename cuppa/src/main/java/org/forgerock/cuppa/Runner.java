@@ -161,7 +161,7 @@ public final class Runner {
                 try {
                     hook.function.apply();
                 } catch (Throwable e) {
-                    reporter.hookError(hook, newParents, e);
+                    reporter.hookFail(hook, newParents, e);
                     return;
                 }
             }
@@ -213,7 +213,7 @@ public final class Runner {
                     try {
                         hook.function.apply();
                     } catch (Throwable e) {
-                        reporter.hookError(hook, parents, e);
+                        reporter.hookFail(hook, parents, e);
                         throw new HookException(testBlock, e);
                     }
                 }
@@ -223,7 +223,7 @@ public final class Runner {
                     try {
                         hook.function.apply();
                     } catch (Throwable e) {
-                        reporter.hookError(hook, parents, e);
+                        reporter.hookFail(hook, parents, e);
                         throw new HookException(testBlock, e);
                     }
                 }
@@ -236,7 +236,7 @@ public final class Runner {
             try {
                 hook.function.apply();
             } catch (Throwable e) {
-                reporter.hookError(hook, parents, e);
+                reporter.hookFail(hook, parents, e);
                 return;
             }
         }

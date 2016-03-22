@@ -45,7 +45,7 @@ final class ReportJUnitAdapter implements Reporter {
     }
 
     @Override
-    public void hookError(Hook hook, List<TestBlock> parents, Throwable cause) {
+    public void hookFail(Hook hook, List<TestBlock> parents, Throwable cause) {
         ReporterSupport.filterStackTrace(cause);
         notifier.fireTestFailure(new Failure(Description.createTestDescription(hook.testClass.getName(),
                 ReporterSupport.getFullDescription(hook, parents)), cause));

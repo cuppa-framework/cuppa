@@ -60,13 +60,13 @@ public interface Reporter {
     }
 
     /**
-     * Called after a hook due to it throwing an exception.
+     * Called after a hook failed due to it throwing an exception.
      *
      * @param hook The hook that threw an exception.
      * @param parents The ancestor test blocks, starting with the root block and ending with the immediate parent.
      * @param cause The throwable that the hook threw.
      */
-    default void hookError(Hook hook, List<TestBlock> parents, Throwable cause) {
+    default void hookFail(Hook hook, List<TestBlock> parents, Throwable cause) {
     }
 
     /**

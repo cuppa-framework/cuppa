@@ -54,7 +54,7 @@ final class CuppaSurefireReporter implements Reporter {
     }
 
     @Override
-    public void hookError(Hook hook, List<TestBlock> parents, Throwable cause) {
+    public void hookFail(Hook hook, List<TestBlock> parents, Throwable cause) {
         ReporterSupport.filterStackTrace(cause);
         String fullDescription = ReporterSupport.getFullDescription(hook, parents);
         String className = hook.testClass.getCanonicalName();
