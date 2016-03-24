@@ -18,6 +18,10 @@ package org.forgerock.cuppa;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.forgerock.cuppa.Cuppa.describe;
+import static org.forgerock.cuppa.Cuppa.with;
+import static org.forgerock.cuppa.TestCuppaSupport.defineTests;
+import static org.forgerock.cuppa.TestCuppaSupport.findTest;
 import static org.forgerock.cuppa.model.Behaviour.NORMAL;
 import static org.forgerock.cuppa.model.TestBlockType.ROOT;
 
@@ -26,6 +30,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.forgerock.cuppa.functions.HookFunction;
+import org.forgerock.cuppa.functions.TestFunction;
 import org.forgerock.cuppa.model.Hook;
 import org.forgerock.cuppa.model.HookType;
 import org.forgerock.cuppa.model.Option;
@@ -97,9 +102,34 @@ public class ModelTests {
         assertThat(test.options.get(TestOption.class)).isEmpty();
     }
 
+
+    @Test
+    public void shouldMergeMultipleOptionsOfSameType() throws Exception {
+
+        //When
+        TestBlock rootBlock = defineTests(() -> {
+            describe("tagged tests", () -> {
+                with(testOptions("A"), testOptions("B")).
+                it("has both options", TestFunction.identity());
+            });
+        });
+
+        //Then
+        assertThat(findTest(rootBlock, "has both options").options.get(TestOption.class).get()).isEqualTo("AB");
+    }
+
+    private static TestOption testOptions(String value) {
+        return new TestOption(value);
+    }
+
     private static final class TestOption extends Option<String> {
         private TestOption(String value) {
             super(value);
+        }
+
+        @Override
+        protected Option<String> merge(String value) {
+            return new TestOption(get() + value);
         }
     }
 }

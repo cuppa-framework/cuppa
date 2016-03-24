@@ -42,9 +42,31 @@ public abstract class Option<T> {
         this.value = value;
     }
 
-    final T get() {
+    /**
+     * Returns the value inside the option.
+     *
+     * @return The wrapped value.
+     */
+    protected final T get() {
         return value;
     }
+
+    /**
+     * Merges this Option with the given Option of the same type.
+     *
+     * <p>Merging occurs when the user specifies the same option twice, e.g.</p>
+     *
+     * <pre>
+     * with(myOption(1), myOption(2)).
+     * it("some test");
+     * </pre>
+     *
+     * <p>In this example, {@code MyOption#merge(int)} will be called with {@code 2}.</p>
+     *
+     * @param value the value of the other option
+     * @return a new option representing the merged values
+     */
+    protected abstract Option<T> merge(T value);
 
     @Override
     public final boolean equals(Object o) {

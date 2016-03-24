@@ -26,7 +26,7 @@ import java.util.Optional;
  * blocks.
  */
 public final class Options {
-    private final Map<Class<? extends Option>, Option> options;
+    private final Map<Class<? extends Option>, Option<?>> options;
 
     /**
      * Creates a empty mutable options set.
@@ -35,7 +35,7 @@ public final class Options {
         this(new HashMap<>());
     }
 
-    private Options(Map<Class<? extends Option>, Option> options) {
+    private Options(Map<Class<? extends Option>, Option<?>> options) {
         this.options = options;
     }
 
@@ -75,14 +75,20 @@ public final class Options {
     }
 
     /**
-     * Set an option. If an option of the given type is already set, then it will be overwritten.
+     * Set an option. If an option of the given type is already set, then it will be merged.
      *
      * @param option The option to store.
      * @param <T> The type of the option.
      * @throws UnsupportedOperationException if this class is immutable.
      */
+    @SuppressWarnings("unchecked")
     public <T> void set(Option<T> option) {
-        options.put(option.getClass(), option);
+        Option<T> currentOption = (Option<T>) options.get(option.getClass());
+        if (currentOption != null) {
+            options.put(option.getClass(), currentOption.merge(option.get()));
+        } else {
+            options.put(option.getClass(), option);
+        }
     }
 
     @Override
