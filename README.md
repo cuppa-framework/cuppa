@@ -1,6 +1,6 @@
 # [Cuppa](http://cuppa.forgerock.org/) [![Build Status](https://travis-ci.org/cuppa-framework/cuppa.svg?branch=master)](https://travis-ci.org/cuppa-framework/cuppa)
 
-Cuppa is a test framework for Java 8. It makes writing tests productive and fun.
+Cuppa is a testing framework for Java 8. It makes writing tests productive and fun.
 
  * **Be descriptive:** Use strings – not identifiers – to clearly describe the behaviour you are testing. Test reports
  produced by Cuppa read like good documentation.

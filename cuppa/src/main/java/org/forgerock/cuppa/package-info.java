@@ -15,6 +15,6 @@
  */
 
 /**
- * A test framework for Java 8.
+ * A testing framework for Java 8.
  */
 package org.forgerock.cuppa;

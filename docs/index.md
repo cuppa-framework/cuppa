@@ -1,12 +1,12 @@
 ---
 layout: default
-title: A test framework for Java 8
+title: A testing framework for Java 8
 ---
 
 <div class="jumbotron text-center">
     <div class="container">
         <h1>Cuppa</h1>
-        <p>A test framework for Java 8</p>
+        <p>A testing framework for Java 8</p>
         <a href="{{ site.baseurl }}/docs/getting-started" class="btn btn-lg btn-primary">Get Started</a>
     </div>
 </div>

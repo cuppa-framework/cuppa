@@ -175,7 +175,7 @@ public final class Runner {
                 throw e;
             }
         } catch (Throwable e) {
-            // This should never happen if the test framework is correct because
+            // This should never happen if the testing framework is correct because
             // all exceptions from user code should've been caught by now.
             throw new RuntimeException(e);
         } finally {

@@ -94,7 +94,7 @@ subprojects {
         pom.project {
           name 'Cuppa'
           packaging 'jar'
-          description 'Cuppa - A test framework for Java 8'
+          description 'Cuppa - A testing framework for Java 8'
           url 'http://cuppa.forgerock.org'
 
           scm {
