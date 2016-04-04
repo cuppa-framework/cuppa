@@ -42,6 +42,7 @@ import org.forgerock.cuppa.model.Options;
 import org.forgerock.cuppa.model.Tags;
 import org.forgerock.cuppa.model.Test;
 import org.forgerock.cuppa.model.TestBlock;
+import org.forgerock.cuppa.reporters.CompositeReporter;
 import org.forgerock.cuppa.reporters.Reporter;
 
 /**
@@ -101,12 +102,15 @@ public final class Runner {
      * @param reporter The reporter to use to report test results.
      */
     public void run(TestBlock rootBlock, Reporter reporter) {
+        Reporter fullReporter = (configuration.additionalReporter != null)
+                ? new CompositeReporter(Arrays.asList(reporter, configuration.additionalReporter))
+                : reporter;
         TestContainer.INSTANCE.runTests(() -> {
-            reporter.start(rootBlock);
+            fullReporter.start(rootBlock);
             TestBlock transformedRootBlock = transformTests(rootBlock, configuration.testTransforms);
-            runTests(transformedRootBlock, Collections.emptyList(), transformedRootBlock.behaviour, reporter,
+            runTests(transformedRootBlock, Collections.emptyList(), transformedRootBlock.behaviour, fullReporter,
                     TestFunction::apply);
-            reporter.end();
+            fullReporter.end();
         });
     }
 

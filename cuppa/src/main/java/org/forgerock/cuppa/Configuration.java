@@ -22,6 +22,7 @@ import java.util.Objects;
 import java.util.function.Function;
 
 import org.forgerock.cuppa.model.TestBlock;
+import org.forgerock.cuppa.reporters.Reporter;
 
 /**
  * Holds configuration settings for Cuppa.
@@ -29,6 +30,7 @@ import org.forgerock.cuppa.model.TestBlock;
 public final class Configuration {
     List<Function<TestBlock, TestBlock>> testTransforms = new ArrayList<>();
     TestInstantiator testInstantiator = Class::newInstance;
+    Reporter additionalReporter;
 
     Configuration() {
     }
@@ -53,5 +55,15 @@ public final class Configuration {
     public void registerTestTreeTransform(Function<TestBlock, TestBlock> transform) {
         Objects.requireNonNull(transform, "Transform must not be null");
         testTransforms.add(transform);
+    }
+
+    /**
+     * Register a reporter that will be used in addition to the primary reporter given to the runner.
+     *
+     * @param reporter The reporter. Must not be null.
+     */
+    public void setAdditionalReporter(Reporter reporter) {
+        Objects.requireNonNull(reporter, "Reporter must not be null");
+        additionalReporter = reporter;
     }
 }
