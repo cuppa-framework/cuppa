@@ -33,11 +33,4 @@ public final class TagsOption extends Option<Set<String>> {
     public TagsOption(Set<String> value) {
         super(Collections.unmodifiableSet(new HashSet<>(value)));
     }
-
-    @Override
-    protected TagsOption merge(Set<String> value) {
-        HashSet<String> merged = new HashSet<>(get());
-        merged.addAll(value);
-        return new TagsOption(merged);
-    }
 }
