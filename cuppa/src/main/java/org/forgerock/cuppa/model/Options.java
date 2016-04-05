@@ -26,7 +26,7 @@ import java.util.Optional;
  * blocks.
  */
 public final class Options {
-    private final Map<Class<? extends Option>, Option> options;
+    private final Map<Class<? extends Option>, Option<?>> options;
 
     /**
      * Creates a empty mutable options set.
@@ -35,7 +35,7 @@ public final class Options {
         this(new HashMap<>());
     }
 
-    private Options(Map<Class<? extends Option>, Option> options) {
+    private Options(Map<Class<? extends Option>, Option<?>> options) {
         this.options = options;
     }
 

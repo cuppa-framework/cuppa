@@ -42,7 +42,12 @@ public abstract class Option<T> {
         this.value = value;
     }
 
-    final T get() {
+    /**
+     * Get the value of the option.
+     *
+     * @return the value of the option.
+     */
+    public final T get() {
         return value;
     }
 
