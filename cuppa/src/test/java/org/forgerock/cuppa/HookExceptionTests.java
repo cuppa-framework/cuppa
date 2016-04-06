@@ -38,13 +38,27 @@ import org.testng.annotations.Test;
 
 public class HookExceptionTests {
 
-    private static final Map<String, BiConsumer<String, HookFunction>> ALL_HOOKS =
+    private static final Map<String, BiConsumer<String, HookFunction>> TEST_HOOKS =
+            new HashMap<String, BiConsumer<String, HookFunction>>() {
+        {
+            put("beforeEach", Cuppa::beforeEach);
+            put("afterEach", Cuppa::afterEach);
+        }
+    };
+
+    private static final Map<String, BiConsumer<String, HookFunction>> BLOCK_HOOKS =
             new HashMap<String, BiConsumer<String, HookFunction>>() {
         {
             put("before", Cuppa::before);
             put("after", Cuppa::after);
-            put("beforeEach", Cuppa::beforeEach);
-            put("afterEach", Cuppa::afterEach);
+        }
+    };
+
+    private static final Map<String, BiConsumer<String, HookFunction>> ALL_HOOKS =
+            new HashMap<String, BiConsumer<String, HookFunction>>() {
+        {
+            putAll(TEST_HOOKS);
+            putAll(BLOCK_HOOKS);
         }
     };
 
@@ -70,7 +84,7 @@ public class HookExceptionTests {
         runTests(rootBlock, reporter);
 
         //Then
-        verify(reporter).hookFail(eq(findHook(rootBlock, "hook")), anyListOf(TestBlock.class), eq(exception));
+        verify(reporter).blockHookFail(eq(findHook(rootBlock, "hook")), anyListOf(TestBlock.class), eq(exception));
     }
 
     @Test
@@ -230,7 +244,8 @@ public class HookExceptionTests {
         runTests(rootBlock, reporter);
 
         //Then
-        verify(reporter).hookFail(eq(findHook(rootBlock, "hook")), anyListOf(TestBlock.class), eq(exception));
+        verify(reporter).testHookFail(eq(findHook(rootBlock, "hook")), anyListOf(TestBlock.class),
+                eq(findTest(rootBlock, "a test")), anyListOf(TestBlock.class), eq(exception));
     }
 
     @Test
@@ -453,7 +468,7 @@ public class HookExceptionTests {
         runTests(rootBlock, reporter);
 
         //Then
-        verify(reporter).hookFail(eq(findHook(rootBlock, "hook")), anyListOf(TestBlock.class), eq(exception));
+        verify(reporter).blockHookFail(eq(findHook(rootBlock, "hook")), anyListOf(TestBlock.class), eq(exception));
         verify(reporter, never()).testFail(any(), anyListOf(TestBlock.class), any());
         verify(reporter, never()).testPass(any(), anyListOf(TestBlock.class));
     }
@@ -477,7 +492,7 @@ public class HookExceptionTests {
         runTests(rootBlock, reporter);
 
         //Then
-        verify(reporter).hookFail(eq(findHook(rootBlock, "hook")), anyListOf(TestBlock.class), eq(exception));
+        verify(reporter).blockHookFail(eq(findHook(rootBlock, "hook")), anyListOf(TestBlock.class), eq(exception));
     }
 
     @Test
@@ -499,7 +514,8 @@ public class HookExceptionTests {
         runTests(rootBlock, reporter);
 
         //Then
-        verify(reporter).hookFail(eq(findHook(rootBlock, "hook")), anyListOf(TestBlock.class), eq(exception));
+        verify(reporter).testHookFail(eq(findHook(rootBlock, "hook")), anyListOf(TestBlock.class),
+                eq(findTest(rootBlock, "does not run the test")), anyListOf(TestBlock.class), eq(exception));
         verify(reporter, never()).testFail(any(), anyListOf(TestBlock.class), any());
         verify(reporter, never()).testPass(any(), anyListOf(TestBlock.class));
     }
@@ -523,7 +539,8 @@ public class HookExceptionTests {
         runTests(rootBlock, reporter);
 
         //Then
-        verify(reporter).hookFail(eq(findHook(rootBlock, "hook")), anyListOf(TestBlock.class), eq(exception));
+        verify(reporter).testHookFail(eq(findHook(rootBlock, "hook")), anyListOf(TestBlock.class),
+                eq(findTest(rootBlock, "runs the first test")), anyListOf(TestBlock.class), eq(exception));
     }
 
     @Test
@@ -541,7 +558,7 @@ public class HookExceptionTests {
             describe("afterEach blocks", () -> {
                 beforeEach("beforeEach", beforeEachFunction);
                 afterEach("afterEach", afterEachFunction);
-                it("runs the first test", TestFunction.identity());
+                it("does not run the test", TestFunction.identity());
             });
         });
 
@@ -549,11 +566,15 @@ public class HookExceptionTests {
         runTests(rootBlock, reporter);
 
         //Then
-        verify(reporter).hookFail(eq(findHook(rootBlock, "beforeEach")), anyListOf(TestBlock.class),
+        verify(reporter).testHookFail(eq(findHook(rootBlock, "beforeEach")), anyListOf(TestBlock.class),
+                eq(findTest(rootBlock, "does not run the test")), anyListOf(TestBlock.class),
                 eq(beforeEachException));
-        verify(reporter).hookFail(eq(findHook(rootBlock, "afterEach")), anyListOf(TestBlock.class),
+        verify(reporter).testHookFail(eq(findHook(rootBlock, "afterEach")), anyListOf(TestBlock.class),
+                eq(findTest(rootBlock, "does not run the test")), anyListOf(TestBlock.class),
                 eq(afterEachException));
-        verify(reporter, times(2)).hookFail(any(), anyListOf(TestBlock.class), any());
+        verify(reporter, times(2)).testHookFail(any(), anyListOf(TestBlock.class), any(), anyListOf(TestBlock.class),
+                any());
+        verify(reporter, never()).blockHookFail(any(), anyListOf(TestBlock.class), any());
         verify(reporter, never()).testFail(any(), anyListOf(TestBlock.class), any());
         verify(reporter, never()).testPass(any(), anyListOf(TestBlock.class));
     }
@@ -671,16 +692,16 @@ public class HookExceptionTests {
     }
 
     @DataProvider
-    private Iterator<Object[]> testInHooks() {
-        return ALL_HOOKS.values().stream()
+    private Iterator<Object[]> testInTestHooks() {
+        return TEST_HOOKS.values().stream()
                 .map(f -> new Object[] {
                         (TestBlockFunction) () -> f.accept("hook", () -> it("", TestFunction.identity())),
                 })
                 .iterator();
     }
 
-    @Test(dataProvider = "testInHooks")
-    public void addingTestsInHookShouldThrowException(TestBlockFunction hookWithTest) {
+    @Test(dataProvider = "testInTestHooks")
+    public void addingTestsInTestHookShouldThrowException(TestBlockFunction hookWithTest) {
 
         //Given
         Reporter reporter = mock(Reporter.class);
@@ -696,7 +717,40 @@ public class HookExceptionTests {
 
         //Then
         ArgumentCaptor<Throwable> captor = ArgumentCaptor.forClass(Throwable.class);
-        verify(reporter).hookFail(eq(findHook(rootBlock, "hook")), anyListOf(TestBlock.class), captor.capture());
+        verify(reporter).testHookFail(eq(findHook(rootBlock, "hook")), anyListOf(TestBlock.class),
+                eq(findTest(rootBlock, "does not run the test")), anyListOf(TestBlock.class), captor.capture());
+        assertThat(captor.getValue())
+                .isExactlyInstanceOf(CuppaException.class)
+                .hasMessage("'it' may only be nested within a 'describe' or 'when' block");
+    }
+
+    @DataProvider
+    private Iterator<Object[]> testInBlockHooks() {
+        return BLOCK_HOOKS.values().stream()
+                .map(f -> new Object[] {
+                        (TestBlockFunction) () -> f.accept("hook", () -> it("", TestFunction.identity())),
+                })
+                .iterator();
+    }
+
+    @Test(dataProvider = "testInBlockHooks")
+    public void addingTestsInBlockHookShouldThrowException(TestBlockFunction hookWithTest) {
+
+        //Given
+        Reporter reporter = mock(Reporter.class);
+        TestBlock rootBlock = defineTests(() -> {
+            describe("tests in hook", () -> {
+                hookWithTest.apply();
+                it("does not run the test", TestFunction.identity());
+            });
+        });
+
+        //When
+        runTests(rootBlock, reporter);
+
+        //Then
+        ArgumentCaptor<Throwable> captor = ArgumentCaptor.forClass(Throwable.class);
+        verify(reporter).blockHookFail(eq(findHook(rootBlock, "hook")), anyListOf(TestBlock.class), captor.capture());
         assertThat(captor.getValue())
                 .isExactlyInstanceOf(CuppaException.class)
                 .hasMessage("'it' may only be nested within a 'describe' or 'when' block");
@@ -743,8 +797,8 @@ public class HookExceptionTests {
     }
 
     @DataProvider
-    private Iterator<Object[]> hooksInHooks() {
-        return ALL_HOOKS.values().stream()
+    private Iterator<Object[]> hooksInTestHooks() {
+        return TEST_HOOKS.values().stream()
                 .flatMap(f ->
                         ALL_HOOKS.entrySet().stream().map(e -> new Object[] {
                                 e.getKey(),
@@ -754,8 +808,8 @@ public class HookExceptionTests {
                 .iterator();
     }
 
-    @Test(dataProvider = "hooksInHooks")
-    public void addingNestedHookInHookShouldThrowException(String hookName, TestBlockFunction nestedHook) {
+    @Test(dataProvider = "hooksInTestHooks")
+    public void addingNestedHookInTestHookShouldThrowException(String hookName, TestBlockFunction nestedHook) {
 
         //Given
         Reporter reporter = mock(Reporter.class);
@@ -771,15 +825,51 @@ public class HookExceptionTests {
 
         //Then
         ArgumentCaptor<Throwable> captor = ArgumentCaptor.forClass(Throwable.class);
-        verify(reporter).hookFail(eq(findHook(rootBlock, "hook")), anyListOf(TestBlock.class), captor.capture());
+        verify(reporter).testHookFail(eq(findHook(rootBlock, "hook")), anyListOf(TestBlock.class),
+                eq(findTest(rootBlock, "does not run the test")), anyListOf(TestBlock.class), captor.capture());
         assertThat(captor.getValue())
                 .isExactlyInstanceOf(CuppaException.class)
                 .hasMessage("'" + hookName + "' may only be nested within a 'describe' or 'when' block");
     }
 
     @DataProvider
-    private Iterator<Object[]> hooksThrowExceptions() {
-        return ALL_HOOKS.values().stream()
+    private Iterator<Object[]> hooksInBlockHooks() {
+        return BLOCK_HOOKS.values().stream()
+                .flatMap(f ->
+                        ALL_HOOKS.entrySet().stream().map(e -> new Object[] {
+                                e.getKey(),
+                                (TestBlockFunction) () -> f.accept("hook",
+                                        () -> e.getValue().accept("", HookFunction.identity())),
+                        }))
+                .iterator();
+    }
+
+    @Test(dataProvider = "hooksInBlockHooks")
+    public void addingNestedHookInBlockHookShouldThrowException(String hookName, TestBlockFunction nestedHook) {
+
+        //Given
+        Reporter reporter = mock(Reporter.class);
+        TestBlock rootBlock = defineTests(() -> {
+            describe("nested hook in hook", () -> {
+                nestedHook.apply();
+                it("does not run the test", TestFunction.identity());
+            });
+        });
+
+        //When
+        runTests(rootBlock, reporter);
+
+        //Then
+        ArgumentCaptor<Throwable> captor = ArgumentCaptor.forClass(Throwable.class);
+        verify(reporter).blockHookFail(eq(findHook(rootBlock, "hook")), anyListOf(TestBlock.class), captor.capture());
+        assertThat(captor.getValue())
+                .isExactlyInstanceOf(CuppaException.class)
+                .hasMessage("'" + hookName + "' may only be nested within a 'describe' or 'when' block");
+    }
+
+    @DataProvider
+    private Iterator<Object[]> testHooksThrowExceptions() {
+        return TEST_HOOKS.values().stream()
                 .map(f -> (TestBlockFunction) () -> f.accept("hook", () -> {
                     throw new Exception();
                 }))
@@ -787,8 +877,8 @@ public class HookExceptionTests {
                 .iterator();
     }
 
-    @Test(dataProvider = "hooksThrowExceptions")
-    public void shouldAllowHookToThrowCheckedException(TestBlockFunction hook) throws Exception {
+    @Test(dataProvider = "testHooksThrowExceptions")
+    public void shouldAllowTestHookToThrowCheckedException(TestBlockFunction hook) throws Exception {
 
         //Given
         Reporter reporter = mock(Reporter.class);
@@ -803,12 +893,43 @@ public class HookExceptionTests {
         runTests(rootBlock, reporter);
 
         //Then
-        verify(reporter).hookFail(eq(findHook(rootBlock, "hook")), anyListOf(TestBlock.class), isA(Exception.class));
+        verify(reporter).testHookFail(eq(findHook(rootBlock, "hook")), anyListOf(TestBlock.class),
+                eq(findTest(rootBlock, "a test")), anyListOf(TestBlock.class), isA(Exception.class));
     }
 
     @DataProvider
-    private Iterator<Object[]> hooksThrowThrowable() {
-        return ALL_HOOKS.values().stream()
+    private Iterator<Object[]> blockHooksThrowExceptions() {
+        return BLOCK_HOOKS.values().stream()
+                .map(f -> (TestBlockFunction) () -> f.accept("hook", () -> {
+                    throw new Exception();
+                }))
+                .map(f -> new Object[]{f})
+                .iterator();
+    }
+
+    @Test(dataProvider = "blockHooksThrowExceptions")
+    public void shouldAllowBlockHookToThrowCheckedException(TestBlockFunction hook) throws Exception {
+
+        //Given
+        Reporter reporter = mock(Reporter.class);
+        TestBlock rootBlock = defineTests(() -> {
+            describe("before blocks", () -> {
+                hook.apply();
+                it("a test", TestFunction.identity());
+            });
+        });
+
+        //When
+        runTests(rootBlock, reporter);
+
+        //Then
+        verify(reporter).blockHookFail(eq(findHook(rootBlock, "hook")), anyListOf(TestBlock.class),
+                isA(Exception.class));
+    }
+
+    @DataProvider
+    private Iterator<Object[]> testHooksThrowThrowable() {
+        return TEST_HOOKS.values().stream()
                 .map(f -> (TestBlockFunction) () -> f.accept("hook", () -> {
                     throw new AssertionError();
                 }))
@@ -816,8 +937,8 @@ public class HookExceptionTests {
                 .iterator();
     }
 
-    @Test(dataProvider = "hooksThrowThrowable")
-    public void shouldAllowHookToThrowThrowable(TestBlockFunction hook) throws Exception {
+    @Test(dataProvider = "testHooksThrowThrowable")
+    public void shouldAllowTestHookToThrowThrowable(TestBlockFunction hook) throws Exception {
 
         //Given
         Reporter reporter = mock(Reporter.class);
@@ -832,7 +953,37 @@ public class HookExceptionTests {
         runTests(rootBlock, reporter);
 
         //Then
-        verify(reporter).hookFail(eq(findHook(rootBlock, "hook")), anyListOf(TestBlock.class),
+        verify(reporter).testHookFail(eq(findHook(rootBlock, "hook")), anyListOf(TestBlock.class),
+                eq(findTest(rootBlock, "a test")), anyListOf(TestBlock.class), isA(AssertionError.class));
+    }
+
+    @DataProvider
+    private Iterator<Object[]> blockHooksThrowThrowable() {
+        return BLOCK_HOOKS.values().stream()
+                .map(f -> (TestBlockFunction) () -> f.accept("hook", () -> {
+                    throw new AssertionError();
+                }))
+                .map(f -> new Object[]{f})
+                .iterator();
+    }
+
+    @Test(dataProvider = "blockHooksThrowThrowable")
+    public void shouldAllowBlockHookToThrowThrowable(TestBlockFunction hook) throws Exception {
+
+        //Given
+        Reporter reporter = mock(Reporter.class);
+        TestBlock rootBlock = defineTests(() -> {
+            describe("before blocks", () -> {
+                hook.apply();
+                it("a test", TestFunction.identity());
+            });
+        });
+
+        //When
+        runTests(rootBlock, reporter);
+
+        //Then
+        verify(reporter).blockHookFail(eq(findHook(rootBlock, "hook")), anyListOf(TestBlock.class),
                 isA(AssertionError.class));
     }
 }

@@ -109,7 +109,7 @@ public final class Runner {
             fullReporter.start(rootBlock);
             TestBlock transformedRootBlock = transformTests(rootBlock, configuration.testTransforms);
             runTests(transformedRootBlock, Collections.emptyList(), transformedRootBlock.behaviour, fullReporter,
-                    TestFunction::apply);
+                    (test, testParents, f) -> f.apply());
             fullReporter.end();
         });
     }
@@ -165,7 +165,7 @@ public final class Runner {
                 try {
                     hook.function.apply();
                 } catch (Throwable e) {
-                    reporter.hookFail(hook, newParents, e);
+                    reporter.blockHookFail(hook, newParents, e);
                     return;
                 }
             }
@@ -193,7 +193,7 @@ public final class Runner {
         if (!test.function.isPresent()) {
             reporter.testPending(test, parents);
         } else if (behaviour.combine(test.behaviour) != Behaviour.SKIP) {
-            testWrapper.apply(() -> {
+            testWrapper.apply(test, parents, () -> {
                 try {
                     reporter.testStart(test, parents);
                     test.function.get().apply();
@@ -211,13 +211,13 @@ public final class Runner {
 
     private TestWrapper createWrapper(TestBlock testBlock, List<TestBlock> parents, TestWrapper outerTestRunner,
             Reporter reporter) {
-        return outerTestRunner.compose((f) -> {
+        return outerTestRunner.compose((test, testParents, f) -> {
             try {
                 for (Hook hook : testBlock.hooksOfType(BEFORE_EACH)) {
                     try {
                         hook.function.apply();
                     } catch (Throwable e) {
-                        reporter.hookFail(hook, parents, e);
+                        reporter.testHookFail(hook, parents, test, testParents, e);
                         throw new HookException(testBlock, e);
                     }
                 }
@@ -227,7 +227,7 @@ public final class Runner {
                     try {
                         hook.function.apply();
                     } catch (Throwable e) {
-                        reporter.hookFail(hook, parents, e);
+                        reporter.testHookFail(hook, parents, test, testParents, e);
                         throw new HookException(testBlock, e);
                     }
                 }
@@ -240,7 +240,7 @@ public final class Runner {
             try {
                 hook.function.apply();
             } catch (Throwable e) {
-                reporter.hookFail(hook, parents, e);
+                reporter.blockHookFail(hook, parents, e);
                 return;
             }
         }
@@ -248,10 +248,10 @@ public final class Runner {
 
     @FunctionalInterface
     private interface TestWrapper {
-        void apply(TestFunction testRunner) throws Exception;
+        void apply(Test test, List<TestBlock> testParents, TestFunction testRunner) throws Exception;
 
         default TestWrapper compose(TestWrapper after) {
-            return (f) -> apply(() -> after.apply(f));
+            return (test, testParents, f) -> apply(test, testParents, () -> after.apply(test, testParents, f));
         }
     }
 }

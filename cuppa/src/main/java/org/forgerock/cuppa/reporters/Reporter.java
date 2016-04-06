@@ -60,7 +60,34 @@ public interface Reporter {
     }
 
     /**
-     * Called after a hook failed due to it throwing an exception.
+     * Called when a beforeEach or afterEach hook failed due to it throwing an exception.
+     *
+     * @param hook The hook that threw an exception.
+     * @param hookParents The parent test blocks of the hook, starting with the root block and ending with the immediate
+     *                    parent.
+     * @param test The test that was associated with the beforeEach/afterEach.
+     * @param testParents The parent test blocks of the test, starting with the root block and ending with the immediate
+     *                    parent.
+     * @param cause The throwable that the hook threw.
+     */
+    default void testHookFail(Hook hook, List<TestBlock> hookParents, Test test, List<TestBlock> testParents,
+            Throwable cause) {
+        hookFail(hook, hookParents, cause);
+    }
+
+    /**
+     * Called when a before or after hook failed due to it throwing an exception.
+     *
+     * @param hook The hook that threw an exception.
+     * @param parents The parent test blocks of the hook, starting with the root block and ending with the immediate
+     *                parent.
+     * @param cause The throwable that the hook threw.
+     */
+    default void blockHookFail(Hook hook, List<TestBlock> parents, Throwable cause) {
+        hookFail(hook, parents, cause);
+    }
+    /**
+     * Called when a hook failed due to it throwing an exception.
      *
      * @param hook The hook that threw an exception.
      * @param parents The ancestor test blocks, starting with the root block and ending with the immediate parent.
