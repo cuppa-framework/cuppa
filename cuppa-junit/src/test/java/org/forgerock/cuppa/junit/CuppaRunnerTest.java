@@ -137,7 +137,7 @@ public class CuppaRunnerTest {
         //Then
         assertThat(result.wasSuccessful()).isFalse();
         assertThat(result.getRunCount()).isEqualTo(0);
-        assertThat(result.getIgnoreCount()).isEqualTo(0);
+        assertThat(result.getIgnoreCount()).isEqualTo(1);
         assertThat(result.getFailureCount()).isEqualTo(1);
     }
 
@@ -163,7 +163,7 @@ public class CuppaRunnerTest {
         //Then
         assertThat(result.wasSuccessful()).isFalse();
         assertThat(result.getRunCount()).isEqualTo(0);
-        assertThat(result.getIgnoreCount()).isEqualTo(0);
+        assertThat(result.getIgnoreCount()).isEqualTo(1);
         assertThat(result.getFailureCount()).isEqualTo(1);
     }
 
