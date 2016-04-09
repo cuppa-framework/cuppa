@@ -164,8 +164,8 @@ public class ReportingTests {
                 });
             });
         });
-        TestBlock describeBlock = rootBlock.testBlocks.get(0);
-        TestBlock whenBlock = describeBlock.testBlocks.get(0);
+        TestBlock describeBlock = findTestBlock(rootBlock, "describe");
+        TestBlock whenBlock = findTestBlock(rootBlock, "when");
         List<TestBlock> describeBlockParents = Collections.singletonList(rootBlock);
         List<TestBlock> whenBlockParents = Arrays.asList(rootBlock, describeBlock);
         List<TestBlock> testParents = Arrays.asList(rootBlock, describeBlock, whenBlock);
@@ -186,7 +186,7 @@ public class ReportingTests {
     }
 
     @Test
-    public void reporterShouldBeNotifiedOfTestHookFailure() {
+    public void reporterShouldBeNotifiedOfBeforeEachHookFailure() {
 
         //Given
         RuntimeException exception = new RuntimeException();
@@ -202,8 +202,8 @@ public class ReportingTests {
                 });
             });
         });
-        List<TestBlock> blockParents = Arrays.asList(rootBlock, rootBlock.testBlocks.get(0));
-        List<TestBlock> testParents = Arrays.asList(rootBlock, rootBlock.testBlocks.get(0),
+        List<TestBlock> blockParents = Arrays.asList(rootBlock, findTestBlock(rootBlock, "describe"));
+        List<TestBlock> testParents = Arrays.asList(rootBlock, findTestBlock(rootBlock, "describe"),
                 findTestBlock(rootBlock, "when"));
 
         //When
@@ -215,7 +215,36 @@ public class ReportingTests {
     }
 
     @Test
-    public void reporterShouldBeNotifiedOfBlockHookFailure() {
+    public void reporterShouldBeNotifiedOfAfterEachHookFailure() {
+
+        //Given
+        RuntimeException exception = new RuntimeException();
+        Reporter reporter = mock(Reporter.class);
+        TestBlock rootBlock = defineTests(() -> {
+            describe("describe", () -> {
+                afterEach("hook", () -> {
+                    throw exception;
+                });
+                when("when", () -> {
+                    it("test", () -> {
+                    });
+                });
+            });
+        });
+        List<TestBlock> blockParents = Arrays.asList(rootBlock, findTestBlock(rootBlock, "describe"));
+        List<TestBlock> testParents = Arrays.asList(rootBlock, findTestBlock(rootBlock, "describe"),
+                findTestBlock(rootBlock, "when"));
+
+        //When
+        runTests(rootBlock, reporter);
+
+        //Then
+        verify(reporter).testHookFail(eq(findHook(rootBlock, "hook")), eq(blockParents),
+                eq(findTest(rootBlock, "test")), eq(testParents), eq(exception));
+    }
+
+    @Test
+    public void reporterShouldBeNotifiedOfBeforeHookFailure() {
 
         //Given
         RuntimeException exception = new RuntimeException();
@@ -231,7 +260,33 @@ public class ReportingTests {
                 });
             });
         });
-        List<TestBlock> blockParents = Arrays.asList(rootBlock, rootBlock.testBlocks.get(0));
+        List<TestBlock> blockParents = Arrays.asList(rootBlock, findTestBlock(rootBlock, "describe"));
+
+        //When
+        runTests(rootBlock, reporter);
+
+        //Then
+        verify(reporter).blockHookFail(eq(findHook(rootBlock, "hook")), eq(blockParents), eq(exception));
+    }
+
+    @Test
+    public void reporterShouldBeNotifiedOfAfterHookFailure() {
+
+        //Given
+        RuntimeException exception = new RuntimeException();
+        Reporter reporter = mock(Reporter.class);
+        TestBlock rootBlock = defineTests(() -> {
+            describe("describe", () -> {
+                after("hook", () -> {
+                    throw exception;
+                });
+                when("when", () -> {
+                    it("test", () -> {
+                    });
+                });
+            });
+        });
+        List<TestBlock> blockParents = Arrays.asList(rootBlock, findTestBlock(rootBlock, "describe"));
 
         //When
         runTests(rootBlock, reporter);

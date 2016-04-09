@@ -183,7 +183,7 @@ public final class Runner {
             // all exceptions from user code should've been caught by now.
             throw new RuntimeException(e);
         } finally {
-            runAfterHooks(testBlock, parents, reporter);
+            runAfterHooks(testBlock, newParents, reporter);
             reporter.testBlockEnd(testBlock, parents);
         }
     }
