@@ -1,3 +1,8 @@
+plugins {
+  id 'jacoco'
+  id 'com.github.kt3k.coveralls' version '2.6.3'
+}
+
 allprojects {
   apply plugin: 'maven'
   apply plugin: 'signing'
@@ -15,6 +20,7 @@ subprojects {
   apply plugin: 'java'
   apply plugin: 'checkstyle'
   apply plugin: 'findbugs'
+  apply plugin: 'jacoco'
 
   sourceCompatibility = 1.8
   targetCompatibility = 1.8
@@ -69,6 +75,13 @@ subprojects {
   task sourcesJar(type: Jar) {
     from sourceSets.main.allSource
     classifier = 'sources'
+  }
+
+  jacocoTestReport {
+    reports {
+      xml.enabled = true
+      html.enabled = true
+    }
   }
 
   artifacts {
