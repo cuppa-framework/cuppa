@@ -167,6 +167,10 @@ gradle.taskGraph.whenReady { taskGraph ->
   }
 }
 
+coveralls {
+  sourceDirs = files(coverageProjects.sourceSets.main.allSource.srcDirs).files.absolutePath
+}
+
 task jacocoRootReport(type: JacocoReport) {
   dependsOn = coverageProjects.jacocoTestReport
   sourceDirectories = files(coverageProjects.sourceSets.main.allSource.srcDirs)
