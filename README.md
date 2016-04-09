@@ -1,4 +1,4 @@
-# [Cuppa](http://cuppa.forgerock.org/) [![Build Status](https://travis-ci.org/cuppa-framework/cuppa.svg?branch=master)](https://travis-ci.org/cuppa-framework/cuppa)
+# [Cuppa](http://cuppa.forgerock.org/) [![Build Status](https://travis-ci.org/cuppa-framework/cuppa.svg?branch=master)](https://travis-ci.org/cuppa-framework/cuppa) [![Coverage Status](https://coveralls.io/repos/github/cuppa-framework/cuppa/badge.svg?branch=master)](https://coveralls.io/github/cuppa-framework/cuppa?branch=master)
 
 Cuppa is a testing framework for Java 8. It makes writing tests productive and fun.
 
