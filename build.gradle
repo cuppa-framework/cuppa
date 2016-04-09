@@ -6,9 +6,19 @@ plugins {
 allprojects {
   apply plugin: 'maven'
   apply plugin: 'signing'
+  apply plugin: 'jacoco'
 
   group = 'org.forgerock.cuppa'
   version = '1.0.1-SNAPSHOT'
+
+  repositories {
+    mavenLocal()
+    mavenCentral()
+  }
+
+  ext {
+    coverageProjects = [':cuppa', ':cuppa-junit'].collect { project(it) }
+  }
 }
 
 if (!project.hasProperty("sonatypeUsername") || !project.hasProperty("sonatypePassword")) {
@@ -20,15 +30,9 @@ subprojects {
   apply plugin: 'java'
   apply plugin: 'checkstyle'
   apply plugin: 'findbugs'
-  apply plugin: 'jacoco'
 
   sourceCompatibility = 1.8
   targetCompatibility = 1.8
-
-  repositories {
-    mavenLocal()
-    mavenCentral()
-  }
 
   configurations {
     provided
@@ -67,6 +71,13 @@ subprojects {
     useTestNG()
   }
 
+  jacocoTestReport {
+    reports {
+      xml.enabled = true
+      html.enabled = true
+    }
+  }
+
   task javadocJar(type: Jar, dependsOn: javadoc) {
     from 'build/docs/javadoc'
     classifier = 'javadoc'
@@ -75,13 +86,6 @@ subprojects {
   task sourcesJar(type: Jar) {
     from sourceSets.main.allSource
     classifier = 'sources'
-  }
-
-  jacocoTestReport {
-    reports {
-      xml.enabled = true
-      html.enabled = true
-    }
   }
 
   artifacts {
@@ -160,5 +164,16 @@ gradle.taskGraph.whenReady { taskGraph ->
     allprojects { ext."signing.password" = password }
 
     console.printf "\nThanks.\n\n"
+  }
+}
+
+task jacocoRootReport(type: JacocoReport) {
+  dependsOn = coverageProjects.jacocoTestReport
+  sourceDirectories = files(coverageProjects.sourceSets.main.allSource.srcDirs)
+  classDirectories = files(coverageProjects.sourceSets.main.output)
+  executionData = files(coverageProjects.jacocoTestReport.executionData)
+  reports {
+    xml.enabled = true
+    xml.destination = "${buildDir}/reports/jacoco/test/jacocoTestReport.xml"
   }
 }
