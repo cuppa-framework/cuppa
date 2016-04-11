@@ -72,7 +72,6 @@ public interface Reporter {
      */
     default void testHookFail(Hook hook, List<TestBlock> hookParents, Test test, List<TestBlock> testParents,
             Throwable cause) {
-        hookFail(hook, hookParents, cause);
     }
 
     /**
@@ -84,7 +83,6 @@ public interface Reporter {
      * @param cause The throwable that the hook threw.
      */
     default void blockHookFail(Hook hook, List<TestBlock> parents, Throwable cause) {
-        hookFail(hook, parents, cause);
     }
     /**
      * Called when a hook failed due to it throwing an exception.
@@ -92,7 +90,10 @@ public interface Reporter {
      * @param hook The hook that threw an exception.
      * @param parents The ancestor test blocks, starting with the root block and ending with the immediate parent.
      * @param cause The throwable that the hook threw.
+     * @deprecated Use {@link Reporter#testHookFail(Hook, List, Test, List, Throwable)} and
+     *             {@link Reporter#blockHookFail(Hook, List, Throwable)} instead.
      */
+    @Deprecated
     default void hookFail(Hook hook, List<TestBlock> parents, Throwable cause) {
     }
 

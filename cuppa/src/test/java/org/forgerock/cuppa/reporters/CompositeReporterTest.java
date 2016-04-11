@@ -99,6 +99,13 @@ public class CompositeReporterTest {
     }
 
     @Test
+    public void shouldCallBHookFail() {
+        reporter.hookFail(hook, parents, cause);
+        order.verify(mockReporter1).hookFail(hook, parents, cause);
+        order.verify(mockReporter2).hookFail(hook, parents, cause);
+    }
+
+    @Test
     public void shouldCallTestStart() {
         reporter.testStart(test, parents);
         order.verify(mockReporter1).testStart(test, parents);

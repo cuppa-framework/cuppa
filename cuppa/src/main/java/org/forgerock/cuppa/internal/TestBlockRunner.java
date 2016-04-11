@@ -115,13 +115,17 @@ public final class TestBlockRunner {
     }
 
     private boolean runTestHooks(HookType hookType, Test test, List<TestBlock> testParents) {
-        return runHooks(testBlock.hooksOfType(hookType), (hook, e) ->
-                reporter.testHookFail(hook, blocksFromRunners(parentsIncludeThis()), test, testParents, e));
+        return runHooks(testBlock.hooksOfType(hookType), (hook, e) -> {
+            reporter.testHookFail(hook, blocksFromRunners(parentsIncludeThis()), test, testParents, e);
+            reporter.hookFail(hook, blocksFromRunners(parentsIncludeThis()), e);
+        });
     }
 
     private boolean runBlockHooks(HookType hookType) {
-        return runHooks(testBlock.hooksOfType(hookType),
-                (hook, e) -> reporter.blockHookFail(hook, blocksFromRunners(parentsIncludeThis()), e));
+        return runHooks(testBlock.hooksOfType(hookType), (hook, e) -> {
+            reporter.blockHookFail(hook, blocksFromRunners(parentsIncludeThis()), e);
+            reporter.hookFail(hook, blocksFromRunners(parentsIncludeThis()), e);
+        });
     }
 
     private boolean runHooks(List<Hook> hooks, BiConsumer<Hook, Throwable> failHandler) {

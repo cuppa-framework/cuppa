@@ -69,6 +69,11 @@ public final class CompositeReporter implements Reporter {
     }
 
     @Override
+    public void hookFail(Hook hook, List<TestBlock> parents, Throwable cause) {
+        reporters.forEach(r -> r.hookFail(hook, parents, cause));
+    }
+
+    @Override
     public void testStart(Test test, List<TestBlock> parents) {
         reporters.forEach(r -> r.testStart(test, parents));
     }

@@ -241,6 +241,7 @@ public class ExecutionTests {
         verifyStart();
         order.verify(outerBeforeFn1).apply();
         order.verify(reporter).blockHookFail(outerBefore1, parentsOfOuterChildren, exception);
+        order.verify(reporter).hookFail(outerBefore1, parentsOfOuterChildren, exception);
         order.verify(reporter).testSkip(outerTest1, parentsOfOuterChildren);
         order.verify(reporter).testSkip(outerTest2, parentsOfOuterChildren);
         verifySkipNested1Execution();
@@ -262,6 +263,7 @@ public class ExecutionTests {
         verifyNormalNested2Execution();
         order.verify(outerAfterFn1).apply();
         order.verify(reporter).blockHookFail(outerAfter1, parentsOfOuterChildren, exception);
+        order.verify(reporter).hookFail(outerAfter1, parentsOfOuterChildren, exception);
         verifyEnd();
     }
 
@@ -277,6 +279,7 @@ public class ExecutionTests {
         order.verify(outerBeforeEachFn1).apply();
         order.verify(reporter).testHookFail(outerBeforeEach1, parentsOfOuterChildren, outerTest1,
                 parentsOfOuterChildren, exception);
+        order.verify(reporter).hookFail(outerBeforeEach1, parentsOfOuterChildren, exception);
         order.verify(reporter).testSkip(outerTest1, parentsOfOuterChildren);
         order.verify(outerAfterEachFn1).apply();
         order.verify(outerAfterEachFn2).apply();
@@ -305,6 +308,7 @@ public class ExecutionTests {
         order.verify(outerBeforeEachFn1).apply();
         order.verify(reporter).testHookFail(outerBeforeEach1, parentsOfOuterChildren, outerTest2,
                 parentsOfOuterChildren, exception);
+        order.verify(reporter).hookFail(outerBeforeEach1, parentsOfOuterChildren, exception);
         order.verify(reporter).testSkip(outerTest2, parentsOfOuterChildren);
         order.verify(outerAfterEachFn1).apply();
         order.verify(outerAfterEachFn2).apply();
@@ -328,6 +332,7 @@ public class ExecutionTests {
         order.verify(outerBeforeEachFn1).apply();
         order.verify(reporter).testHookFail(outerBeforeEach1, parentsOfOuterChildren, nested1Test1,
                 parentsOfNested1Children, exception);
+        order.verify(reporter).hookFail(outerBeforeEach1, parentsOfOuterChildren, exception);
         order.verify(reporter).testSkip(nested1Test1, parentsOfNested1Children);
         order.verify(outerAfterEachFn1).apply();
         order.verify(outerAfterEachFn2).apply();
@@ -355,6 +360,7 @@ public class ExecutionTests {
         order.verify(outerAfterEachFn1).apply();
         order.verify(reporter).testHookFail(outerAfterEach1, parentsOfOuterChildren, outerTest1, parentsOfOuterChildren,
                 exception);
+        order.verify(reporter).hookFail(outerAfterEach1, parentsOfOuterChildren, exception);
         order.verify(reporter).testSkip(outerTest2, parentsOfOuterChildren);
         verifySkipNested1Execution();
         verifySkipNested2Execution();
@@ -374,6 +380,7 @@ public class ExecutionTests {
         order.verify(reporter).testBlockStart(nested1, parentsOfOuterChildren);
         order.verify(nested1BeforeFn).apply();
         order.verify(reporter).blockHookFail(nested1Before, parentsOfNested1Children, exception);
+        order.verify(reporter).hookFail(nested1Before, parentsOfNested1Children, exception);
         order.verify(reporter).testSkip(nested1Test1, parentsOfNested1Children);
         order.verify(reporter).testSkip(nested1Test2, parentsOfNested1Children);
         order.verify(nested1AfterFn).apply();
@@ -410,6 +417,7 @@ public class ExecutionTests {
         order.verify(outerAfterEachFn2).apply();
         order.verify(nested1AfterFn).apply();
         order.verify(reporter).blockHookFail(nested1After, parentsOfNested1Children, exception);
+        order.verify(reporter).hookFail(nested1After, parentsOfNested1Children, exception);
         order.verify(reporter).testBlockEnd(nested1, parentsOfOuterChildren);
         verifyNormalNested2Execution();
         order.verify(outerAfterFn1).apply();
@@ -432,6 +440,7 @@ public class ExecutionTests {
         order.verify(nested1BeforeEachFn).apply();
         order.verify(reporter).testHookFail(nested1BeforeEach, parentsOfNested1Children, nested1Test1,
                 parentsOfNested1Children, exception);
+        order.verify(reporter).hookFail(nested1BeforeEach, parentsOfNested1Children, exception);
         order.verify(reporter).testSkip(nested1Test1, parentsOfNested1Children);
         order.verify(nested1AfterEachFn).apply();
         order.verify(outerAfterEachFn1).apply();
@@ -462,6 +471,7 @@ public class ExecutionTests {
         order.verify(nested1AfterEachFn).apply();
         order.verify(reporter).testHookFail(nested1AfterEach, parentsOfNested1Children, nested1Test1,
                 parentsOfNested1Children, exception);
+        order.verify(reporter).hookFail(nested1AfterEach, parentsOfNested1Children, exception);
         order.verify(outerAfterEachFn1).apply();
         order.verify(outerAfterEachFn2).apply();
         order.verify(reporter).testSkip(nested1Test2, parentsOfNested1Children);

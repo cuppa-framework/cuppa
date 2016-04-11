@@ -113,7 +113,13 @@ public final class DefaultReporter implements Reporter {
     }
 
     @Override
-    public void hookFail(Hook hook, List<TestBlock> parents, Throwable cause) {
+    public void testHookFail(Hook hook, List<TestBlock> hookParents, Test test, List<TestBlock> testParents,
+            Throwable cause) {
+        blockHookFail(hook, hookParents, cause);
+    }
+
+    @Override
+    public void blockHookFail(Hook hook, List<TestBlock> parents, Throwable cause) {
         failed++;
         failures.add(new TestFailure(ReporterSupport.getFullDescription(hook, parents), cause));
         stream.println(getIndent() + failures.size() + ") " + ReporterSupport.getDescription(hook));
