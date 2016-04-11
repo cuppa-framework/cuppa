@@ -19,4 +19,6 @@
     <suppress files="/src/test/java/" checks="MultipleStringLiterals"/>
     <suppress files="/src/test/java/" checks="Indentation"/>
     <suppress files="/src/test/java/" checks="SeparatorWrap"/>
+    <suppress files="/src/test/java/" checks="ExecutableStatementCount"/>
+    <suppress files="/src/test/java/" checks="JavaNCSS"/>
 </suppressions>
