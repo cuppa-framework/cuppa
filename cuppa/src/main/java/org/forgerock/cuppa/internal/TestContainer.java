@@ -49,7 +49,7 @@ public enum TestContainer {
      */
     INSTANCE;
 
-    private final Deque<Context> contexts = new ArrayDeque<>();
+    private final ThreadLocal<Deque<Context>> contexts = ThreadLocal.withInitial(() -> new ArrayDeque<>());
 
     /**
      * Registers a described suite of tests to be run.
@@ -268,11 +268,11 @@ public enum TestContainer {
      * @param testRunner A function that will run tests.
      */
     public void runTests(Runnable testRunner) {
-        contexts.addLast(new TestRunContext());
+        contexts.get().addLast(new TestRunContext());
         try {
             testRunner.run();
         } finally {
-            contexts.removeLast();
+            contexts.get().removeLast();
         }
     }
 
@@ -286,24 +286,24 @@ public enum TestContainer {
      */
     public TestBlock defineTests(Class<?> testClass, Runnable testDefiner) {
         TestDefinitionContext context = new TestDefinitionContext(testClass);
-        contexts.addLast(context);
+        contexts.get().addLast(context);
         try {
             testDefiner.run();
             return context.rootBuilder.build();
         } finally {
-            contexts.removeLast();
+            contexts.get().removeLast();
         }
     }
 
     private TestDefinitionContext assertIsInTestDefinitionContext(String blockType) {
-        if (contexts.isEmpty()) {
+        if (contexts.get().isEmpty()) {
             throw new CuppaException("Attempted to defined Cuppa tests from outside of Cuppa's control. Is something"
                     + " else instantiating your test class?");
         }
-        if (contexts.getLast() instanceof TestRunContext) {
+        if (contexts.get().getLast() instanceof TestRunContext) {
             throw new CuppaException("'" + blockType + "' may only be nested within a 'describe' or 'when' block");
         }
-        return (TestDefinitionContext) contexts.getLast();
+        return (TestDefinitionContext) contexts.get().getLast();
     }
 
     private void assertNotRootDescribeBlock(String blockType) {
