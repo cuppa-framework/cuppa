@@ -22,6 +22,7 @@ import static org.forgerock.cuppa.model.HookType.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -115,23 +116,34 @@ public final class TestBlockRunner {
     }
 
     private boolean runTestHooks(HookType hookType, Test test, List<TestBlock> testParents) {
-        return runHooks(testBlock.hooksOfType(hookType), (hook, e) -> {
-            reporter.testHookFail(hook, blocksFromRunners(parentsIncludeThis()), test, testParents, e);
-            reporter.hookFail(hook, blocksFromRunners(parentsIncludeThis()), e);
-        });
+        List<TestBlock> hookParents = blocksFromRunners(parentsIncludeThis());
+        return runHooks(testBlock.hooksOfType(hookType),
+                (hook) -> reporter.testHookStart(hook, hookParents, test, testParents),
+                (hook) -> reporter.testHookPass(hook, hookParents, test, testParents),
+                (hook, e) -> {
+                    reporter.testHookFail(hook, hookParents, test, testParents, e);
+                    reporter.hookFail(hook, hookParents, e);
+                });
     }
 
     private boolean runBlockHooks(HookType hookType) {
-        return runHooks(testBlock.hooksOfType(hookType), (hook, e) -> {
-            reporter.blockHookFail(hook, blocksFromRunners(parentsIncludeThis()), e);
-            reporter.hookFail(hook, blocksFromRunners(parentsIncludeThis()), e);
-        });
+        List<TestBlock> parents = blocksFromRunners(parentsIncludeThis());
+        return runHooks(testBlock.hooksOfType(hookType),
+                (hook) -> reporter.blockHookStart(hook, parents),
+                (hook) -> reporter.blockHookPass(hook, parents),
+                (hook, e) -> {
+                    reporter.blockHookFail(hook, parents, e);
+                    reporter.hookFail(hook, parents, e);
+                });
     }
 
-    private boolean runHooks(List<Hook> hooks, BiConsumer<Hook, Throwable> failHandler) {
+    private boolean runHooks(List<Hook> hooks, Consumer<Hook> startHandler, Consumer<Hook> passHandler,
+            BiConsumer<Hook, Throwable> failHandler) {
         for (Hook hook : hooks) {
             try {
+                startHandler.accept(hook);
                 hook.function.apply();
+                passHandler.accept(hook);
             } catch (Throwable e) {
                 failHandler.accept(hook, e);
                 skipTests = true;

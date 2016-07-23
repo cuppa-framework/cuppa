@@ -80,12 +80,20 @@ public class ExecutionTests {
 
     private Hook outerBefore1;
     private Hook outerAfter1;
+    private Hook outerBefore2;
+    private Hook outerAfter2;
     private Hook outerBeforeEach1;
     private Hook outerAfterEach1;
+    private Hook outerBeforeEach2;
+    private Hook outerAfterEach2;
     private Hook nested1Before;
     private Hook nested1After;
     private Hook nested1BeforeEach;
     private Hook nested1AfterEach;
+    private Hook nested2Before;
+    private Hook nested2After;
+    private Hook nested2BeforeEach;
+    private Hook nested2AfterEach;
 
     private InOrder order;
 
@@ -166,12 +174,20 @@ public class ExecutionTests {
 
         outerBefore1 = findHook(root, "outerBefore1");
         outerAfter1 = findHook(root, "outerAfter1");
+        outerBefore2 = findHook(root, "outerBefore2");
+        outerAfter2 = findHook(root, "outerAfter2");
         outerBeforeEach1 = findHook(root, "outerBeforeEach1");
         outerAfterEach1 = findHook(root, "outerAfterEach1");
+        outerBeforeEach2 = findHook(root, "outerBeforeEach2");
+        outerAfterEach2 = findHook(root, "outerAfterEach2");
         nested1Before = findHook(root, "nested1Before");
         nested1After = findHook(root, "nested1After");
         nested1BeforeEach = findHook(root, "nested1BeforeEach");
         nested1AfterEach = findHook(root, "nested1AfterEach");
+        nested2Before = findHook(root, "nested2Before");
+        nested2After = findHook(root, "nested2After");
+        nested2BeforeEach = findHook(root, "nested2BeforeEach");
+        nested2AfterEach = findHook(root, "nested2AfterEach");
 
         order = inOrder(reporter, outerBeforeFn1, outerBeforeFn2, outerAfterFn1, outerAfterFn2,
                 outerBeforeEachFn1, outerBeforeEachFn2, outerAfterEachFn1, outerAfterEachFn2, outerTest1Fn,
@@ -197,8 +213,8 @@ public class ExecutionTests {
         verifyNormalOuterExecution();
         verifyNormalNested1Execution();
         verifyNormalNested2Execution();
-        order.verify(outerAfterFn1).apply();
-        order.verify(outerAfterFn2).apply();
+        verifyBlockHookPass(outerAfter1, parentsOfOuterChildren);
+        verifyBlockHookPass(outerAfter2, parentsOfOuterChildren);
         verifyEnd();
     }
 
@@ -209,26 +225,22 @@ public class ExecutionTests {
         runTests(root, reporter);
 
         verifyStart();
-        order.verify(outerBeforeFn1).apply();
-        order.verify(outerBeforeFn2).apply();
-        order.verify(outerBeforeEachFn1).apply();
-        order.verify(outerBeforeEachFn2).apply();
-
-        order.verify(reporter).testStart(outerTest1, parentsOfOuterChildren);
-        order.verify(outerTest1Fn).apply();
-        order.verify(reporter).testFail(outerTest1, parentsOfOuterChildren, exception);
-        order.verify(reporter).testEnd(outerTest1, parentsOfOuterChildren);
-        order.verify(outerAfterEachFn1).apply();
-        order.verify(outerAfterEachFn2).apply();
-        order.verify(outerBeforeEachFn1).apply();
-        order.verify(outerBeforeEachFn2).apply();
-        verifyNormalTestExecution(outerTest2, parentsOfOuterChildren);
-        order.verify(outerAfterEachFn1).apply();
-        order.verify(outerAfterEachFn2).apply();
+        verifyBlockHookPass(outerBefore1, parentsOfOuterChildren);
+        verifyBlockHookPass(outerBefore2, parentsOfOuterChildren);
+        verifyTestHookPass(outerBeforeEach1, parentsOfOuterChildren, outerTest1, parentsOfOuterChildren);
+        verifyTestHookPass(outerBeforeEach2, parentsOfOuterChildren, outerTest1, parentsOfOuterChildren);
+        verifyTestFail(outerTest1, parentsOfOuterChildren);
+        verifyTestHookPass(outerAfterEach1, parentsOfOuterChildren, outerTest1, parentsOfOuterChildren);
+        verifyTestHookPass(outerAfterEach2, parentsOfOuterChildren, outerTest1, parentsOfOuterChildren);
+        verifyTestHookPass(outerBeforeEach1, parentsOfOuterChildren, outerTest2, parentsOfOuterChildren);
+        verifyTestHookPass(outerBeforeEach2, parentsOfOuterChildren, outerTest2, parentsOfOuterChildren);
+        verifyTestPass(outerTest2, parentsOfOuterChildren);
+        verifyTestHookPass(outerAfterEach1, parentsOfOuterChildren, outerTest2, parentsOfOuterChildren);
+        verifyTestHookPass(outerAfterEach2, parentsOfOuterChildren, outerTest2, parentsOfOuterChildren);
         verifyNormalNested1Execution();
         verifyNormalNested2Execution();
-        order.verify(outerAfterFn1).apply();
-        order.verify(outerAfterFn2).apply();
+        verifyBlockHookPass(outerAfter1, parentsOfOuterChildren);
+        verifyBlockHookPass(outerAfter2, parentsOfOuterChildren);
         verifyEnd();
     }
 
@@ -239,15 +251,13 @@ public class ExecutionTests {
         runTests(root, reporter);
 
         verifyStart();
-        order.verify(outerBeforeFn1).apply();
-        order.verify(reporter).blockHookFail(outerBefore1, parentsOfOuterChildren, exception);
-        order.verify(reporter).hookFail(outerBefore1, parentsOfOuterChildren, exception);
-        order.verify(reporter).testSkip(outerTest1, parentsOfOuterChildren);
-        order.verify(reporter).testSkip(outerTest2, parentsOfOuterChildren);
+        verifyBlockHookFail(outerBefore1, parentsOfOuterChildren);
+        verifyTestSkip(outerTest1, parentsOfOuterChildren);
+        verifyTestSkip(outerTest2, parentsOfOuterChildren);
         verifySkipNested1Execution();
         verifySkipNested2Execution();
-        order.verify(outerAfterFn1).apply();
-        order.verify(outerAfterFn2).apply();
+        verifyBlockHookPass(outerAfter1, parentsOfOuterChildren);
+        verifyBlockHookPass(outerAfter2, parentsOfOuterChildren);
         verifyEnd();
     }
 
@@ -261,9 +271,7 @@ public class ExecutionTests {
         verifyNormalOuterExecution();
         verifyNormalNested1Execution();
         verifyNormalNested2Execution();
-        order.verify(outerAfterFn1).apply();
-        order.verify(reporter).blockHookFail(outerAfter1, parentsOfOuterChildren, exception);
-        order.verify(reporter).hookFail(outerAfter1, parentsOfOuterChildren, exception);
+        verifyBlockHookFail(outerAfter1, parentsOfOuterChildren);
         verifyEnd();
     }
 
@@ -274,20 +282,17 @@ public class ExecutionTests {
         runTests(root, reporter);
 
         verifyStart();
-        order.verify(outerBeforeFn1).apply();
-        order.verify(outerBeforeFn2).apply();
-        order.verify(outerBeforeEachFn1).apply();
-        order.verify(reporter).testHookFail(outerBeforeEach1, parentsOfOuterChildren, outerTest1,
-                parentsOfOuterChildren, exception);
-        order.verify(reporter).hookFail(outerBeforeEach1, parentsOfOuterChildren, exception);
-        order.verify(reporter).testSkip(outerTest1, parentsOfOuterChildren);
-        order.verify(outerAfterEachFn1).apply();
-        order.verify(outerAfterEachFn2).apply();
-        order.verify(reporter).testSkip(outerTest2, parentsOfOuterChildren);
+        verifyBlockHookPass(outerBefore1, parentsOfOuterChildren);
+        verifyBlockHookPass(outerBefore2, parentsOfOuterChildren);
+        verifyTestHookFail(outerBeforeEach1, parentsOfOuterChildren, outerTest1, parentsOfOuterChildren);
+        verifyTestSkip(outerTest1, parentsOfOuterChildren);
+        verifyTestHookPass(outerAfterEach1, parentsOfOuterChildren, outerTest1, parentsOfOuterChildren);
+        verifyTestHookPass(outerAfterEach2, parentsOfOuterChildren, outerTest1, parentsOfOuterChildren);
+        verifyTestSkip(outerTest2, parentsOfOuterChildren);
         verifySkipNested1Execution();
         verifySkipNested2Execution();
-        order.verify(outerAfterFn1).apply();
-        order.verify(outerAfterFn2).apply();
+        verifyBlockHookPass(outerAfter1, parentsOfOuterChildren);
+        verifyBlockHookPass(outerAfter2, parentsOfOuterChildren);
         verifyEnd();
     }
 
@@ -298,24 +303,21 @@ public class ExecutionTests {
         runTests(root, reporter);
 
         verifyStart();
-        order.verify(outerBeforeFn1).apply();
-        order.verify(outerBeforeFn2).apply();
-        order.verify(outerBeforeEachFn1).apply();
-        order.verify(outerBeforeEachFn2).apply();
-        verifyNormalTestExecution(outerTest1, parentsOfOuterChildren);
-        order.verify(outerAfterEachFn1).apply();
-        order.verify(outerAfterEachFn2).apply();
-        order.verify(outerBeforeEachFn1).apply();
-        order.verify(reporter).testHookFail(outerBeforeEach1, parentsOfOuterChildren, outerTest2,
-                parentsOfOuterChildren, exception);
-        order.verify(reporter).hookFail(outerBeforeEach1, parentsOfOuterChildren, exception);
-        order.verify(reporter).testSkip(outerTest2, parentsOfOuterChildren);
-        order.verify(outerAfterEachFn1).apply();
-        order.verify(outerAfterEachFn2).apply();
+        verifyBlockHookPass(outerBefore1, parentsOfOuterChildren);
+        verifyBlockHookPass(outerBefore2, parentsOfOuterChildren);
+        verifyTestHookPass(outerBeforeEach1, parentsOfOuterChildren, outerTest1, parentsOfOuterChildren);
+        verifyTestHookPass(outerBeforeEach2, parentsOfOuterChildren, outerTest1, parentsOfOuterChildren);
+        verifyTestPass(outerTest1, parentsOfOuterChildren);
+        verifyTestHookPass(outerAfterEach1, parentsOfOuterChildren, outerTest1, parentsOfOuterChildren);
+        verifyTestHookPass(outerAfterEach2, parentsOfOuterChildren, outerTest1, parentsOfOuterChildren);
+        verifyTestHookFail(outerBeforeEach1, parentsOfOuterChildren, outerTest2, parentsOfOuterChildren);
+        verifyTestSkip(outerTest2, parentsOfOuterChildren);
+        verifyTestHookPass(outerAfterEach1, parentsOfOuterChildren, outerTest2, parentsOfOuterChildren);
+        verifyTestHookPass(outerAfterEach2, parentsOfOuterChildren, outerTest2, parentsOfOuterChildren);
         verifySkipNested1Execution();
         verifySkipNested2Execution();
-        order.verify(outerAfterFn1).apply();
-        order.verify(outerAfterFn2).apply();
+        verifyBlockHookPass(outerAfter1, parentsOfOuterChildren);
+        verifyBlockHookPass(outerAfter2, parentsOfOuterChildren);
         verifyEnd();
     }
 
@@ -328,20 +330,17 @@ public class ExecutionTests {
         verifyStart();
         verifyNormalOuterExecution();
         order.verify(reporter).testBlockStart(nested1, parentsOfOuterChildren);
-        order.verify(nested1BeforeFn).apply();
-        order.verify(outerBeforeEachFn1).apply();
-        order.verify(reporter).testHookFail(outerBeforeEach1, parentsOfOuterChildren, nested1Test1,
-                parentsOfNested1Children, exception);
-        order.verify(reporter).hookFail(outerBeforeEach1, parentsOfOuterChildren, exception);
-        order.verify(reporter).testSkip(nested1Test1, parentsOfNested1Children);
-        order.verify(outerAfterEachFn1).apply();
-        order.verify(outerAfterEachFn2).apply();
-        order.verify(reporter).testSkip(nested1Test2, parentsOfNested1Children);
-        order.verify(nested1AfterFn).apply();
+        verifyBlockHookPass(nested1Before, parentsOfNested1Children);
+        verifyTestHookFail(outerBeforeEach1, parentsOfOuterChildren, nested1Test1, parentsOfNested1Children);
+        verifyTestSkip(nested1Test1, parentsOfNested1Children);
+        verifyTestHookPass(outerAfterEach1, parentsOfOuterChildren, nested1Test1, parentsOfNested1Children);
+        verifyTestHookPass(outerAfterEach2, parentsOfOuterChildren, nested1Test1, parentsOfNested1Children);
+        verifyTestSkip(nested1Test2, parentsOfNested1Children);
+        verifyBlockHookPass(nested1After, parentsOfNested1Children);
         order.verify(reporter).testBlockEnd(nested1, parentsOfOuterChildren);
         verifySkipNested2Execution();
-        order.verify(outerAfterFn1).apply();
-        order.verify(outerAfterFn2).apply();
+        verifyBlockHookPass(outerAfter1, parentsOfOuterChildren);
+        verifyBlockHookPass(outerAfter2, parentsOfOuterChildren);
         verifyEnd();
     }
 
@@ -352,20 +351,17 @@ public class ExecutionTests {
         runTests(root, reporter);
 
         verifyStart();
-        order.verify(outerBeforeFn1).apply();
-        order.verify(outerBeforeFn2).apply();
-        order.verify(outerBeforeEachFn1).apply();
-        order.verify(outerBeforeEachFn2).apply();
-        verifyNormalTestExecution(outerTest1, parentsOfOuterChildren);
-        order.verify(outerAfterEachFn1).apply();
-        order.verify(reporter).testHookFail(outerAfterEach1, parentsOfOuterChildren, outerTest1, parentsOfOuterChildren,
-                exception);
-        order.verify(reporter).hookFail(outerAfterEach1, parentsOfOuterChildren, exception);
-        order.verify(reporter).testSkip(outerTest2, parentsOfOuterChildren);
+        verifyBlockHookPass(outerBefore1, parentsOfOuterChildren);
+        verifyBlockHookPass(outerBefore2, parentsOfOuterChildren);
+        verifyTestHookPass(outerBeforeEach1, parentsOfOuterChildren, outerTest1, parentsOfOuterChildren);
+        verifyTestHookPass(outerBeforeEach2, parentsOfOuterChildren, outerTest1, parentsOfOuterChildren);
+        verifyTestPass(outerTest1, parentsOfOuterChildren);
+        verifyTestHookFail(outerAfterEach1, parentsOfOuterChildren, outerTest1, parentsOfOuterChildren);
+        verifyTestSkip(outerTest2, parentsOfOuterChildren);
         verifySkipNested1Execution();
         verifySkipNested2Execution();
-        order.verify(outerAfterFn1).apply();
-        order.verify(outerAfterFn2).apply();
+        verifyBlockHookPass(outerAfter1, parentsOfOuterChildren);
+        verifyBlockHookPass(outerAfter2, parentsOfOuterChildren);
         verifyEnd();
     }
 
@@ -378,16 +374,14 @@ public class ExecutionTests {
         verifyStart();
         verifyNormalOuterExecution();
         order.verify(reporter).testBlockStart(nested1, parentsOfOuterChildren);
-        order.verify(nested1BeforeFn).apply();
-        order.verify(reporter).blockHookFail(nested1Before, parentsOfNested1Children, exception);
-        order.verify(reporter).hookFail(nested1Before, parentsOfNested1Children, exception);
-        order.verify(reporter).testSkip(nested1Test1, parentsOfNested1Children);
-        order.verify(reporter).testSkip(nested1Test2, parentsOfNested1Children);
-        order.verify(nested1AfterFn).apply();
+        verifyBlockHookFail(nested1Before, parentsOfNested1Children);
+        verifyTestSkip(nested1Test1, parentsOfNested1Children);
+        verifyTestSkip(nested1Test2, parentsOfNested1Children);
+        verifyBlockHookPass(nested1After, parentsOfNested1Children);
         order.verify(reporter).testBlockEnd(nested1, parentsOfOuterChildren);
         verifyNormalNested2Execution();
-        order.verify(outerAfterFn1).apply();
-        order.verify(outerAfterFn2).apply();
+        verifyBlockHookPass(outerAfter1, parentsOfOuterChildren);
+        verifyBlockHookPass(outerAfter2, parentsOfOuterChildren);
         verifyEnd();
     }
 
@@ -400,28 +394,14 @@ public class ExecutionTests {
         verifyStart();
         verifyNormalOuterExecution();
         order.verify(reporter).testBlockStart(nested1, parentsOfOuterChildren);
-        order.verify(nested1BeforeFn).apply();
-        order.verify(outerBeforeEachFn1).apply();
-        order.verify(outerBeforeEachFn2).apply();
-        order.verify(nested1BeforeEachFn).apply();
-        verifyNormalTestExecution(nested1Test1, parentsOfNested1Children);
-        order.verify(nested1AfterEachFn).apply();
-        order.verify(outerAfterEachFn1).apply();
-        order.verify(outerAfterEachFn2).apply();
-        order.verify(outerBeforeEachFn1).apply();
-        order.verify(outerBeforeEachFn2).apply();
-        order.verify(nested1BeforeEachFn).apply();
-        verifyNormalTestExecution(nested1Test2, parentsOfNested1Children);
-        order.verify(nested1AfterEachFn).apply();
-        order.verify(outerAfterEachFn1).apply();
-        order.verify(outerAfterEachFn2).apply();
-        order.verify(nested1AfterFn).apply();
-        order.verify(reporter).blockHookFail(nested1After, parentsOfNested1Children, exception);
-        order.verify(reporter).hookFail(nested1After, parentsOfNested1Children, exception);
+        verifyBlockHookPass(nested1Before, parentsOfNested1Children);
+        verifyNested1TestPass(nested1Test1);
+        verifyNested1TestPass(nested1Test2);
+        verifyBlockHookFail(nested1After, parentsOfNested1Children);
         order.verify(reporter).testBlockEnd(nested1, parentsOfOuterChildren);
         verifyNormalNested2Execution();
-        order.verify(outerAfterFn1).apply();
-        order.verify(outerAfterFn2).apply();
+        verifyBlockHookPass(outerAfter1, parentsOfOuterChildren);
+        verifyBlockHookPass(outerAfter2, parentsOfOuterChildren);
         verifyEnd();
     }
 
@@ -434,23 +414,20 @@ public class ExecutionTests {
         verifyStart();
         verifyNormalOuterExecution();
         order.verify(reporter).testBlockStart(nested1, parentsOfOuterChildren);
-        order.verify(nested1BeforeFn).apply();
-        order.verify(outerBeforeEachFn1).apply();
-        order.verify(outerBeforeEachFn2).apply();
-        order.verify(nested1BeforeEachFn).apply();
-        order.verify(reporter).testHookFail(nested1BeforeEach, parentsOfNested1Children, nested1Test1,
-                parentsOfNested1Children, exception);
-        order.verify(reporter).hookFail(nested1BeforeEach, parentsOfNested1Children, exception);
-        order.verify(reporter).testSkip(nested1Test1, parentsOfNested1Children);
-        order.verify(nested1AfterEachFn).apply();
-        order.verify(outerAfterEachFn1).apply();
-        order.verify(outerAfterEachFn2).apply();
-        order.verify(reporter).testSkip(nested1Test2, parentsOfNested1Children);
-        order.verify(nested1AfterFn).apply();
+        verifyBlockHookPass(nested1Before, parentsOfNested1Children);
+        verifyTestHookPass(outerBeforeEach1, parentsOfOuterChildren, nested1Test1, parentsOfNested1Children);
+        verifyTestHookPass(outerBeforeEach2, parentsOfOuterChildren, nested1Test1, parentsOfNested1Children);
+        verifyTestHookFail(nested1BeforeEach, parentsOfNested1Children, nested1Test1, parentsOfNested1Children);
+        verifyTestSkip(nested1Test1, parentsOfNested1Children);
+        verifyTestHookPass(nested1AfterEach, parentsOfNested1Children, nested1Test1, parentsOfNested1Children);
+        verifyTestHookPass(outerAfterEach1, parentsOfOuterChildren, nested1Test1, parentsOfNested1Children);
+        verifyTestHookPass(outerAfterEach2, parentsOfOuterChildren, nested1Test1, parentsOfNested1Children);
+        verifyTestSkip(nested1Test2, parentsOfNested1Children);
+        verifyBlockHookPass(nested1After, parentsOfNested1Children);
         order.verify(reporter).testBlockEnd(nested1, parentsOfOuterChildren);
         verifyNormalNested2Execution();
-        order.verify(outerAfterFn1).apply();
-        order.verify(outerAfterFn2).apply();
+        verifyBlockHookPass(outerAfter1, parentsOfOuterChildren);
+        verifyBlockHookPass(outerAfter2, parentsOfOuterChildren);
         verifyEnd();
     }
 
@@ -463,23 +440,20 @@ public class ExecutionTests {
         verifyStart();
         verifyNormalOuterExecution();
         order.verify(reporter).testBlockStart(nested1, parentsOfOuterChildren);
-        order.verify(nested1BeforeFn).apply();
-        order.verify(outerBeforeEachFn1).apply();
-        order.verify(outerBeforeEachFn2).apply();
-        order.verify(nested1BeforeEachFn).apply();
-        verifyNormalTestExecution(nested1Test1, parentsOfNested1Children);
-        order.verify(nested1AfterEachFn).apply();
-        order.verify(reporter).testHookFail(nested1AfterEach, parentsOfNested1Children, nested1Test1,
-                parentsOfNested1Children, exception);
-        order.verify(reporter).hookFail(nested1AfterEach, parentsOfNested1Children, exception);
-        order.verify(outerAfterEachFn1).apply();
-        order.verify(outerAfterEachFn2).apply();
-        order.verify(reporter).testSkip(nested1Test2, parentsOfNested1Children);
-        order.verify(nested1AfterFn).apply();
+        verifyBlockHookPass(nested1Before, parentsOfNested1Children);
+        verifyTestHookPass(outerBeforeEach1, parentsOfOuterChildren, nested1Test1, parentsOfNested1Children);
+        verifyTestHookPass(outerBeforeEach2, parentsOfOuterChildren, nested1Test1, parentsOfNested1Children);
+        verifyTestHookPass(nested1BeforeEach, parentsOfNested1Children, nested1Test1, parentsOfNested1Children);
+        verifyTestPass(nested1Test1, parentsOfNested1Children);
+        verifyTestHookFail(nested1AfterEach, parentsOfNested1Children, nested1Test1, parentsOfNested1Children);
+        verifyTestHookPass(outerAfterEach1, parentsOfOuterChildren, nested1Test1, parentsOfNested1Children);
+        verifyTestHookPass(outerAfterEach2, parentsOfOuterChildren, nested1Test1, parentsOfNested1Children);
+        verifyTestSkip(nested1Test2, parentsOfNested1Children);
+        verifyBlockHookPass(nested1After, parentsOfNested1Children);
         order.verify(reporter).testBlockEnd(nested1, parentsOfOuterChildren);
         verifyNormalNested2Execution();
-        order.verify(outerAfterFn1).apply();
-        order.verify(outerAfterFn2).apply();
+        verifyBlockHookPass(outerAfter1, parentsOfOuterChildren);
+        verifyBlockHookPass(outerAfter2, parentsOfOuterChildren);
         verifyEnd();
     }
 
@@ -502,7 +476,7 @@ public class ExecutionTests {
         }).when(f).apply();
     }
 
-    private void verifyNormalTestExecution(org.forgerock.cuppa.model.Test test, List<TestBlock> parents)
+    private void verifyTestPass(org.forgerock.cuppa.model.Test test, List<TestBlock> parents)
             throws Exception {
         order.verify(reporter).testStart(test, parents);
         order.verify(test.function.get()).apply();
@@ -510,61 +484,64 @@ public class ExecutionTests {
         order.verify(reporter).testEnd(test, parents);
     }
 
+    private void verifyTestFail(org.forgerock.cuppa.model.Test test, List<TestBlock> parents) throws Exception {
+        order.verify(reporter).testStart(test, parents);
+        order.verify(test.function.get()).apply();
+        order.verify(reporter).testFail(test, parents, exception);
+        order.verify(reporter).testEnd(test, parents);
+    }
+
     private void verifyNormalOuterExecution() throws Exception {
-        order.verify(outerBeforeFn1).apply();
-        order.verify(outerBeforeFn2).apply();
-        order.verify(outerBeforeEachFn1).apply();
-        order.verify(outerBeforeEachFn2).apply();
-        verifyNormalTestExecution(outerTest1, parentsOfOuterChildren);
-        order.verify(outerAfterEachFn1).apply();
-        order.verify(outerAfterEachFn2).apply();
-        order.verify(outerBeforeEachFn1).apply();
-        order.verify(outerBeforeEachFn2).apply();
-        verifyNormalTestExecution(outerTest2, parentsOfOuterChildren);
-        order.verify(outerAfterEachFn1).apply();
-        order.verify(outerAfterEachFn2).apply();
+        verifyBlockHookPass(outerBefore1, parentsOfOuterChildren);
+        verifyBlockHookPass(outerBefore2, parentsOfOuterChildren);
+        verifyTestHookPass(outerBeforeEach1, parentsOfOuterChildren, outerTest1, parentsOfOuterChildren);
+        verifyTestHookPass(outerBeforeEach2, parentsOfOuterChildren, outerTest1, parentsOfOuterChildren);
+        verifyTestPass(outerTest1, parentsOfOuterChildren);
+        verifyTestHookPass(outerAfterEach1, parentsOfOuterChildren, outerTest1, parentsOfOuterChildren);
+        verifyTestHookPass(outerAfterEach2, parentsOfOuterChildren, outerTest1, parentsOfOuterChildren);
+        verifyTestHookPass(outerBeforeEach1, parentsOfOuterChildren, outerTest2, parentsOfOuterChildren);
+        verifyTestHookPass(outerBeforeEach2, parentsOfOuterChildren, outerTest2, parentsOfOuterChildren);
+        verifyTestPass(outerTest2, parentsOfOuterChildren);
+        verifyTestHookPass(outerAfterEach1, parentsOfOuterChildren, outerTest2, parentsOfOuterChildren);
+        verifyTestHookPass(outerAfterEach2, parentsOfOuterChildren, outerTest2, parentsOfOuterChildren);
     }
 
     private void verifyNormalNested1Execution() throws Exception {
         order.verify(reporter).testBlockStart(nested1, parentsOfOuterChildren);
-        order.verify(nested1BeforeFn).apply();
-        order.verify(outerBeforeEachFn1).apply();
-        order.verify(outerBeforeEachFn2).apply();
-        order.verify(nested1BeforeEachFn).apply();
-        verifyNormalTestExecution(nested1Test1, parentsOfNested1Children);
-        order.verify(nested1AfterEachFn).apply();
-        order.verify(outerAfterEachFn1).apply();
-        order.verify(outerAfterEachFn2).apply();
-        order.verify(outerBeforeEachFn1).apply();
-        order.verify(outerBeforeEachFn2).apply();
-        order.verify(nested1BeforeEachFn).apply();
-        verifyNormalTestExecution(nested1Test2, parentsOfNested1Children);
-        order.verify(nested1AfterEachFn).apply();
-        order.verify(outerAfterEachFn1).apply();
-        order.verify(outerAfterEachFn2).apply();
-        order.verify(nested1AfterFn).apply();
+        verifyBlockHookPass(nested1Before, parentsOfNested1Children);
+        verifyNested1TestPass(nested1Test1);
+        verifyNested1TestPass(nested1Test2);
+        verifyBlockHookPass(nested1After, parentsOfNested1Children);
         order.verify(reporter).testBlockEnd(nested1, parentsOfOuterChildren);
+    }
+
+    private void verifyNested1TestPass(org.forgerock.cuppa.model.Test test) throws Exception {
+        verifyTestHookPass(outerBeforeEach1, parentsOfOuterChildren, test, parentsOfNested1Children);
+        verifyTestHookPass(outerBeforeEach2, parentsOfOuterChildren, test, parentsOfNested1Children);
+        verifyTestHookPass(nested1BeforeEach, parentsOfNested1Children, test, parentsOfNested1Children);
+        verifyTestPass(test, parentsOfNested1Children);
+        verifyTestHookPass(nested1AfterEach, parentsOfNested1Children, test, parentsOfNested1Children);
+        verifyTestHookPass(outerAfterEach1, parentsOfOuterChildren, test, parentsOfNested1Children);
+        verifyTestHookPass(outerAfterEach2, parentsOfOuterChildren, test, parentsOfNested1Children);
     }
 
     private void verifyNormalNested2Execution() throws Exception {
         order.verify(reporter).testBlockStart(nested2, parentsOfOuterChildren);
-        order.verify(nested2BeforeFn).apply();
-        order.verify(outerBeforeEachFn1).apply();
-        order.verify(outerBeforeEachFn2).apply();
-        order.verify(nested2BeforeEachFn).apply();
-        verifyNormalTestExecution(nested2Test1, parentsOfNested2Children);
-        order.verify(nested2AfterEachFn).apply();
-        order.verify(outerAfterEachFn1).apply();
-        order.verify(outerAfterEachFn2).apply();
-        order.verify(outerBeforeEachFn1).apply();
-        order.verify(outerBeforeEachFn2).apply();
-        order.verify(nested2BeforeEachFn).apply();
-        verifyNormalTestExecution(nested2Test2, parentsOfNested2Children);
-        order.verify(nested2AfterEachFn).apply();
-        order.verify(outerAfterEachFn1).apply();
-        order.verify(outerAfterEachFn2).apply();
-        order.verify(nested2AfterFn).apply();
+        verifyBlockHookPass(nested2Before, parentsOfNested2Children);
+        verifyNested2TestPass(nested2Test1);
+        verifyNested2TestPass(nested2Test2);
+        verifyBlockHookPass(nested2After, parentsOfNested2Children);
         order.verify(reporter).testBlockEnd(nested2, parentsOfOuterChildren);
+    }
+
+    private void verifyNested2TestPass(org.forgerock.cuppa.model.Test test) throws Exception {
+        verifyTestHookPass(outerBeforeEach1, parentsOfOuterChildren, test, parentsOfNested2Children);
+        verifyTestHookPass(outerBeforeEach2, parentsOfOuterChildren, test, parentsOfNested2Children);
+        verifyTestHookPass(nested2BeforeEach, parentsOfNested2Children, test, parentsOfNested2Children);
+        verifyTestPass(test, parentsOfNested2Children);
+        verifyTestHookPass(nested2AfterEach, parentsOfNested2Children, test, parentsOfNested2Children);
+        verifyTestHookPass(outerAfterEach1, parentsOfOuterChildren, test, parentsOfNested2Children);
+        verifyTestHookPass(outerAfterEach2, parentsOfOuterChildren, test, parentsOfNested2Children);
     }
 
     private void verifyStart() {
@@ -581,15 +558,47 @@ public class ExecutionTests {
 
     private void verifySkipNested1Execution() throws Exception {
         order.verify(reporter).testBlockStart(nested1, parentsOfOuterChildren);
-        order.verify(reporter).testSkip(nested1Test1, parentsOfNested1Children);
-        order.verify(reporter).testSkip(nested1Test2, parentsOfNested1Children);
+        verifyTestSkip(nested1Test1, parentsOfNested1Children);
+        verifyTestSkip(nested1Test2, parentsOfNested1Children);
         order.verify(reporter).testBlockEnd(nested1, parentsOfOuterChildren);
     }
 
     private void verifySkipNested2Execution() throws Exception {
         order.verify(reporter).testBlockStart(nested2, parentsOfOuterChildren);
-        order.verify(reporter).testSkip(nested2Test1, parentsOfNested2Children);
-        order.verify(reporter).testSkip(nested2Test2, parentsOfNested2Children);
+        verifyTestSkip(nested2Test1, parentsOfNested2Children);
+        verifyTestSkip(nested2Test2, parentsOfNested2Children);
         order.verify(reporter).testBlockEnd(nested2, parentsOfOuterChildren);
+    }
+
+    private void verifyBlockHookPass(Hook hook, List<TestBlock> parents) throws Exception {
+        order.verify(reporter).blockHookStart(hook, parents);
+        order.verify(hook.function).apply();
+        order.verify(reporter).blockHookPass(hook, parents);
+    }
+
+    private void verifyTestHookPass(Hook hook, List<TestBlock> parents, org.forgerock.cuppa.model.Test test,
+            List<TestBlock> testParents) throws Exception {
+        order.verify(reporter).testHookStart(hook, parents, test, testParents);
+        order.verify(hook.function).apply();
+        order.verify(reporter).testHookPass(hook, parents, test, testParents);
+    }
+
+    private void verifyTestHookFail(Hook hook, List<TestBlock> parents, org.forgerock.cuppa.model.Test test,
+            List<TestBlock> testParents) throws Exception {
+        order.verify(reporter).testHookStart(hook, parents, test, testParents);
+        order.verify(hook.function).apply();
+        order.verify(reporter).testHookFail(hook, parents, test, testParents, exception);
+        order.verify(reporter).hookFail(hook, parents, exception);
+    }
+
+    private void verifyBlockHookFail(Hook hook, List<TestBlock> parents) throws Exception {
+        order.verify(reporter).blockHookStart(hook, parents);
+        order.verify(hook.function).apply();
+        order.verify(reporter).blockHookFail(hook, parents, exception);
+        order.verify(reporter).hookFail(hook, parents, exception);
+    }
+
+    private void verifyTestSkip(org.forgerock.cuppa.model.Test test, List<TestBlock> parents) {
+        order.verify(reporter).testSkip(test, parents);
     }
 }
