@@ -33,8 +33,7 @@ final class TestBuilderImpl implements TestBuilder {
     private Behaviour behaviour = Behaviour.NORMAL;
 
     @Override
-    public TestBuilder with(Option<?> option, Option<?>... options) {
-        this.options.set(option);
+    public TestBuilder with(Option<?>... options) {
         for (Option<?> o : options) {
             this.options.set(o);
         }

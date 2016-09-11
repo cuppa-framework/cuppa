@@ -173,7 +173,7 @@ public final class Cuppa {
 
     /**
      * Decorate a test or block of tests with additional options. Options are constructed via factory methods. For
-     * example, see {@link Cuppa#tags(String, String...)}.
+     * example, see {@link Cuppa#tags(String...)}.
      *
      * <p>Multiple options can be either passed as additional arguments or chained using the returned builder.</p>
      *
@@ -184,14 +184,13 @@ public final class Cuppa {
      * });
      * </code></pre>
      *
-     * @param option An option to apply to the test/block.
-     * @param options Additional options to apply to the test/block.
+     * @param options Options to apply to the test/block.
      * @return An object for building a test or test block with the given options.
      *
-     * @see Cuppa#tags(String, String...)
+     * @see Cuppa#tags(String...)
      */
-    public static TestBuilder with(Option<?> option, Option<?>... options) {
-        return TestContainer.INSTANCE.with(option, options);
+    public static TestBuilder with(Option<?>... options) {
+        return TestContainer.INSTANCE.with(options);
     }
 
     /**
@@ -233,7 +232,7 @@ public final class Cuppa {
      * test run.
      *
      * <p>Apply to a test or block of tests by passing the result of this method to
-     * {@link Cuppa#with(Option, Option...)}.</p>
+     * {@link Cuppa#with(Option...)}.</p>
      *
      * <pre><code>
      * with(tags("slow")).
@@ -242,13 +241,12 @@ public final class Cuppa {
      * });
      * </code></pre>
      *
-     * @param tag A string identifier that can be used when running Cuppa to include or exclude the test/block.
-     * @param tags Additional tags to apply to the test/block.
-     * @return An option, which can be passed to {@link Cuppa#with(Option, Option...)}.
+     * @param tags String identifiers that can be used when running Cuppa to include or exclude a test/block.
+     * @return An option, which can be passed to {@link Cuppa#with(Option...)}.
      *
-     * @see Cuppa#with(Option, Option...)
+     * @see Cuppa#with(Option...)
      */
-    public static Option tags(String tag, String... tags) {
-        return TestContainer.INSTANCE.tags(tag, tags);
+    public static Option tags(String... tags) {
+        return TestContainer.INSTANCE.tags(tags);
     }
 }
