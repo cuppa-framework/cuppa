@@ -219,13 +219,12 @@ public enum TestContainer {
     /**
      * Decorate a test or block of tests with additional options.
      *
-     * @param option An option to apply to the test/block.
-     * @param options Additional options to apply to the test/block.
+     * @param options Options to apply to the test/block.
      * @return An object for building a test or test block with the given options.
      */
-    public TestBuilder with(Option option, Option... options) {
+    public TestBuilder with(Option... options) {
         TestBuilderImpl testBuilder = new TestBuilderImpl();
-        return testBuilder.with(option, options);
+        return testBuilder.with(options);
     }
 
     /**
@@ -250,13 +249,11 @@ public enum TestContainer {
      * Decorates tests with a set of tags. Tags can be used to group tests together to be included or excluded from a
      * test run.
      *
-     * @param tag A string identifier that can be used when running Cuppa to include or exclude the test/block.
-     * @param tags Additional tags to apply to the test/block.
+     * @param tags String identifiers that can be used when running Cuppa to include or exclude a test/block.
      * @return An option.
      */
-    public Option tags(String tag, String... tags) {
+    public Option tags(String... tags) {
         Set<String> set = new HashSet<>();
-        set.add(tag);
         set.addAll(Arrays.asList(tags));
         return new TagsOption(set);
     }

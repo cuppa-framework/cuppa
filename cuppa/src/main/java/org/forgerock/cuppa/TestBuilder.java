@@ -39,7 +39,7 @@ public interface TestBuilder {
 
     /**
      * Decorate a test or block of tests with additional options. Options are constructed via factory methods. For
-     * example, see {@link Cuppa#tags(String, String...)}.
+     * example, see {@link Cuppa#tags(String...)}.
      *
      * <p>Multiple options can be either passed as additional arguments or chained using the returned builder.</p>
      *
@@ -50,13 +50,12 @@ public interface TestBuilder {
      * });
      * </code></pre>
      *
-     * @param option An option to apply to the test/block.
-     * @param options Additional options to apply to the test/block.
+     * @param options Options to apply to the test/block.
      * @return This, for chaining.
      *
-     * @see Cuppa#with(Option, Option...)
+     * @see Cuppa#with(Option...)
      */
-    TestBuilder with(Option<?> option, Option<?>... options);
+    TestBuilder with(Option<?>... options);
 
     /**
      * Mark a test or block of tests to be skipped.
