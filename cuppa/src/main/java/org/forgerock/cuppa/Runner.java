@@ -116,7 +116,7 @@ public final class Runner {
                     } catch (CuppaException e) {
                         throw e;
                     } catch (Exception e) {
-                        throw new IllegalStateException("Failed to instantiate test class", e);
+                        throw new IllegalStateException("Failed to instantiate test class: " + c.getName(), e);
                     }
                 }))
                 .reduce(EMPTY_TEST_BLOCK, this::mergeRootTestBlocks);
