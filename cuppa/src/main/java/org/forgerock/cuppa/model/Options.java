@@ -44,7 +44,7 @@ public final class Options {
      * @param options A set of options to copy.
      * @return An mutable set of options.
      */
-    public static Options copyOf(Options options) {
+    private static Options copyOf(Options options) {
         return new Options(new HashMap<>(options.options));
     }
 
@@ -62,6 +62,19 @@ public final class Options {
             return Optional.of(option.get());
         }
         return Optional.empty();
+    }
+
+    /**
+     * Removes an option.
+     *
+     * @param optionClass The class of the option to remove.
+     * @param <O> The type of the option.
+     * @return A new Option instance without the specified option.
+     */
+    public <O extends Option<?>> Options remove(Class<O> optionClass) {
+        Options copy = copyOf(this);
+        copy.options.remove(optionClass);
+        return copy;
     }
 
     /**

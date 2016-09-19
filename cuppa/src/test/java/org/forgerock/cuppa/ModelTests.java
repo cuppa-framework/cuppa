@@ -49,11 +49,6 @@ public class ModelTests {
         assertThatThrownBy(() -> testBlock.hooks.add(new Hook(HookType.BEFORE, ModelTests.class, Optional.empty(),
                 HookFunction.identity())))
                 .isExactlyInstanceOf(UnsupportedOperationException.class);
-
-        Options options = testBlock.options;
-        testBlock.options.set(new TestOption("a"));
-        assertThat(testBlock.options).isEqualTo(options);
-        assertThat(testBlock.options.get(TestOption.class)).isEqualTo(Optional.empty());
     }
 
     @Test
@@ -76,29 +71,6 @@ public class ModelTests {
         assertThat(testBlock.tests).hasSize(0);
         assertThat(testBlock.hooks).hasSize(0);
         assertThat(testBlock.options.get(TestOption.class)).isEmpty();
-    }
-
-    @Test
-    public void testShouldBeImmutable() {
-        org.forgerock.cuppa.model.Test test = new org.forgerock.cuppa.model.Test(NORMAL, ModelTests.class, "",
-                Optional.empty(), new Options());
-
-        Options options = test.options;
-        test.options.set(new TestOption("a"));
-        assertThat(test.options).isEqualTo(options);
-        assertThat(test.options.get(TestOption.class)).isEqualTo(Optional.empty());
-    }
-
-    @Test
-    public void testShouldTakeDefensiveCopiesOfMutableObjects() {
-        Options originalOptions = new Options();
-
-        org.forgerock.cuppa.model.Test test = new org.forgerock.cuppa.model.Test(NORMAL, ModelTests.class, "",
-                Optional.empty(), originalOptions);
-
-        originalOptions.set(new TestOption("a"));
-
-        assertThat(test.options.get(TestOption.class)).isEmpty();
     }
 
     private static final class TestOption extends Option<String> {
