@@ -16,7 +16,6 @@
 
 package org.forgerock.cuppa.model;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -37,15 +36,6 @@ public final class Options {
 
     private Options(Map<Class<? extends Option>, Option<?>> options) {
         this.options = options;
-    }
-
-    /**
-     * Creates an immutable options set from the given options.
-     * @param options A set of options to copy.
-     * @return An immutable set of options.
-     */
-    public static Options immutableCopyOf(Options options) {
-        return new Options(Collections.unmodifiableMap(new HashMap<>(options.options)));
     }
 
     /**
@@ -79,10 +69,12 @@ public final class Options {
      *
      * @param option The option to store.
      * @param <T> The type of the option.
-     * @throws UnsupportedOperationException if this class is immutable.
+     * @return A new Option instance with the specified option.
      */
-    public <T> void set(Option<T> option) {
-        options.put(option.getClass(), option);
+    public <T> Options set(Option<T> option) {
+        Options copy = copyOf(this);
+        copy.options.put(option.getClass(), option);
+        return copy;
     }
 
     @Override

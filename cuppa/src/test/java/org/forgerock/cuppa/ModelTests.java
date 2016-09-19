@@ -50,8 +50,10 @@ public class ModelTests {
                 HookFunction.identity())))
                 .isExactlyInstanceOf(UnsupportedOperationException.class);
 
-        assertThatThrownBy(() -> testBlock.options.set(new TestOption("a")))
-                .isExactlyInstanceOf(UnsupportedOperationException.class);
+        Options options = testBlock.options;
+        testBlock.options.set(new TestOption("a"));
+        assertThat(testBlock.options).isEqualTo(options);
+        assertThat(testBlock.options.get(TestOption.class)).isEqualTo(Optional.empty());
     }
 
     @Test
@@ -81,8 +83,10 @@ public class ModelTests {
         org.forgerock.cuppa.model.Test test = new org.forgerock.cuppa.model.Test(NORMAL, ModelTests.class, "",
                 Optional.empty(), new Options());
 
-        assertThatThrownBy(() -> test.options.set(new TestOption("a")))
-                .isExactlyInstanceOf(UnsupportedOperationException.class);
+        Options options = test.options;
+        test.options.set(new TestOption("a"));
+        assertThat(test.options).isEqualTo(options);
+        assertThat(test.options.get(TestOption.class)).isEqualTo(Optional.empty());
     }
 
     @Test

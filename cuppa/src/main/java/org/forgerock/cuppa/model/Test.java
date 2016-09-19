@@ -71,7 +71,7 @@ public final class Test {
         this.testClass = testClass;
         this.description = description;
         this.function = function;
-        this.options = Options.immutableCopyOf(options);
+        this.options = options;
     }
 
     @Override

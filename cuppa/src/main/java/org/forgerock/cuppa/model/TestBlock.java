@@ -97,7 +97,7 @@ public final class TestBlock {
         this.testBlocks = Collections.unmodifiableList(new ArrayList<>(testBlocks));
         this.hooks = Collections.unmodifiableList(new ArrayList<>(hooks));
         this.tests = Collections.unmodifiableList(new ArrayList<>(tests));
-        this.options = Options.immutableCopyOf(options);
+        this.options = options;
     }
 
     @Override
