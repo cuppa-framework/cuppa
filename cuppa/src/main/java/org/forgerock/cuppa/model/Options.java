@@ -65,13 +65,13 @@ public final class Options {
     }
 
     /**
-     * Removes an option.
+     * Un-sets an option.
      *
-     * @param optionClass The class of the option to remove.
+     * @param optionClass The class of the option to un-set.
      * @param <O> The type of the option.
      * @return A new Option instance without the specified option.
      */
-    public <O extends Option<?>> Options remove(Class<O> optionClass) {
+    public <O extends Option<?>> Options unset(Class<O> optionClass) {
         Options copy = copyOf(this);
         copy.options.remove(optionClass);
         return copy;
