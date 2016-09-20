@@ -42,7 +42,7 @@ Add a test dependency for Cuppa in your project's POM:
 <dependency>
     <groupId>org.forgerock.cuppa</groupId>
     <artifactId>cuppa</artifactId>
-    <version>1.2.0</version>
+    <version>1.3.0</version>
     <scope>test</scope>
 </dependency>
 ```
