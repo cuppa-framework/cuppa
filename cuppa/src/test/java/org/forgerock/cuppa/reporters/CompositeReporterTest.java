@@ -85,10 +85,38 @@ public class CompositeReporterTest {
     }
 
     @Test
+    public void shouldCallBlockHookStart() {
+        reporter.blockHookStart(hook, parents);
+        order.verify(mockReporter1).blockHookStart(hook, parents);
+        order.verify(mockReporter2).blockHookStart(hook, parents);
+    }
+
+
+    @Test
+    public void shouldCallBlockHookPass() {
+        reporter.blockHookPass(hook, parents);
+        order.verify(mockReporter1).blockHookPass(hook, parents);
+        order.verify(mockReporter2).blockHookPass(hook, parents);
+    }
+    @Test
     public void shouldCallBlockHookFail() {
         reporter.blockHookFail(hook, parents, cause);
         order.verify(mockReporter1).blockHookFail(hook, parents, cause);
         order.verify(mockReporter2).blockHookFail(hook, parents, cause);
+    }
+
+    @Test
+    public void shouldCallTestHookStart() {
+        reporter.testHookStart(hook, parents, test, parents);
+        order.verify(mockReporter1).testHookStart(hook, parents, test, parents);
+        order.verify(mockReporter2).testHookStart(hook, parents, test, parents);
+    }
+
+    @Test
+    public void shouldCallTestHookPass() {
+        reporter.testHookPass(hook, parents, test, parents);
+        order.verify(mockReporter1).testHookPass(hook, parents, test, parents);
+        order.verify(mockReporter2).testHookPass(hook, parents, test, parents);
     }
 
     @Test
@@ -99,7 +127,7 @@ public class CompositeReporterTest {
     }
 
     @Test
-    public void shouldCallBHookFail() {
+    public void shouldCallHookFail() {
         reporter.hookFail(hook, parents, cause);
         order.verify(mockReporter1).hookFail(hook, parents, cause);
         order.verify(mockReporter2).hookFail(hook, parents, cause);

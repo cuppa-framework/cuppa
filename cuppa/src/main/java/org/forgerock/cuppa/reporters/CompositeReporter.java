@@ -58,8 +58,28 @@ public final class CompositeReporter implements Reporter {
     }
 
     @Override
+    public void blockHookStart(Hook hook, List<TestBlock> parents) {
+        reporters.forEach(r -> r.blockHookStart(hook, parents));
+    }
+
+    @Override
+    public void blockHookPass(Hook hook, List<TestBlock> parents) {
+        reporters.forEach(r -> r.blockHookPass(hook, parents));
+    }
+
+    @Override
     public void blockHookFail(Hook hook, List<TestBlock> parents, Throwable cause) {
         reporters.forEach(r -> r.blockHookFail(hook, parents, cause));
+    }
+
+    @Override
+    public void testHookStart(Hook hook, List<TestBlock> hookParents, Test test, List<TestBlock> testParents) {
+        reporters.forEach(r -> r.testHookStart(hook, hookParents, test, testParents));
+    }
+
+    @Override
+    public void testHookPass(Hook hook, List<TestBlock> hookParents, Test test, List<TestBlock> testParents) {
+        reporters.forEach(r -> r.testHookPass(hook, hookParents, test, testParents));
     }
 
     @Override
