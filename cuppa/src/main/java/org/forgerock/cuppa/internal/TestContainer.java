@@ -72,8 +72,8 @@ public enum TestContainer {
     void testBlock(TestBlockType type, Behaviour behaviour, String description, TestBlockFunction function,
             Options options) {
         TestDefinitionContext context = assertIsInTestDefinitionContext("describe");
-        TestBlockBuilder testBlockBuilder = new TestBlockBuilder(type, behaviour, context.testClass, description,
-                options);
+        InternalTestBlockBuilder testBlockBuilder = new InternalTestBlockBuilder(type, behaviour, context.testClass,
+                description, options);
         context.stack.addLast(testBlockBuilder);
         try {
             function.apply();
@@ -211,8 +211,14 @@ public enum TestContainer {
     public void it(Behaviour behaviour, String description, Optional<TestFunction> function, Options options) {
         TestDefinitionContext context = assertIsInTestDefinitionContext("it");
         assertNotRootDescribeBlock("it");
-        context.getCurrentDescribeBlock()
-                .addTest(new Test(behaviour, context.testClass, description, function, options));
+        Test test = new org.forgerock.cuppa.model.TestBuilder()
+                .setBehaviour(behaviour)
+                .setTestClass(context.testClass)
+                .setDescription(description)
+                .setFunction(function)
+                .setOptions(options)
+                .build();
+        context.getCurrentDescribeBlock().addTest(test);
     }
 
 
@@ -314,17 +320,17 @@ public enum TestContainer {
     }
 
     private static final class TestDefinitionContext implements Context {
-        private final Deque<TestBlockBuilder> stack = new ArrayDeque<>();
-        private final TestBlockBuilder rootBuilder;
+        private final Deque<InternalTestBlockBuilder> stack = new ArrayDeque<>();
+        private final InternalTestBlockBuilder rootBuilder;
         private final Class<?> testClass;
 
         private TestDefinitionContext(Class<?> testClass) {
             this.testClass = testClass;
-            rootBuilder = new TestBlockBuilder(ROOT, NORMAL, testClass, "", Options.EMPTY);
+            rootBuilder = new InternalTestBlockBuilder(ROOT, NORMAL, testClass, "", Options.EMPTY);
             stack.addLast(rootBuilder);
         }
 
-        private TestBlockBuilder getCurrentDescribeBlock() {
+        private InternalTestBlockBuilder getCurrentDescribeBlock() {
             return stack.getLast();
         }
     }

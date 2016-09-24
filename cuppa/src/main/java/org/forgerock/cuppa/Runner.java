@@ -16,7 +16,6 @@
 
 package org.forgerock.cuppa;
 
-import static org.forgerock.cuppa.model.Behaviour.NORMAL;
 import static org.forgerock.cuppa.model.TestBlockType.ROOT;
 
 import java.util.Arrays;
@@ -34,9 +33,9 @@ import org.forgerock.cuppa.internal.TestContainer;
 import org.forgerock.cuppa.internal.filters.EmptyTestBlockFilter;
 import org.forgerock.cuppa.internal.filters.OnlyTestBlockFilter;
 import org.forgerock.cuppa.internal.filters.TagTestBlockFilter;
-import org.forgerock.cuppa.model.Options;
 import org.forgerock.cuppa.model.Tags;
 import org.forgerock.cuppa.model.TestBlock;
+import org.forgerock.cuppa.model.TestBlockBuilder;
 import org.forgerock.cuppa.reporters.CompositeReporter;
 import org.forgerock.cuppa.reporters.Reporter;
 
@@ -46,8 +45,11 @@ import org.forgerock.cuppa.reporters.Reporter;
 public final class Runner {
     private static final ServiceLoader<ConfigurationProvider> CONFIGURATION_PROVIDER_LOADER
             = ServiceLoader.load(ConfigurationProvider.class);
-    private static final TestBlock EMPTY_TEST_BLOCK = new TestBlock(ROOT, NORMAL, Cuppa.class, "",
-            Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), Options.EMPTY);
+    private static final TestBlock EMPTY_TEST_BLOCK = new TestBlockBuilder()
+            .setType(ROOT)
+            .setTestClass(Cuppa.class)
+            .setDescription("")
+            .build();
 
     private final List<Function<TestBlock, TestBlock>> coreTestTransforms;
     private final Configuration configuration;
@@ -123,9 +125,8 @@ public final class Runner {
     }
 
     private TestBlock mergeRootTestBlocks(TestBlock testBlock1, TestBlock testBlock2) {
-        return new TestBlock(ROOT, NORMAL, Cuppa.class, "", Stream.concat(testBlock1.testBlocks.stream(),
-                testBlock2.testBlocks.stream()).collect(Collectors.toList()), Collections.emptyList(),
-                Collections.emptyList(), Options.EMPTY);
+        return EMPTY_TEST_BLOCK.toBuilder().setTestBlocks(Stream.concat(testBlock1.testBlocks.stream(),
+                testBlock2.testBlocks.stream()).collect(Collectors.toList())).build();
     }
 
     private static Configuration getConfiguration() {

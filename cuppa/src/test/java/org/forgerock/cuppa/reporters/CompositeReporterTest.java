@@ -16,7 +16,6 @@
 
 package org.forgerock.cuppa.reporters;
 
-import static org.forgerock.cuppa.model.Behaviour.NORMAL;
 import static org.forgerock.cuppa.model.HookType.BEFORE;
 import static org.forgerock.cuppa.model.TestBlockType.ROOT;
 import static org.mockito.Mockito.inOrder;
@@ -27,9 +26,12 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+import org.forgerock.cuppa.functions.HookFunction;
 import org.forgerock.cuppa.model.Hook;
-import org.forgerock.cuppa.model.Options;
+import org.forgerock.cuppa.model.HookBuilder;
 import org.forgerock.cuppa.model.TestBlock;
+import org.forgerock.cuppa.model.TestBlockBuilder;
+import org.forgerock.cuppa.model.TestBuilder;
 import org.mockito.InOrder;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -39,12 +41,22 @@ public class CompositeReporterTest {
     private Reporter mockReporter2;
     private InOrder order;
     private CompositeReporter reporter;
-    private final TestBlock testBlock = new TestBlock(ROOT, NORMAL, CompositeReporterTest.class, "",
-            Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), Options.EMPTY);
-    private final Hook hook = new Hook(BEFORE, CompositeReporterTest.class, Optional.empty(), () -> {
-    });
-    private final org.forgerock.cuppa.model.Test test = new org.forgerock.cuppa.model.Test(NORMAL,
-            CompositeReporterTest.class, "", Optional.empty(), Options.EMPTY);
+    private final TestBlock testBlock = new TestBlockBuilder()
+            .setType(ROOT)
+            .setTestClass(CompositeReporterTest.class)
+            .setDescription("")
+            .build();
+    private final Hook hook = new HookBuilder()
+            .setType(BEFORE)
+            .setTestClass(CompositeReporterTest.class)
+            .setDescription(Optional.empty())
+            .setFunction(HookFunction.identity())
+            .build();
+    private final org.forgerock.cuppa.model.Test test = new TestBuilder()
+            .setTestClass(CompositeReporterTest.class)
+            .setDescription("")
+            .setFunction(Optional.empty())
+            .build();
     private final List<TestBlock> parents = Collections.singletonList(testBlock);
     private final Exception cause = new Exception();
 

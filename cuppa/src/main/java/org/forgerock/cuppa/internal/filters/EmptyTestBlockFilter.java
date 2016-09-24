@@ -32,8 +32,9 @@ public final class EmptyTestBlockFilter implements Function<TestBlock, TestBlock
                 .map(this)
                 .filter(b -> !isEmpty(b))
                 .collect(Collectors.toList());
-        return new TestBlock(testBlock.type, testBlock.behaviour, testBlock.testClass, testBlock.description,
-                testBlocks, testBlock.hooks, testBlock.tests, testBlock.options);
+        return testBlock.toBuilder()
+                .setTestBlocks(testBlocks)
+                .build();
     }
 
     private boolean isEmpty(TestBlock testBlock) {

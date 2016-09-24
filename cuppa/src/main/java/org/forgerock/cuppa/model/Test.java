@@ -54,17 +54,8 @@ public final class Test {
      */
     public final Options options;
 
-    /**
-     * Constructs a new test.
-     *
-     * @param behaviour The behaviour of the test.
-     * @param testClass The class that the test was defined in.
-     * @param description The description of the test. Will be used for reporting.
-     * @param function The body of the test. If the {@link Optional} is empty the test is
-     *     classified as pending.
-     * @param options The set of options applied to the test.
-     */
-    public Test(Behaviour behaviour, Class<?> testClass, String description, Optional<TestFunction> function,
+    // Package private. Use TestBuilder.
+    Test(Behaviour behaviour, Class<?> testClass, String description, Optional<TestFunction> function,
             Options options) {
         Objects.requireNonNull(behaviour, "Test must have a behaviour");
         Objects.requireNonNull(testClass, "Test must have a testClass");
@@ -75,6 +66,19 @@ public final class Test {
         this.description = description;
         this.function = function;
         this.options = options;
+    }
+
+    /**
+     * Creates a {@link TestBuilder} and initialises it's properties to this {@code Test}.
+     * @return a {@link TestBuilder}.
+     */
+    public TestBuilder toBuilder() {
+        return new TestBuilder()
+                .setBehaviour(behaviour)
+                .setTestClass(testClass)
+                .setDescription(description)
+                .setFunction(function)
+                .setOptions(options);
     }
 
     @Override

@@ -29,7 +29,8 @@ import org.forgerock.cuppa.functions.TestBlockFunction;
  *
  * <p>A {@code TestBlock} is usually created by calling
  * {@link org.forgerock.cuppa.Cuppa#describe(String, TestBlockFunction)} or
- * {@link org.forgerock.cuppa.Cuppa#when(String, TestBlockFunction)} but can be constructed directly.</p>
+ * {@link org.forgerock.cuppa.Cuppa#when(String, TestBlockFunction)} but can be constructed using
+ * {@link TestBlockBuilder}.</p>
  *
  * <p>{@code TestBlock}s form a tree, which together contain all the tests defined in the program. There is always a
  * single root {@code TestBlock}, which has the type {@link TestBlockType#ROOT}.</p>
@@ -95,33 +96,26 @@ public final class TestBlock {
     public final List<TestBlock> testBlocks;
 
     /**
-     * Before hooks. Will be run once before any tests in this test block are executed.
+     * Hooks defined by the test block.
+     *
+     * <p>This list does not contain hooks from any of the nested blocks.</p>
      */
     public final List<Hook> hooks;
 
     /**
-     * Nested tests.
+     * Tests defined by the test block.
+     *
+     * <p>This list does not contain tests from any of the nested blocks.</p>
      */
     public final List<Test> tests;
 
     /**
-     * The set of options applied to the block.
+     * The set of options applied to the test block.
      */
     public final Options options;
 
-    /**
-     * Constructs a new TestBlock. Will convert mutable lists to immutable lists.
-     *
-     * @param type The type of the test block.
-     * @param behaviour Controls how the test block and its descendants behave.
-     * @param testClass The class that the test block was defined in.
-     * @param description The description of the test block. Will be used for reporting.
-     * @param testBlocks Nested test blocks.
-     * @param hooks Hooks associated with this test block.
-     * @param tests Nested tests.
-     * @param options The set of options applied to the block.
-     */
-    public TestBlock(TestBlockType type, Behaviour behaviour, Class<?> testClass, String description,
+    // Package private. Use TestBlockBuilder.
+    TestBlock(TestBlockType type, Behaviour behaviour, Class<?> testClass, String description,
             List<TestBlock> testBlocks, List<Hook> hooks, List<Test> tests, Options options) {
         Objects.requireNonNull(type, "TestBlock must have a type");
         Objects.requireNonNull(behaviour, "TestBlock must have a behaviour");
@@ -139,6 +133,22 @@ public final class TestBlock {
         this.hooks = Collections.unmodifiableList(new ArrayList<>(hooks));
         this.tests = Collections.unmodifiableList(new ArrayList<>(tests));
         this.options = options;
+    }
+
+    /**
+     * Creates a {@link TestBlockBuilder} and initialises it's properties to this {@code TestBlock}.
+     * @return a {@link TestBlockBuilder}.
+     */
+    public TestBlockBuilder toBuilder() {
+        return new TestBlockBuilder()
+                .setType(type)
+                .setBehaviour(behaviour)
+                .setTestClass(testClass)
+                .setDescription(description)
+                .setTestBlocks(new ArrayList<>(testBlocks))
+                .setHooks(new ArrayList<>(hooks))
+                .setTests(new ArrayList<>(tests))
+                .setOptions(options);
     }
 
     @Override

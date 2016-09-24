@@ -18,7 +18,6 @@ package org.forgerock.cuppa;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.forgerock.cuppa.model.Behaviour.NORMAL;
 import static org.forgerock.cuppa.model.TestBlockType.ROOT;
 
 import java.util.ArrayList;
@@ -27,27 +26,42 @@ import java.util.Optional;
 
 import org.forgerock.cuppa.functions.HookFunction;
 import org.forgerock.cuppa.model.Hook;
+import org.forgerock.cuppa.model.HookBuilder;
 import org.forgerock.cuppa.model.HookType;
 import org.forgerock.cuppa.model.Option;
 import org.forgerock.cuppa.model.Options;
 import org.forgerock.cuppa.model.TestBlock;
+import org.forgerock.cuppa.model.TestBlockBuilder;
+import org.forgerock.cuppa.model.TestBuilder;
 import org.testng.annotations.Test;
 
 public class ModelTests {
     @Test
     public void testBlockShouldBeImmutable() {
-        TestBlock testBlock = new TestBlock(ROOT, NORMAL, ModelTests.class, "", new ArrayList<>(),
-                new ArrayList<>(), new ArrayList<>(), Options.EMPTY);
+        TestBlock testBlock = new TestBlockBuilder()
+                .setType(ROOT)
+                .setTestClass(ModelTests.class)
+                .setDescription("")
+                .build();
 
         assertThatThrownBy(() -> testBlock.testBlocks.add(testBlock))
                 .isExactlyInstanceOf(UnsupportedOperationException.class);
 
-        assertThatThrownBy(() -> testBlock.tests.add(new org.forgerock.cuppa.model.Test(NORMAL,
-                ModelTests.class, "", Optional.empty(), Options.EMPTY)))
+        org.forgerock.cuppa.model.Test test = new TestBuilder()
+                .setTestClass(ModelTests.class)
+                .setDescription("")
+                .setFunction(Optional.empty())
+                .build();
+        assertThatThrownBy(() -> testBlock.tests.add(test))
                 .isExactlyInstanceOf(UnsupportedOperationException.class);
 
-        assertThatThrownBy(() -> testBlock.hooks.add(new Hook(HookType.BEFORE, ModelTests.class, Optional.empty(),
-                HookFunction.identity())))
+        Hook hook = new HookBuilder()
+                .setType(HookType.BEFORE)
+                .setTestClass(ModelTests.class)
+                .setDescription(Optional.empty())
+                .setFunction(HookFunction.identity())
+                .build();
+        assertThatThrownBy(() -> testBlock.hooks.add(hook))
                 .isExactlyInstanceOf(UnsupportedOperationException.class);
     }
 
@@ -58,13 +72,31 @@ public class ModelTests {
         List<Hook> originalHooks = new ArrayList<>();
         Options originalOptions = Options.EMPTY;
 
-        TestBlock testBlock = new TestBlock(ROOT, NORMAL, ModelTests.class, "", originalTestBlocks,
-                originalHooks, originalTests, originalOptions);
+        TestBlock testBlock = new TestBlockBuilder()
+                .setType(ROOT)
+                .setTestClass(ModelTests.class)
+                .setDescription("")
+                .setTestBlocks(originalTestBlocks)
+                .setHooks(originalHooks)
+                .setTests(originalTests)
+                .setOptions(originalOptions)
+                .build();
 
         originalTestBlocks.add(testBlock);
-        originalTests.add(new org.forgerock.cuppa.model.Test(NORMAL,
-                ModelTests.class, "", Optional.empty(), Options.EMPTY));
-        originalHooks.add(new Hook(HookType.BEFORE, ModelTests.class, Optional.empty(), HookFunction.identity()));
+
+        org.forgerock.cuppa.model.Test test = new TestBuilder()
+                .setTestClass(ModelTests.class)
+                .setDescription("")
+                .setFunction(Optional.empty())
+                .build();
+        originalTests.add(test);
+        Hook hook = new HookBuilder()
+                .setType(HookType.BEFORE)
+                .setTestClass(ModelTests.class)
+                .setDescription(Optional.empty())
+                .setFunction(HookFunction.identity())
+                .build();
+        originalHooks.add(hook);
         originalOptions.set(new TestOption("a"));
 
         assertThat(testBlock.testBlocks).hasSize(0);

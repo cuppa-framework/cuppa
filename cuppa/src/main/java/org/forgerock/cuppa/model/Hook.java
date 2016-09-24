@@ -50,14 +50,8 @@ public final class Hook {
      */
     public final HookFunction function;
 
-    /**
-     * Constructs a new hook.
-     *  @param type The type of the hook.
-     * @param testClass The class that the hook was defined in.
-     * @param description An optional description.
-     * @param function A function to be executed (possibly more than once).
-     */
-    public Hook(HookType type, Class<?> testClass, Optional<String> description, HookFunction function) {
+    // Package private. Use HookBuilder.
+    Hook(HookType type, Class<?> testClass, Optional<String> description, HookFunction function) {
         Objects.requireNonNull(type, "Hook must have a type");
         Objects.requireNonNull(testClass, "Hook must have a testClass");
         Objects.requireNonNull(description, "Hook must have a description");
