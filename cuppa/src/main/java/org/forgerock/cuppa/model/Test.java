@@ -22,7 +22,10 @@ import java.util.Optional;
 import org.forgerock.cuppa.functions.TestFunction;
 
 /**
- * Encapsulates the test ('it') function block.
+ * Models a single test.
+ *
+ * <p>A {@code Test} is usually created by calling {@link org.forgerock.cuppa.Cuppa#it(String)} but can be constructed
+ * directly.</p>
  */
 public final class Test {
 

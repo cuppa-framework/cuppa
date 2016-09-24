@@ -22,9 +22,50 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import org.forgerock.cuppa.functions.TestBlockFunction;
+
 /**
- * Encapsulates the 'describe' and 'when' function blocks and all nested 'describe', 'when' and
- * test ('it') function blocks.
+ * Models a collection of tests and/or nested test blocks.
+ *
+ * <p>A {@code TestBlock} is usually created by calling
+ * {@link org.forgerock.cuppa.Cuppa#describe(String, TestBlockFunction)} or
+ * {@link org.forgerock.cuppa.Cuppa#when(String, TestBlockFunction)} but can be constructed directly.</p>
+ *
+ * <p>{@code TestBlock}s form a tree, which together contain all the tests defined in the program. There is always a
+ * single root {@code TestBlock}, which has the type {@link TestBlockType#ROOT}.</p>
+ *
+ * <p>For example, the following test code</p>
+ *
+ * <pre>
+ *     describe("a", () -&gt; {
+ *         beforeEach("a-be1", () -&gt; {
+ *
+ *         });
+ *
+ *         it("a1");
+ *
+ *         describe("b", () -&gt; {
+ *             it("b1");
+ *             it("b3");
+ *         });
+ *     });
+ * </pre>
+ *
+ * <p>would result in a TestBlock tree of</p>
+ *
+ * <pre>
+ *      root (TestBlock)
+ *       |
+ *       +-- a (TestBlock)
+ *           |
+ *           +-- a1 (Test)
+ *           +-- a-be1 (Hook)
+ *           +-- b (TestBlock)
+ *               |
+ *               +-- b1 (Test)
+ *               +-- b2 (Test)
+ * </pre>
+ *
  */
 public final class TestBlock {
 

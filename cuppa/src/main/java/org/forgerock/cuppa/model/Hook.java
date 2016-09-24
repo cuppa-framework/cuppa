@@ -22,8 +22,11 @@ import java.util.Optional;
 import org.forgerock.cuppa.functions.HookFunction;
 
 /**
- * A hook is code that is executed before or after a test is run. It may optionally have a
- * description to help with debugging when a hook throws an exception.
+ * Models a function that is executed before or after a test is run.
+ *
+ * <p>A {@code Hook} is usually created using {@link org.forgerock.cuppa.Cuppa#before(HookFunction)},
+ * {@link org.forgerock.cuppa.Cuppa#after(HookFunction)}, {@link org.forgerock.cuppa.Cuppa#beforeEach(HookFunction)}
+ * or {@link org.forgerock.cuppa.Cuppa#afterEach(HookFunction)} but can be constructed directly.</p>
  */
 public final class Hook {
 
