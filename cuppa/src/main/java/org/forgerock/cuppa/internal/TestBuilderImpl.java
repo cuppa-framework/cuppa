@@ -29,7 +29,7 @@ import org.forgerock.cuppa.model.Option;
 import org.forgerock.cuppa.model.Options;
 
 final class TestBuilderImpl implements TestBuilder {
-    private Options options = new Options();
+    private Options options = Options.EMPTY;
     private Behaviour behaviour = Behaviour.NORMAL;
 
     @Override

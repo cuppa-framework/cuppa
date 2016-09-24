@@ -185,7 +185,7 @@ public enum TestContainer {
      * @param function The test function.
      */
     public void it(String description, TestFunction function) {
-        it(NORMAL, description, Optional.of(function), new Options());
+        it(NORMAL, description, Optional.of(function), Options.EMPTY);
     }
 
     /**
@@ -197,7 +197,7 @@ public enum TestContainer {
      * @param description The description of the test.
      */
     public void it(String description) {
-        it(NORMAL, description, Optional.empty(), new Options());
+        it(NORMAL, description, Optional.empty(), Options.EMPTY);
     }
 
     /**
@@ -320,7 +320,7 @@ public enum TestContainer {
 
         private TestDefinitionContext(Class<?> testClass) {
             this.testClass = testClass;
-            rootBuilder = new TestBlockBuilder(ROOT, NORMAL, testClass, "", new Options());
+            rootBuilder = new TestBlockBuilder(ROOT, NORMAL, testClass, "", Options.EMPTY);
             stack.addLast(rootBuilder);
         }
 

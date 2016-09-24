@@ -25,12 +25,14 @@ import java.util.Optional;
  * blocks.
  */
 public final class Options {
+    /**
+     * The empty option set.
+     */
+    public static final Options EMPTY = new Options();
+
     private final Map<Class<? extends Option>, Option<?>> options;
 
-    /**
-     * Creates a empty mutable options set.
-     */
-    public Options() {
+    private Options() {
         this(new HashMap<>());
     }
 

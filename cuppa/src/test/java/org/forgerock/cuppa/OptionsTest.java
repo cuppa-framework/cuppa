@@ -28,7 +28,7 @@ public class OptionsTest {
 
     @Test
     public void addingNewOptionShouldReturnNewOptionCopy() {
-        Options options = new Options();
+        Options options = Options.EMPTY;
         Options optionsCopy = options.set(new TestOption());
         assertThat(options.get(TestOption.class)).isEqualTo(Optional.empty());
         assertThat(optionsCopy.get(TestOption.class)).isNotEqualTo(Optional.empty());
@@ -36,7 +36,7 @@ public class OptionsTest {
 
     @Test
     public void removingOptionShouldReturnNewOptionCopy() {
-        Options options = new Options().set(new TestOption());
+        Options options = Options.EMPTY.set(new TestOption());
         Options optionsCopy = options.unset(TestOption.class);
         assertThat(options.get(TestOption.class)).isNotEqualTo(Optional.empty());
         assertThat(optionsCopy.get(TestOption.class)).isEqualTo(Optional.empty());

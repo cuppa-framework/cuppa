@@ -47,7 +47,7 @@ public final class Runner {
     private static final ServiceLoader<ConfigurationProvider> CONFIGURATION_PROVIDER_LOADER
             = ServiceLoader.load(ConfigurationProvider.class);
     private static final TestBlock EMPTY_TEST_BLOCK = new TestBlock(ROOT, NORMAL, Cuppa.class, "",
-            Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), new Options());
+            Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), Options.EMPTY);
 
     private final List<Function<TestBlock, TestBlock>> coreTestTransforms;
     private final Configuration configuration;
@@ -125,7 +125,7 @@ public final class Runner {
     private TestBlock mergeRootTestBlocks(TestBlock testBlock1, TestBlock testBlock2) {
         return new TestBlock(ROOT, NORMAL, Cuppa.class, "", Stream.concat(testBlock1.testBlocks.stream(),
                 testBlock2.testBlocks.stream()).collect(Collectors.toList()), Collections.emptyList(),
-                Collections.emptyList(), new Options());
+                Collections.emptyList(), Options.EMPTY);
     }
 
     private static Configuration getConfiguration() {

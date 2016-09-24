@@ -40,11 +40,11 @@ public class CompositeReporterTest {
     private InOrder order;
     private CompositeReporter reporter;
     private final TestBlock testBlock = new TestBlock(ROOT, NORMAL, CompositeReporterTest.class, "",
-            Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), new Options());
+            Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), Options.EMPTY);
     private final Hook hook = new Hook(BEFORE, CompositeReporterTest.class, Optional.empty(), () -> {
     });
     private final org.forgerock.cuppa.model.Test test = new org.forgerock.cuppa.model.Test(NORMAL,
-            CompositeReporterTest.class, "", Optional.empty(), new Options());
+            CompositeReporterTest.class, "", Optional.empty(), Options.EMPTY);
     private final List<TestBlock> parents = Collections.singletonList(testBlock);
     private final Exception cause = new Exception();
 

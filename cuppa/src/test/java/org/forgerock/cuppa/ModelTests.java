@@ -37,13 +37,13 @@ public class ModelTests {
     @Test
     public void testBlockShouldBeImmutable() {
         TestBlock testBlock = new TestBlock(ROOT, NORMAL, ModelTests.class, "", new ArrayList<>(),
-                new ArrayList<>(), new ArrayList<>(), new Options());
+                new ArrayList<>(), new ArrayList<>(), Options.EMPTY);
 
         assertThatThrownBy(() -> testBlock.testBlocks.add(testBlock))
                 .isExactlyInstanceOf(UnsupportedOperationException.class);
 
         assertThatThrownBy(() -> testBlock.tests.add(new org.forgerock.cuppa.model.Test(NORMAL,
-                ModelTests.class, "", Optional.empty(), new Options())))
+                ModelTests.class, "", Optional.empty(), Options.EMPTY)))
                 .isExactlyInstanceOf(UnsupportedOperationException.class);
 
         assertThatThrownBy(() -> testBlock.hooks.add(new Hook(HookType.BEFORE, ModelTests.class, Optional.empty(),
@@ -56,14 +56,14 @@ public class ModelTests {
         List<TestBlock> originalTestBlocks = new ArrayList<>();
         List<org.forgerock.cuppa.model.Test> originalTests = new ArrayList<>();
         List<Hook> originalHooks = new ArrayList<>();
-        Options originalOptions = new Options();
+        Options originalOptions = Options.EMPTY;
 
         TestBlock testBlock = new TestBlock(ROOT, NORMAL, ModelTests.class, "", originalTestBlocks,
                 originalHooks, originalTests, originalOptions);
 
         originalTestBlocks.add(testBlock);
         originalTests.add(new org.forgerock.cuppa.model.Test(NORMAL,
-                ModelTests.class, "", Optional.empty(), new Options()));
+                ModelTests.class, "", Optional.empty(), Options.EMPTY));
         originalHooks.add(new Hook(HookType.BEFORE, ModelTests.class, Optional.empty(), HookFunction.identity()));
         originalOptions.set(new TestOption("a"));
 
