@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright 2016 ForgeRock AS.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~ http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+<idea-plugin version="2" url="http://cuppa.forgerock.org">
+    <name>Cuppa</name>
+    <id>org.forgerock.cuppa</id>
+    <description>
+        <![CDATA[
+        Integration with <a href="http://cuppa.forgerock.org">Cuppa</a>, a test framework for Java 8.
+        ]]></description>
+    <vendor url="http://forgerock.org">ForgeRock AS.</vendor>
+    <depends>com.intellij.modules.java</depends>
+    <extensions defaultExtensionNs="com.intellij">
+        <stacktrace.fold substring="at org.forgerock.cuppa."/>
+        <cantBeStatic implementation="org.forgerock.cuppa.intellij.CuppaCantBeStaticExtension"/>
+        <deadCode implementation="org.forgerock.cuppa.intellij.CuppaEntryPoint"/>
+        <defaultLiveTemplatesProvider implementation="org.forgerock.cuppa.intellij.CuppaLiveTemplatesProvider"/>
+        <liveTemplateContext implementation="org.forgerock.cuppa.intellij.CuppaLiveTemplateContext"/>
+    </extensions>
+</idea-plugin>
