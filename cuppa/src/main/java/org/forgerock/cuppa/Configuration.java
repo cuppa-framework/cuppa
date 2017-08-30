@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
 
+import org.forgerock.cuppa.model.Options;
 import org.forgerock.cuppa.model.TestBlock;
 import org.forgerock.cuppa.reporters.Reporter;
 
@@ -31,8 +32,10 @@ public final class Configuration {
     List<Function<TestBlock, TestBlock>> testTransforms = new ArrayList<>();
     TestInstantiator testInstantiator = Class::newInstance;
     Reporter additionalReporter;
+    final Options runState;
 
-    Configuration() {
+    Configuration(Options runState) {
+        this.runState = runState;
     }
 
     /**

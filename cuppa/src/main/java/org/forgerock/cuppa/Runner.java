@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2016 ForgeRock AS.
+ * Copyright 2015-2017 ForgeRock AS.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,10 @@
 
 package org.forgerock.cuppa;
 
+import static java.util.Collections.emptyList;
 import static org.forgerock.cuppa.model.TestBlockType.ROOT;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ServiceLoader;
@@ -32,13 +32,14 @@ import org.forgerock.cuppa.internal.TestBlockRunner;
 import org.forgerock.cuppa.internal.TestContainer;
 import org.forgerock.cuppa.internal.filters.EmptyTestBlockFilter;
 import org.forgerock.cuppa.internal.filters.OnlyTestBlockFilter;
-import org.forgerock.cuppa.internal.filters.TagTestBlockFilter;
 import org.forgerock.cuppa.internal.filters.expression.ExpressionTagTestBlockFilter;
+import org.forgerock.cuppa.model.Options;
 import org.forgerock.cuppa.model.Tags;
 import org.forgerock.cuppa.model.TestBlock;
 import org.forgerock.cuppa.model.TestBlockBuilder;
 import org.forgerock.cuppa.reporters.CompositeReporter;
 import org.forgerock.cuppa.reporters.Reporter;
+import org.forgerock.cuppa.transforms.TagTestBlockFilter;
 
 /**
  * Runs Cuppa tests.
@@ -51,24 +52,31 @@ public final class Runner {
             .setTestClass(Cuppa.class)
             .setDescription("")
             .build();
+    private static final List<Function<TestBlock, TestBlock>> DEFAULT_CORE_TEST_TRANSFORMS =
+            Arrays.asList(new OnlyTestBlockFilter(), new EmptyTestBlockFilter());
 
     private final List<Function<TestBlock, TestBlock>> coreTestTransforms;
     private final Configuration configuration;
+    private final Options runState;
 
     /**
      * Creates a new runner with no run tags and a configuration loaded from the classpath.
      */
     public Runner() {
-        this(Tags.EMPTY_TAGS);
+        this(Options.EMPTY);
     }
 
     /**
      * Creates a new runner with the given run tags and a configuration loaded from the classpath.
      *
      * @param runTags Tags to filter the tests on.
+     * @deprecated Use @{link {@link #Runner(Options)}} and provide {@literal runTags} as {@literal runState} instead
+     *     and use state in {@link ConfigurationProvider} implementation to insert the {@link TagTestBlockFilter} in
+     *     the appropriate order.
      */
+    @Deprecated
     public Runner(Tags runTags) {
-        this(runTags, getConfiguration());
+        this(Options.EMPTY.set(new TagTestBlockFilter.RunState(runTags)));
     }
 
     /**
@@ -76,12 +84,44 @@ public final class Runner {
      *
      * @param runTags Tags to filter the tests on.
      * @param configuration Cuppa configuration to control the behaviour of the runner.
+     * @deprecated Use @{link {@link #Runner(Configuration, Options)}} and provide {@literal runTags} as
+     *     {@literal runState} instead and use state in {@link ConfigurationProvider} implementation to insert the
+     *     {@link TagTestBlockFilter} in the appropriate order.
      */
+    @Deprecated
     public Runner(Tags runTags, Configuration configuration) {
-        coreTestTransforms = Arrays.asList(new OnlyTestBlockFilter(), new ExpressionTagTestBlockFilter(runTags),
-                new TagTestBlockFilter(runTags), new EmptyTestBlockFilter());
-        this.configuration = configuration;
+        this(Stream.concat(Stream.of(
+                new ExpressionTagTestBlockFilter(runTags),
+                new TagTestBlockFilter(runTags)),
+                DEFAULT_CORE_TEST_TRANSFORMS.stream()).collect(Collectors.toList()), configuration, Options.EMPTY);
     }
+
+    /**
+     * Creates a new runner with the given run state and a configuration loaded from the classpath.
+     *
+     * @param runState Any state information that should be used by test block transforms.
+     */
+    public Runner(Options runState) {
+        this(getConfiguration(runState), runState);
+    }
+
+    /**
+     * Creates a new runner with the given run state and configuration.
+     *
+     * @param configuration Cuppa configuration to control the behaviour of the runner.
+     * @param runState Any state information that should be used by test block transforms.
+     */
+    public Runner(Configuration configuration, Options runState) {
+        this(DEFAULT_CORE_TEST_TRANSFORMS, configuration, runState);
+    }
+
+    private Runner(List<Function<TestBlock, TestBlock>> coreTestTransforms, Configuration configuration,
+            Options runState) {
+        this.coreTestTransforms = coreTestTransforms;
+        this.configuration = configuration;
+        this.runState = runState;
+    }
+
 
     /**
      * Instantiates the test classes, which define tests as side effects, and return the root test block.
@@ -130,8 +170,8 @@ public final class Runner {
                 testBlock2.testBlocks.stream()).collect(Collectors.toList())).build();
     }
 
-    private static Configuration getConfiguration() {
-        Configuration configuration = new Configuration();
+    private static Configuration getConfiguration(Options runState) {
+        Configuration configuration = new Configuration(runState);
         Iterator<ConfigurationProvider> iterator = CONFIGURATION_PROVIDER_LOADER.iterator();
         if (iterator.hasNext()) {
             ConfigurationProvider configurationProvider = iterator.next();
@@ -151,7 +191,7 @@ public final class Runner {
     }
 
     private void runTests(TestBlock rootBlock, Reporter reporter) {
-        TestBlockRunner rootRunner = createRunner(rootBlock, Collections.emptyList(), reporter);
+        TestBlockRunner rootRunner = createRunner(rootBlock, emptyList(), reporter);
         rootRunner.run();
     }
 

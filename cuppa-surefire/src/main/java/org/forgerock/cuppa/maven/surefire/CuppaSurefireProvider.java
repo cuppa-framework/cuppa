@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2016 ForgeRock AS.
+ * Copyright 2015-2017 ForgeRock AS.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,11 +31,13 @@ import org.apache.maven.surefire.report.RunListener;
 import org.apache.maven.surefire.suite.RunResult;
 import org.forgerock.cuppa.Runner;
 import org.forgerock.cuppa.Test;
+import org.forgerock.cuppa.model.Options;
 import org.forgerock.cuppa.model.Tags;
 import org.forgerock.cuppa.model.TestBlock;
 import org.forgerock.cuppa.reporters.CompositeReporter;
 import org.forgerock.cuppa.reporters.DefaultReporter;
 import org.forgerock.cuppa.reporters.Reporter;
+import org.forgerock.cuppa.transforms.TagTestBlockFilter;
 
 /**
  * Maven Surefire and Failsafe provider for locating and running Cuppa tests.
@@ -109,7 +111,7 @@ public final class CuppaSurefireProvider extends AbstractProvider {
     public RunResult invoke(Object forkTestSet) {
         ReporterFactory reporterFactory = providerParameters.getReporterFactory();
         RunListener listener = reporterFactory.createReporter();
-        Runner runner = new Runner(tags);
+        Runner runner = new Runner(Options.EMPTY.set(new TagTestBlockFilter.RunState(tags)));
         TestBlock rootBlock = runner.defineTests(getSuites());
         List<Reporter> reporters = Arrays.asList(new DefaultReporter(), new CuppaSurefireReporter(listener));
         runner.run(rootBlock, new CompositeReporter(reporters));
