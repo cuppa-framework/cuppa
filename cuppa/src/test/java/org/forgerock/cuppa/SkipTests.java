@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2016 ForgeRock AS.
+ * Copyright 2015-2017 ForgeRock AS.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -381,5 +381,42 @@ public class SkipTests {
 
         //Then
         verify(hookFunction, never()).apply();
+    }
+
+    @Test
+    public void shouldNotRunTestIfSkipConditionApplies() throws Exception {
+        //Given
+        Reporter reporter = mock(Reporter.class);
+        TestBlock rootBlock = defineTests(() -> {
+            describe("describe", () -> {
+                skip(() -> true).it("skipped test", TestFunction.identity());
+            });
+        });
+
+        //When
+        runTests(rootBlock, reporter);
+
+        //Then
+        verify(reporter).testSkip(eq(findTest(rootBlock, "skipped test")), anyListOf(TestBlock.class));
+    }
+
+    @Test
+    public void shouldRunTestIfConditionDoesNotApply() throws Exception {
+        //Given
+        Reporter reporter = mock(Reporter.class);
+        TestFunction testFunction = mock(TestFunction.class);
+
+        TestBlock rootBlock = defineTests(() -> {
+            describe("describe", () -> {
+                skip(() -> false).it("non-skipped test", testFunction);
+            });
+        });
+
+        //When
+        runTests(rootBlock, reporter);
+
+        //Then
+        verify(testFunction).apply();
+        verify(reporter).testPass(eq(findTest(rootBlock, "non-skipped test")), anyListOf(TestBlock.class));
     }
 }

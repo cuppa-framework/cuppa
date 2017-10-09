@@ -16,6 +16,7 @@
 
 package org.forgerock.cuppa;
 
+import org.forgerock.cuppa.functions.Condition;
 import org.forgerock.cuppa.functions.HookFunction;
 import org.forgerock.cuppa.functions.TestBlockFunction;
 import org.forgerock.cuppa.functions.TestFunction;
@@ -208,6 +209,28 @@ public final class Cuppa {
      */
     public static TestBuilder skip() {
         return TestContainer.INSTANCE.skip();
+    }
+
+    /**
+     * Mark a test or block of tests to be skipped only if the provided {@link Condition} applies.
+     *
+     * <p>The test(s) may still be included in test reports, but marked as skipped.</p>
+     *
+     * <pre><code>
+     * skip(() -&gt; /* ... *&#47;).it("does something", () -&gt; {
+     *   // Will not run if condition evaluates to true.
+     * });
+     * </code></pre>
+     *
+     * @param condition The {@link Condition} that needs to apply in order to skip the test or block of tests.
+     * @return An object for building the test or test block that will be skipped.
+     */
+    public static TestBuilder skip(Condition condition) {
+        if (condition.applies()) {
+            return skip();
+        } else {
+            return TestContainer.INSTANCE.with();
+        }
     }
 
     /**
