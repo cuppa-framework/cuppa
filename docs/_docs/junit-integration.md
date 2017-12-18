@@ -10,6 +10,17 @@ If you're using Maven, then we recommend you use Cuppa's
 
 To use the runner, your project will need to depend on `org.forgerock.cuppa:cuppa-junit`
 ([download it here]({{ site.github_url }}/releases/latest)).
+
+This can be easily included with the following Maven dependency:
+```xml
+<dependency>
+    <groupId>org.forgerock.cuppa</groupId>
+    <artifactId>cuppa-junit</artifactId>
+    <version>{{ site.cuppa_version }}</version>
+    <scope>test</scope>
+</dependency>
+```
+
 Simply annotate your class with JUnit's `@RunWith` annotation instead of Cuppa's `@Test` annotation:
 
 ```java
