@@ -16,8 +16,9 @@
 
 package org.forgerock.cuppa.maven.surefire;
 
+import static java.util.Collections.emptySet;
+
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -52,43 +53,55 @@ public final class CuppaSurefireProvider extends AbstractProvider {
     public CuppaSurefireProvider(ProviderParameters parameters) {
         this.providerParameters = parameters;
         Map<String, String> properties = parameters.getProviderProperties();
-        tags = new Tags(getTags(properties), getExcludedTags(properties));
+        tags = new Tags(getIncludedTags(properties), getExcludedTags(properties),
+                getExpressionTags(properties));
+
+        if (!tags.expressionTags.isEmpty() && (!tags.tags.isEmpty() || !tags.excludedTags.isEmpty())) {
+            throw new RuntimeException("Use of groupsExpression/tagsExpression cannot be used with "
+                    + "excludedGroups/excludedTags or groups/tags");
+        }
     }
 
-    private Set<String> getTags(Map<String, String> properties) {
-        String groups = properties.get("groups");
-        if (groups == null) {
-            groups = System.getProperty("groups");
-        }
-        String tags = properties.get("tags");
-        String overrideTags = System.getProperty("tags");
-        return getTags(groups, overrideTags == null ? tags : overrideTags);
+    private String getExpressionTags(Map<String, String> properties) {
+        return getTagsFromPropertiesOrSystem("groupsExpression", "tagsExpression", properties);
     }
 
-    private Set<String> getTags(String groups, String tags) {
-        if (groups != null && tags != null) {
-            throw new RuntimeException("Use of 'groups/excludedGroups' and 'tags/excludedTags' "
-                    + "are mutually exclusive.");
-        } else if (groups != null) {
-            return split(groups);
-        } else if (tags != null) {
-            return split(tags);
-        } else {
-            return Collections.emptySet();
-        }
+    private Set<String> getIncludedTags(Map<String, String> properties) {
+        return split(getTagsFromPropertiesOrSystem("groups", "tags", properties));
     }
 
     private Set<String> getExcludedTags(Map<String, String> properties) {
-        String excludedGroups = properties.get("excludedGroups");
-        if (excludedGroups == null) {
-            excludedGroups = System.getProperty("excludedGroups");
+        return split(getTagsFromPropertiesOrSystem("excludedGroups", "excludedTags", properties));
+    }
+
+    private String getTagsFromPropertiesOrSystem(String groupName, String tagName,
+            Map<String, String> properties) {
+        String groups = properties.get(groupName);
+        if (groups == null) {
+            groups = System.getProperty(groupName);
         }
-        String excludedTags = properties.get("excludedTags");
-        String overrideExcludedTags = System.getProperty("excludedTags");
-        return getTags(excludedGroups, overrideExcludedTags == null ? excludedTags : overrideExcludedTags);
+        String tags = properties.get(tagName);
+        String overrideTags = System.getProperty(tagName);
+        return getTags(groups, overrideTags == null ? tags : overrideTags);
+    }
+
+    private String getTags(String groups, String tags) {
+        if (groups != null && tags != null) {
+            throw new RuntimeException("Use of 'groups/excludedGroups/groupsExpression' and"
+                    + " 'tags/excludedTags/tagsExpression are mutually exclusive.");
+        } else if (groups != null) {
+            return groups;
+        } else if (tags != null) {
+            return tags;
+        } else {
+            return "";
+        }
     }
 
     private Set<String> split(String s) {
+        if (s.isEmpty()) {
+            return emptySet();
+        }
         return Arrays.stream(s.split(",")).map(String::trim).collect(Collectors.toSet());
     }
 

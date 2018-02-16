@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2018 ForgeRock AS.
+ * Copyright 2018 ForgeRock AS.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,28 @@
  * limitations under the License.
  */
 
+package org.forgerock.cuppa.internal.filters.expression;
+
+import java.util.Collection;
+
 /**
- * A testing framework for Java 8.
+ * A condition that checks if a tag is contains in a collection of tags.
  */
-package org.forgerock.cuppa;
+class ContainsCondition implements Condition {
+
+    private String tag;
+
+    /**
+     * Constructor.
+     *
+     * @param tag A group/tag we want to search for.
+     */
+    ContainsCondition(String tag) {
+        this.tag = tag;
+    }
+
+    @Override
+    public boolean shouldRun(Collection<String> tags) {
+        return tags.contains(tag);
+    }
+}

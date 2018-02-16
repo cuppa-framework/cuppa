@@ -16,7 +16,8 @@
 
 package org.forgerock.cuppa.model;
 
-import java.util.Collections;
+import static java.util.Collections.emptySet;
+
 import java.util.Set;
 
 /**
@@ -27,7 +28,7 @@ public class Tags {
     /**
      * No tags specified, meaning no tests should be filtered from the test run.
      */
-    public static final Tags EMPTY_TAGS = new Tags(Collections.emptySet(), Collections.emptySet());
+    public static final Tags EMPTY_TAGS = new Tags(emptySet(), emptySet(), "");
 
     /**
      * The set of tags which tests must be tagged with to be included in the test run.
@@ -40,14 +41,22 @@ public class Tags {
     public final Set<String> excludedTags;
 
     /**
+     * An expression of tags using condition to create complex tag filtering.
+     */
+    public final String expressionTags;
+
+    /**
      * Constructs a {@code Tags} instance with the specified tags and anti-tags (excluded tags).
      *
      * @param tags The set of tags which tests must be tagged with to be included in the test run.
      * @param excludedTags The set of excluded tags which tests must not be tagged with to be included
      *     in the test run.
+     * @param expressionTags An expression using condition to create complex tag filtering
+     * {@link org.forgerock.cuppa.internal.filters.expression.Condition}
      */
-    public Tags(Set<String> tags, Set<String> excludedTags) {
+    public Tags(Set<String> tags, Set<String> excludedTags, String expressionTags) {
         this.tags = tags;
+        this.expressionTags = expressionTags;
         this.excludedTags = excludedTags;
     }
 
@@ -58,7 +67,7 @@ public class Tags {
      * @return The {@code Tags} instance.
      */
     public static Tags tags(Set<String> tags) {
-        return new Tags(tags, Collections.emptySet());
+        return new Tags(tags, emptySet(), "");
     }
 
     /**
@@ -69,6 +78,16 @@ public class Tags {
      * @return The {@code Tags} instance.
      */
     public static Tags excludedTags(Set<String> excludedTags) {
-        return new Tags(Collections.emptySet(), excludedTags);
+        return new Tags(emptySet(), excludedTags, "");
+    }
+
+    /**
+     * Constructs a {@code Tags} instance with the specified expression tag.
+     *
+     * @param expressionTag The expression tag
+     * @return The {@code Tags} instance.
+     */
+    public static Tags expressionTags(String expressionTag) {
+        return new Tags(emptySet(), emptySet(), expressionTag);
     }
 }

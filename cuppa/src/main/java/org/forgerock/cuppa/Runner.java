@@ -33,6 +33,7 @@ import org.forgerock.cuppa.internal.TestContainer;
 import org.forgerock.cuppa.internal.filters.EmptyTestBlockFilter;
 import org.forgerock.cuppa.internal.filters.OnlyTestBlockFilter;
 import org.forgerock.cuppa.internal.filters.TagTestBlockFilter;
+import org.forgerock.cuppa.internal.filters.expression.ExpressionTagTestBlockFilter;
 import org.forgerock.cuppa.model.Tags;
 import org.forgerock.cuppa.model.TestBlock;
 import org.forgerock.cuppa.model.TestBlockBuilder;
@@ -77,8 +78,8 @@ public final class Runner {
      * @param configuration Cuppa configuration to control the behaviour of the runner.
      */
     public Runner(Tags runTags, Configuration configuration) {
-        coreTestTransforms = Arrays.asList(new OnlyTestBlockFilter(), new TagTestBlockFilter(runTags),
-                new EmptyTestBlockFilter());
+        coreTestTransforms = Arrays.asList(new OnlyTestBlockFilter(), new ExpressionTagTestBlockFilter(runTags),
+                new TagTestBlockFilter(runTags), new EmptyTestBlockFilter());
         this.configuration = configuration;
     }
 

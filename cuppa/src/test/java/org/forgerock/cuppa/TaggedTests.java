@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 ForgeRock AS.
+ * Copyright 2018 ForgeRock AS.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,18 @@
 
 package org.forgerock.cuppa;
 
-import static org.forgerock.cuppa.Cuppa.*;
+import static org.forgerock.cuppa.Cuppa.describe;
+import static org.forgerock.cuppa.Cuppa.it;
+import static org.forgerock.cuppa.Cuppa.tags;
+import static org.forgerock.cuppa.Cuppa.with;
 import static org.forgerock.cuppa.TestCuppaSupport.defineTests;
 import static org.forgerock.cuppa.TestCuppaSupport.runTests;
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.anyListOf;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -374,7 +381,7 @@ public class TaggedTests {
         });
 
         //When
-        runTests(rootBlock, reporter, new Tags(tags, excludedTags));
+        runTests(rootBlock, reporter, new Tags(tags, excludedTags, ""));
 
         //Then
         verify(testFunction, never()).apply();
@@ -401,7 +408,7 @@ public class TaggedTests {
         });
 
         //When
-        runTests(rootBlock, reporter, new Tags(tags, excludedTags));
+        runTests(rootBlock, reporter, new Tags(tags, excludedTags, ""));
 
         //Then
         verify(testFunctionNotRun, never()).apply();

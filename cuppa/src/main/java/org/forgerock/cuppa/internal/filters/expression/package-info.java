@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2018 ForgeRock AS.
+ * Copyright 2018 ForgeRock AS.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,6 @@
  */
 
 /**
- * A testing framework for Java 8.
+ * Classes related to the expression group filter.
  */
-package org.forgerock.cuppa;
+package org.forgerock.cuppa.internal.filters.expression;

@@ -35,14 +35,28 @@ For example, to run all tests except tests tagged with `slow`:
 mvn -DexcludedTags=slow test
 ```
 
+If you want more flexibility you can use an expression.
+For example, to run all the tests with `fast` tag or with `smoke` and `ui` tags excluding all `slow` tags :
+
+```bash
+mvn -DgroupsExpression="and(or(fast,and(smoke,ui)),not(slow))"
+```
+
 <div class="alert alert-info" role="alert">
 #### Note
 
 When running with a combination of TestNG or JUnit along side Cuppa, you can use the TestNG/JUnit way of 
 specifying/excluding groups so that you can run a sub-set of tests across both TestNG/JUnit and Cuppa.
 
-It's important to note that you cannot use both `-Dgroups=` and `-Dtags=` or `-DexcludedGroups=` and `-DexcludedTags=` 
-at the same time.
+It's important to note that you cannot use `-Dgroups=` and `-Dtags=`, `-DexcludedGroups=` and `-DexcludedTags=` 
+or `-DgroupsExpression` and `-DtagsExpression` at the same time.
+</div>
+
+<div class="alert alert-info" role="alert">
+#### Note 2
+
+It's important to note that you cannot if you use the expression you cannot use tags/groups or 
+excludedTags/excludedGroups
 </div>
 
 ## Tagging a Block of Tests
