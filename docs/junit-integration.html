@@ -172,17 +172,28 @@ If you’re using Maven, then we recommend you use Cuppa’s
 <a href="/docs/maven-integration">Maven integration</a> instead.</p>
 
 <p>To use the runner, your project will need to depend on <code class="highlighter-rouge">org.forgerock.cuppa:cuppa-junit</code>
-(<a href="https://github.com/cuppa-framework/cuppa/releases/latest">download it here</a>).
-Simply annotate your class with JUnit’s <code class="highlighter-rouge">@RunWith</code> annotation instead of Cuppa’s <code class="highlighter-rouge">@Test</code> annotation:</p>
+(<a href="https://github.com/cuppa-framework/cuppa/releases/latest">download it here</a>).</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code><span class="nd">@RunWith</span><span class="o">(</span><span class="n">CuppaRunner</span><span class="o">.</span><span class="na">class</span><span class="o">)</span>
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">MyCuppaTests</span> <span class="o">{</span>
-    <span class="o">{</span>
-        <span class="n">describe</span><span class="o">(</span><span class="s">"something"</span><span class="o">,</span> <span class="o">()</span> <span class="o">-&gt;</span> <span class="o">{</span>
-            <span class="c1">// ...</span>
-        <span class="o">});</span>
-    <span class="o">}</span>
-<span class="o">}</span>
+<p>This can be easily included with the following Maven dependency:
+```xml</p>
+<dependency>
+    <groupid>org.forgerock.cuppa</groupid>
+    <artifactid>cuppa-junit</artifactid>
+    <version>1.4.0</version>
+    <scope>test</scope>
+</dependency>
+<div class="highlighter-rouge"><pre class="highlight"><code>
+Simply annotate your class with JUnit's `@RunWith` annotation instead of Cuppa's `@Test` annotation:
+
+```java
+@RunWith(CuppaRunner.class)
+public class MyCuppaTests {
+    {
+        describe("something", () -&gt; {
+            // ...
+        });
+    }
+}
 </code></pre>
 </div>
 

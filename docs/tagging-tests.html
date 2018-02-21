@@ -198,14 +198,28 @@ For example, to run all tests except tests tagged with <code class="highlighter-
 </code></pre>
 </div>
 
+<p>If you want more flexibility you can use an expression.
+For example, to run all the tests with <code class="highlighter-rouge">fast</code> tag or with <code class="highlighter-rouge">smoke</code> and <code class="highlighter-rouge">ui</code> tags excluding all <code class="highlighter-rouge">slow</code> tags :</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>mvn -DgroupsExpression<span class="o">=</span><span class="s2">"and(or(fast,and(smoke,ui)),not(slow))"</span>
+</code></pre>
+</div>
+
 <div class="alert alert-info" role="alert">
   <h4 id="note-1">Note</h4>
 
   <p>When running with a combination of TestNG or JUnit along side Cuppa, you can use the TestNG/JUnit way of 
 specifying/excluding groups so that you can run a sub-set of tests across both TestNG/JUnit and Cuppa.</p>
 
-  <p>It’s important to note that you cannot use both <code class="highlighter-rouge">-Dgroups=</code> and <code class="highlighter-rouge">-Dtags=</code> or <code class="highlighter-rouge">-DexcludedGroups=</code> and <code class="highlighter-rouge">-DexcludedTags=</code> 
-at the same time.</p>
+  <p>It’s important to note that you cannot use <code class="highlighter-rouge">-Dgroups=</code> and <code class="highlighter-rouge">-Dtags=</code>, <code class="highlighter-rouge">-DexcludedGroups=</code> and <code class="highlighter-rouge">-DexcludedTags=</code> 
+or <code class="highlighter-rouge">-DgroupsExpression</code> and <code class="highlighter-rouge">-DtagsExpression</code> at the same time.</p>
+</div>
+
+<div class="alert alert-info" role="alert">
+  <h4 id="note-2">Note 2</h4>
+
+  <p>It’s important to note that you cannot if you use the expression you cannot use tags/groups or 
+excludedTags/excludedGroups</p>
 </div>
 
 <h2 id="tagging-a-block-of-tests">Tagging a Block of Tests</h2>
