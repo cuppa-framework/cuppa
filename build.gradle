@@ -1,6 +1,7 @@
 plugins {
   id 'jacoco'
-  id 'com.github.kt3k.coveralls' version '2.6.3'
+  id 'com.github.kt3k.coveralls' version '2.8.4'
+  id 'com.github.spotbugs' version '2.0.0'
 }
 
 allprojects {
@@ -29,7 +30,7 @@ if (!project.hasProperty("sonatypeUsername") || !project.hasProperty("sonatypePa
 subprojects {
   apply plugin: 'java'
   apply plugin: 'checkstyle'
-  apply plugin: 'findbugs'
+  apply plugin: 'com.github.spotbugs'
 
   sourceCompatibility = 1.8
   targetCompatibility = 1.8
@@ -81,12 +82,12 @@ subprojects {
 
   task javadocJar(type: Jar, dependsOn: javadoc) {
     from 'build/docs/javadoc'
-    classifier = 'javadoc'
+    archiveClassifier.set 'javadoc'
   }
 
   task sourcesJar(type: Jar) {
     from sourceSets.main.allSource
-    classifier = 'sources'
+    archiveClassifier.set 'sources'
   }
 
   artifacts {
@@ -174,11 +175,13 @@ coveralls {
 
 task jacocoRootReport(type: JacocoReport) {
   dependsOn = coverageProjects.jacocoTestReport
-  sourceDirectories = files(coverageProjects.sourceSets.main.allSource.srcDirs)
-  classDirectories = files(coverageProjects.sourceSets.main.output)
-  executionData = files(coverageProjects.jacocoTestReport.executionData)
+  sourceDirectories.from = files(coverageProjects.sourceSets.main.allSource.srcDirs)
+  classDirectories.from = files(coverageProjects.sourceSets.main.output)
+  executionData.from = files(coverageProjects.jacocoTestReport.executionData)
   reports {
-    xml.enabled = true
-    xml.destination = "${buildDir}/reports/jacoco/test/jacocoTestReport.xml"
+    xml {
+      enabled true
+      destination file("${buildDir}/reports/jacoco/test/jacocoTestReport.xml")
+    }
   }
 }
