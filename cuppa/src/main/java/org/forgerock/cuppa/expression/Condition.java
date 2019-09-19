@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
-package org.forgerock.cuppa.internal.filters.expression;
+package org.forgerock.cuppa.expression;
 
 import java.util.Collection;
+
+import org.forgerock.cuppa.internal.filters.ExpressionTagTestBlockFilter;
 
 /**
  * A condition used by {@link ExpressionTagTestBlockFilter}.

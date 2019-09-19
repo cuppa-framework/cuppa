@@ -33,7 +33,7 @@ import org.forgerock.cuppa.internal.TestContainer;
 import org.forgerock.cuppa.internal.filters.EmptyTestBlockFilter;
 import org.forgerock.cuppa.internal.filters.OnlyTestBlockFilter;
 import org.forgerock.cuppa.internal.filters.TagTestBlockFilter;
-import org.forgerock.cuppa.internal.filters.expression.ExpressionTagTestBlockFilter;
+import org.forgerock.cuppa.internal.filters.ExpressionTagTestBlockFilter;
 import org.forgerock.cuppa.model.Tags;
 import org.forgerock.cuppa.model.TestBlock;
 import org.forgerock.cuppa.model.TestBlockBuilder;
@@ -68,7 +68,7 @@ public final class Runner {
      * @param runTags Tags to filter the tests on.
      */
     public Runner(Tags runTags) {
-        this(runTags, getConfiguration());
+        this(runTags, getConfiguration(runTags));
     }
 
     /**
@@ -130,8 +130,8 @@ public final class Runner {
                 testBlock2.testBlocks.stream()).collect(Collectors.toList())).build();
     }
 
-    private static Configuration getConfiguration() {
-        Configuration configuration = new Configuration();
+    private static Configuration getConfiguration(Tags runTags) {
+        Configuration configuration = new Configuration(runTags);
         Iterator<ConfigurationProvider> iterator = CONFIGURATION_PROVIDER_LOADER.iterator();
         if (iterator.hasNext()) {
             ConfigurationProvider configurationProvider = iterator.next();

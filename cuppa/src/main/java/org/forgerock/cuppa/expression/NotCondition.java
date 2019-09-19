@@ -1,4 +1,4 @@
-package org.forgerock.cuppa.internal.filters.expression;
+package org.forgerock.cuppa.expression;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -7,7 +7,7 @@ import java.util.Optional;
 /**
  * A wrapper condition that inverse the wrapped condition.
  */
-class NotCondition extends ConditionWrapper {
+public class NotCondition extends ConditionWrapper {
 
     public static final NotCondition EMPTY = new NotCondition(Collections.emptyList());
     private final Optional<Condition> condition;
@@ -30,7 +30,7 @@ class NotCondition extends ConditionWrapper {
     }
 
     @Override
-    public ConditionWrapper setConditions(Collection<Condition> conditions) {
+    ConditionWrapper setConditions(Collection<Condition> conditions) {
         return new NotCondition(conditions);
     }
 }

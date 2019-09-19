@@ -1,4 +1,4 @@
-package org.forgerock.cuppa.internal.filters.expression;
+package org.forgerock.cuppa.expression;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -7,7 +7,7 @@ import java.util.Stack;
 /**
  * This class is responsible to parse an expression tag to a {@link Condition} .
  */
-final class ExpressionParser {
+public final class ExpressionParser {
 
     private ExpressionParser() {
     }
@@ -17,7 +17,7 @@ final class ExpressionParser {
      * @param expressionTags the expression to parse
      * @return The condition
      */
-    static Condition parse(String expressionTags) {
+    public static Condition parse(String expressionTags) {
         if (expressionTags.isEmpty()) {
             return (t) -> true;
         }

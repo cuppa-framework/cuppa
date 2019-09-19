@@ -1,4 +1,4 @@
-package org.forgerock.cuppa.internal.filters.expression;
+package org.forgerock.cuppa.expression;
 
 import java.util.Collection;
 

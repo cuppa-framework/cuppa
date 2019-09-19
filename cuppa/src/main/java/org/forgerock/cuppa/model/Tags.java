@@ -52,7 +52,7 @@ public class Tags {
      * @param excludedTags The set of excluded tags which tests must not be tagged with to be included
      *     in the test run.
      * @param expressionTags An expression using condition to create complex tag filtering
-     * {@link org.forgerock.cuppa.internal.filters.expression.Condition}
+     * {@link org.forgerock.cuppa.expression.Condition}
      */
     public Tags(Set<String> tags, Set<String> excludedTags, String expressionTags) {
         this.tags = tags;

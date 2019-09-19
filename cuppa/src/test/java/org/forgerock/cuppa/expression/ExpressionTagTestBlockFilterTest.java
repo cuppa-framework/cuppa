@@ -15,7 +15,7 @@
  */
 
 
-package org.forgerock.cuppa.internal.filters.expression;
+package org.forgerock.cuppa.expression;
 
 import static java.util.Collections.emptySet;
 import static org.forgerock.cuppa.model.TestBlockType.ROOT;
@@ -31,6 +31,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.forgerock.cuppa.internal.filters.ExpressionTagTestBlockFilter;
 import org.forgerock.cuppa.model.Options;
 import org.forgerock.cuppa.model.Tags;
 import org.forgerock.cuppa.model.TagsOption;

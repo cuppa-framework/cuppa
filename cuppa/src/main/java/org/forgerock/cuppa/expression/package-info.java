@@ -14,28 +14,7 @@
  * limitations under the License.
  */
 
-package org.forgerock.cuppa.internal.filters.expression;
-
-import java.util.Collection;
-
 /**
- * A condition that checks if a tag is contains in a collection of tags.
+ * Classes related to the tag expression group filter.
  */
-class ContainsCondition implements Condition {
-
-    private String tag;
-
-    /**
-     * Constructor.
-     *
-     * @param tag A group/tag we want to search for.
-     */
-    ContainsCondition(String tag) {
-        this.tag = tag;
-    }
-
-    @Override
-    public boolean shouldRun(Collection<String> tags) {
-        return tags.contains(tag);
-    }
-}
+package org.forgerock.cuppa.expression;

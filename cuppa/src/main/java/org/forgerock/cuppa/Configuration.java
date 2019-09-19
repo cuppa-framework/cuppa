@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
 
+import org.forgerock.cuppa.model.Tags;
 import org.forgerock.cuppa.model.TestBlock;
 import org.forgerock.cuppa.reporters.Reporter;
 
@@ -28,11 +29,17 @@ import org.forgerock.cuppa.reporters.Reporter;
  * Holds configuration settings for Cuppa.
  */
 public final class Configuration {
+    private final Tags runTags;
     List<Function<TestBlock, TestBlock>> testTransforms = new ArrayList<>();
     TestInstantiator testInstantiator = Class::newInstance;
     Reporter additionalReporter;
 
     Configuration() {
+        this(Tags.EMPTY_TAGS);
+    }
+
+    Configuration(Tags runTags) {
+        this.runTags = runTags;
     }
 
     /**
@@ -65,5 +72,13 @@ public final class Configuration {
     public void setAdditionalReporter(Reporter reporter) {
         Objects.requireNonNull(reporter, "Reporter must not be null");
         additionalReporter = reporter;
+    }
+
+    /**
+     * Get the tags that have been selected for this execution.
+     * @return the {@link Tags} object.
+     */
+    public Tags getRunTags() {
+        return runTags;
     }
 }
