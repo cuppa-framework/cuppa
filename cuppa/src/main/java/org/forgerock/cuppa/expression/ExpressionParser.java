@@ -63,10 +63,10 @@ public final class ExpressionParser {
 
         String operator = operators.pop();
         int number = numberOfGroupsPerOperator.pop();
-        List<Condition> tags = new ArrayList<>(number);
+        List<Condition> tags = new ArrayList<>(groups.subList(groups.size() - number, groups.size()));
 
         for (; number > 0; number--) {
-            tags.add(groups.pop());
+            groups.pop();
         }
 
         groups.push(ConditionFactory.get(operator, tags));

@@ -23,7 +23,7 @@ import java.util.Collection;
  */
 public class ContainsCondition implements Condition {
 
-    private String tag;
+    final String tag;
 
     /**
      * Constructor.
@@ -35,7 +35,7 @@ public class ContainsCondition implements Condition {
     }
 
     @Override
-    public boolean shouldRun(Collection<String> tags) {
+    public final boolean shouldRun(Collection<String> tags) {
         return tags.contains(tag);
     }
 }

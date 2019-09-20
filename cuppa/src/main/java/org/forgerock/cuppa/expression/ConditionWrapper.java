@@ -1,6 +1,6 @@
 package org.forgerock.cuppa.expression;
 
-import java.util.Collection;
+import java.util.List;
 
 /**
  * A condition wrapper for Condition that needs to wrap other conditions.
@@ -12,5 +12,5 @@ abstract class ConditionWrapper implements Condition {
      * @param conditions the collection of conditions
      * @return a new condition
      */
-    abstract ConditionWrapper setConditions(Collection<Condition> conditions);
+    abstract ConditionWrapper setConditions(List<Condition> conditions);
 }

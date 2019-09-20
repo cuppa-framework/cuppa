@@ -2,15 +2,16 @@ package org.forgerock.cuppa.expression;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 /**
  * A wrapper condition that inverse the wrapped condition.
  */
 public class NotCondition extends ConditionWrapper {
-
+    /** An empty NOT definition. */
     public static final NotCondition EMPTY = new NotCondition(Collections.emptyList());
-    private final Optional<Condition> condition;
+    final Optional<Condition> condition;
 
     /**
      * Constructor.
@@ -25,12 +26,12 @@ public class NotCondition extends ConditionWrapper {
     }
 
     @Override
-    public boolean shouldRun(Collection<String> tags) {
+    public final boolean shouldRun(Collection<String> tags) {
         return !condition.orElse(c -> true).shouldRun(tags);
     }
 
     @Override
-    ConditionWrapper setConditions(Collection<Condition> conditions) {
+    final ConditionWrapper setConditions(List<Condition> conditions) {
         return new NotCondition(conditions);
     }
 }

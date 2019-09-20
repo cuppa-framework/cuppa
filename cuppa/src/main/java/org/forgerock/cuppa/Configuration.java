@@ -29,10 +29,10 @@ import org.forgerock.cuppa.reporters.Reporter;
  * Holds configuration settings for Cuppa.
  */
 public final class Configuration {
-    private final Tags runTags;
     List<Function<TestBlock, TestBlock>> testTransforms = new ArrayList<>();
     TestInstantiator testInstantiator = Class::newInstance;
     Reporter additionalReporter;
+    private final Tags runTags;
 
     Configuration() {
         this(Tags.EMPTY_TAGS);
