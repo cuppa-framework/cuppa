@@ -14,22 +14,28 @@
  * limitations under the License.
  */
 
-package org.forgerock.cuppa.internal.filters.expression;
+package org.forgerock.cuppa.transforms.expression;
 
 import java.util.Collection;
 
 /**
- * A condition used by {@link ExpressionTagTestBlockFilter}.
+ * A condition that checks if a tag is contains in a collection of tags.
  */
-@FunctionalInterface
-public interface Condition {
+public class ContainsCondition implements Condition {
+
+    final String tag;
 
     /**
-     * Check if the list of tags is compliant with the condition.
+     * Constructor.
      *
-     * @param tags The collection of tags.
-     * @return true if the condition complies with the tags supplied, false otherwise.
+     * @param tag A group/tag we want to search for.
      */
-    boolean shouldRun(Collection<String> tags);
+    ContainsCondition(String tag) {
+        this.tag = tag;
+    }
 
+    @Override
+    public final boolean shouldRun(Collection<String> tags) {
+        return tags.contains(tag);
+    }
 }

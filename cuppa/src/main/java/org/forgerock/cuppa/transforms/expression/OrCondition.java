@@ -14,35 +14,37 @@
  * limitations under the License.
  */
 
-package org.forgerock.cuppa.internal.filters.expression;
+package org.forgerock.cuppa.transforms.expression;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
 /**
  * A condition that composes other conditions with a logical OR.
  */
-class OrCondition extends ConditionWrapper {
+public class OrCondition extends ConditionWrapper {
 
+    /** An empty OR definition. */
     public static final OrCondition EMPTY = new OrCondition(Collections.emptyList());
-    private final Collection<Condition> conditions;
+    final List<Condition> conditions;
 
     /**
      * Constructor.
      *
      * @param conditions a list of condition to compose.
      */
-    OrCondition(Collection<Condition> conditions) {
-        this.conditions = Collections.unmodifiableCollection(conditions);
+    OrCondition(List<Condition> conditions) {
+        this.conditions = Collections.unmodifiableList(conditions);
     }
 
     @Override
-    public boolean shouldRun(Collection<String> tags) {
+    public final boolean shouldRun(Collection<String> tags) {
         return conditions.stream().anyMatch(c -> c.shouldRun(tags));
     }
 
     @Override
-    public ConditionWrapper setConditions(Collection<Condition> conditions) {
+    final ConditionWrapper setConditions(List<Condition> conditions) {
         return new OrCondition(conditions);
     }
 }

@@ -37,7 +37,6 @@ import org.forgerock.cuppa.model.TestBlock;
 import org.forgerock.cuppa.reporters.CompositeReporter;
 import org.forgerock.cuppa.reporters.DefaultReporter;
 import org.forgerock.cuppa.reporters.Reporter;
-import org.forgerock.cuppa.transforms.TagTestBlockFilter;
 
 /**
  * Maven Surefire and Failsafe provider for locating and running Cuppa tests.
@@ -111,7 +110,7 @@ public final class CuppaSurefireProvider extends AbstractProvider {
     public RunResult invoke(Object forkTestSet) {
         ReporterFactory reporterFactory = providerParameters.getReporterFactory();
         RunListener listener = reporterFactory.createReporter();
-        Runner runner = new Runner(Options.EMPTY.set(new TagTestBlockFilter.RunState(tags)));
+        Runner runner = new Runner(Options.EMPTY.set(new Runner.TagsRunOption(tags)));
         TestBlock rootBlock = runner.defineTests(getSuites());
         List<Reporter> reporters = Arrays.asList(new DefaultReporter(), new CuppaSurefireReporter(listener));
         runner.run(rootBlock, new CompositeReporter(reporters));

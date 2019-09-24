@@ -1,4 +1,4 @@
-package org.forgerock.cuppa.internal.filters.expression;
+package org.forgerock.cuppa.transforms.expression;
 
 import java.util.Arrays;
 import java.util.List;
@@ -6,7 +6,7 @@ import java.util.List;
 /**
  * A factory to creates {@link ConditionWrapper}.
  */
-final class ConditionFactory {
+public final class ConditionFactory {
 
     /**
      * link the operator to an instance of {@link Condition}.

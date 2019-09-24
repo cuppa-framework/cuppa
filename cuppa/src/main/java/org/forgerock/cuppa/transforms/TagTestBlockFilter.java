@@ -23,7 +23,6 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import org.forgerock.cuppa.model.Option;
 import org.forgerock.cuppa.model.Options;
 import org.forgerock.cuppa.model.Tags;
 import org.forgerock.cuppa.model.TagsOption;
@@ -94,19 +93,5 @@ public final class TagTestBlockFilter implements Function<TestBlock, TestBlock> 
         Set<T> intersection = new HashSet<>(a);
         intersection.retainAll(b);
         return intersection;
-    }
-
-    /**
-     * Tag run state to perform tag based filtering with.
-     */
-    public static final class RunState extends Option<Tags> {
-        /**
-         * Create a new option.
-         *
-         * @param value The immutable value to store in this option.
-         */
-        public RunState(Tags value) {
-            super(value);
-        }
     }
 }

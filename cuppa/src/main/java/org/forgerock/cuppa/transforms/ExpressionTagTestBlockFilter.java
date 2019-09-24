@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.forgerock.cuppa.internal.filters.expression;
+package org.forgerock.cuppa.transforms;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -28,6 +28,8 @@ import org.forgerock.cuppa.model.Tags;
 import org.forgerock.cuppa.model.TagsOption;
 import org.forgerock.cuppa.model.Test;
 import org.forgerock.cuppa.model.TestBlock;
+import org.forgerock.cuppa.transforms.expression.Condition;
+import org.forgerock.cuppa.transforms.expression.ExpressionParser;
 
 
 /**

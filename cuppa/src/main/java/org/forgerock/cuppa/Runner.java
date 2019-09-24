@@ -32,13 +32,14 @@ import org.forgerock.cuppa.internal.TestBlockRunner;
 import org.forgerock.cuppa.internal.TestContainer;
 import org.forgerock.cuppa.internal.filters.EmptyTestBlockFilter;
 import org.forgerock.cuppa.internal.filters.OnlyTestBlockFilter;
-import org.forgerock.cuppa.internal.filters.expression.ExpressionTagTestBlockFilter;
+import org.forgerock.cuppa.model.Option;
 import org.forgerock.cuppa.model.Options;
 import org.forgerock.cuppa.model.Tags;
 import org.forgerock.cuppa.model.TestBlock;
 import org.forgerock.cuppa.model.TestBlockBuilder;
 import org.forgerock.cuppa.reporters.CompositeReporter;
 import org.forgerock.cuppa.reporters.Reporter;
+import org.forgerock.cuppa.transforms.ExpressionTagTestBlockFilter;
 import org.forgerock.cuppa.transforms.TagTestBlockFilter;
 
 /**
@@ -57,7 +58,6 @@ public final class Runner {
 
     private final List<Function<TestBlock, TestBlock>> coreTestTransforms;
     private final Configuration configuration;
-    private final Options runState;
 
     /**
      * Creates a new runner with no run tags and a configuration loaded from the classpath.
@@ -76,7 +76,7 @@ public final class Runner {
      */
     @Deprecated
     public Runner(Tags runTags) {
-        this(Options.EMPTY.set(new TagTestBlockFilter.RunState(runTags)));
+        this(Options.EMPTY.set(new TagsRunOption(runTags)));
     }
 
     /**
@@ -84,7 +84,7 @@ public final class Runner {
      *
      * @param runTags Tags to filter the tests on.
      * @param configuration Cuppa configuration to control the behaviour of the runner.
-     * @deprecated Use @{link {@link #Runner(Configuration, Options)}} and provide {@literal runTags} as
+     * @deprecated Use @{link {@link #Runner(Configuration)}} and provide {@literal runTags} as
      *     {@literal runState} instead and use state in {@link ConfigurationProvider} implementation to insert the
      *     {@link TagTestBlockFilter} in the appropriate order.
      */
@@ -93,33 +93,30 @@ public final class Runner {
         this(Stream.concat(Stream.of(
                 new ExpressionTagTestBlockFilter(runTags),
                 new TagTestBlockFilter(runTags)),
-                DEFAULT_CORE_TEST_TRANSFORMS.stream()).collect(Collectors.toList()), configuration, Options.EMPTY);
+                DEFAULT_CORE_TEST_TRANSFORMS.stream()).collect(Collectors.toList()), configuration);
     }
 
     /**
      * Creates a new runner with the given run state and a configuration loaded from the classpath.
      *
-     * @param runState Any state information that should be used by test block transforms.
+     * @param runOptions Any state information that should be used by test block transforms.
      */
-    public Runner(Options runState) {
-        this(getConfiguration(runState), runState);
+    public Runner(Options runOptions) {
+        this(getConfiguration(runOptions));
     }
 
     /**
      * Creates a new runner with the given run state and configuration.
      *
      * @param configuration Cuppa configuration to control the behaviour of the runner.
-     * @param runState Any state information that should be used by test block transforms.
      */
-    public Runner(Configuration configuration, Options runState) {
-        this(DEFAULT_CORE_TEST_TRANSFORMS, configuration, runState);
+    public Runner(Configuration configuration) {
+        this(DEFAULT_CORE_TEST_TRANSFORMS, configuration);
     }
 
-    private Runner(List<Function<TestBlock, TestBlock>> coreTestTransforms, Configuration configuration,
-            Options runState) {
+    private Runner(List<Function<TestBlock, TestBlock>> coreTestTransforms, Configuration configuration) {
         this.coreTestTransforms = coreTestTransforms;
         this.configuration = configuration;
-        this.runState = runState;
     }
 
 
@@ -170,8 +167,8 @@ public final class Runner {
                 testBlock2.testBlocks.stream()).collect(Collectors.toList())).build();
     }
 
-    private static Configuration getConfiguration(Options runState) {
-        Configuration configuration = new Configuration(runState);
+    private static Configuration getConfiguration(Options runOptions) {
+        Configuration configuration = new Configuration(runOptions);
         Iterator<ConfigurationProvider> iterator = CONFIGURATION_PROVIDER_LOADER.iterator();
         if (iterator.hasNext()) {
             ConfigurationProvider configurationProvider = iterator.next();
@@ -204,5 +201,19 @@ public final class Runner {
             runner.addChild(child);
         }
         return runner;
+    }
+
+    /**
+     * Tag run state to perform tag based filtering with.
+     */
+    public static final class TagsRunOption extends Option<Tags> {
+        /**
+         * Create a new option.
+         *
+         * @param value The immutable value to store in this option.
+         */
+        public TagsRunOption(Tags value) {
+            super(value);
+        }
     }
 }

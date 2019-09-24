@@ -32,10 +32,10 @@ public final class Configuration {
     List<Function<TestBlock, TestBlock>> testTransforms = new ArrayList<>();
     TestInstantiator testInstantiator = Class::newInstance;
     Reporter additionalReporter;
-    final Options runState;
+    private final Options runOptions;
 
-    Configuration(Options runState) {
-        this.runState = runState;
+    Configuration(Options runOptions) {
+        this.runOptions = runOptions;
     }
 
     /**
@@ -68,5 +68,13 @@ public final class Configuration {
     public void setAdditionalReporter(Reporter reporter) {
         Objects.requireNonNull(reporter, "Reporter must not be null");
         additionalReporter = reporter;
+    }
+
+    /**
+     * Get the set of options that can be used by test block transforms.
+     * @return The run state.
+     */
+    public Options getRunOptions() {
+        return runOptions;
     }
 }
