@@ -15,7 +15,7 @@
  */
 
 
-package org.forgerock.cuppa.internal.filters.expression;
+package org.forgerock.cuppa.transforms.expression;
 
 import static java.util.Collections.emptySet;
 import static org.forgerock.cuppa.model.TestBlockType.ROOT;
@@ -38,6 +38,7 @@ import org.forgerock.cuppa.model.Test;
 import org.forgerock.cuppa.model.TestBlock;
 import org.forgerock.cuppa.model.TestBlockBuilder;
 import org.forgerock.cuppa.model.TestBuilder;
+import org.forgerock.cuppa.transforms.ExpressionTagTestBlockFilter;
 import org.testng.Assert;
 import org.testng.annotations.BeforeTest;
 

@@ -24,6 +24,7 @@ import java.util.stream.Stream;
 
 import org.forgerock.cuppa.internal.TestContainer;
 import org.forgerock.cuppa.model.Hook;
+import org.forgerock.cuppa.model.Options;
 import org.forgerock.cuppa.model.Tags;
 import org.forgerock.cuppa.model.Test;
 import org.forgerock.cuppa.model.TestBlock;
@@ -65,7 +66,8 @@ public final class TestCuppaSupport {
      * @param tags Tags to filter the tests on.
      */
     public static void runTests(TestBlock testBlock, Reporter reporter, Tags tags) {
-        new Runner(tags, new Configuration()).run(testBlock, reporter);
+        new Runner(tags, new Configuration(Options.EMPTY))
+                .run(testBlock, reporter);
     }
 
     /**

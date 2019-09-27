@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 ForgeRock AS.
+ * Copyright 2016 ForgeRock AS.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.forgerock.cuppa.internal.filters.expression;
+package org.forgerock.cuppa.transforms;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -29,33 +29,27 @@ import org.forgerock.cuppa.model.TagsOption;
 import org.forgerock.cuppa.model.Test;
 import org.forgerock.cuppa.model.TestBlock;
 
-
 /**
- * Filter the tests according to the expression tag.
- * It uses a set of conditions to decide if it should run a test.
- *
- * @see Condition
+ * Filters the test tree to only include tests that have tags that match the given run tags, excluding any tests
+ * that have the given excluded run tags.
  */
-public final class ExpressionTagTestBlockFilter implements Function<TestBlock, TestBlock> {
+public final class TagTestBlockFilter implements Function<TestBlock, TestBlock> {
     private final Tags runTags;
-    private final Condition condition;
 
     /**
      * Creates a new filter.
      *
-     * @param runTags runTags
+     * @param runTags The tags to include/exclude.
      */
-    public ExpressionTagTestBlockFilter(Tags runTags) {
+    public TagTestBlockFilter(Tags runTags) {
         this.runTags = runTags;
-        this.condition = ExpressionParser.parse(runTags.expressionTags);
     }
 
     @Override
     public TestBlock apply(TestBlock testBlock) {
-        if (runTags.expressionTags.isEmpty()) {
+        if (runTags.tags.isEmpty() && runTags.excludedTags.isEmpty()) {
             return testBlock;
         }
-
         return filterTests(testBlock, Collections.emptySet());
     }
 
@@ -65,12 +59,24 @@ public final class ExpressionTagTestBlockFilter implements Function<TestBlock, T
                 .map(b -> filterTests(b, blockTags))
                 .collect(Collectors.toList());
         List<Test> tests = testBlock.tests.stream()
-                .filter(t -> condition.shouldRun(union(getTags(t.options), blockTags)))
+                .filter(t -> shouldRun(union(getTags(t.options), blockTags)))
                 .collect(Collectors.toList());
         return testBlock.toBuilder()
                 .setTestBlocks(testBlocks)
                 .setTests(tests)
                 .build();
+    }
+
+    private boolean shouldInclude(Set<String> testTags) {
+        return runTags.tags.isEmpty() || !intersection(testTags, runTags.tags).isEmpty();
+    }
+
+    private boolean shouldExclude(Set<String> testTags) {
+        return !intersection(testTags, runTags.excludedTags).isEmpty();
+    }
+
+    private boolean shouldRun(Set<String> testTags) {
+        return shouldInclude(testTags) && !shouldExclude(testTags);
     }
 
     private Set<String> getTags(Options options) {
@@ -81,5 +87,11 @@ public final class ExpressionTagTestBlockFilter implements Function<TestBlock, T
         Set<T> union = new HashSet<>(a);
         union.addAll(b);
         return union;
+    }
+
+    private <T> Set<T> intersection(Set<T> a, Set<T> b) {
+        Set<T> intersection = new HashSet<>(a);
+        intersection.retainAll(b);
+        return intersection;
     }
 }

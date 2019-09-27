@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 ForgeRock AS.
+ * Copyright 2017 ForgeRock AS.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,22 +14,7 @@
  * limitations under the License.
  */
 
-package org.forgerock.cuppa.internal.filters.expression;
-
-import java.util.Collection;
-
 /**
- * A condition used by {@link ExpressionTagTestBlockFilter}.
+ * Test block filters.
  */
-@FunctionalInterface
-public interface Condition {
-
-    /**
-     * Check if the list of tags is compliant with the condition.
-     *
-     * @param tags The collection of tags.
-     * @return true if the condition complies with the tags supplied, false otherwise.
-     */
-    boolean shouldRun(Collection<String> tags);
-
-}
+package org.forgerock.cuppa.transforms;

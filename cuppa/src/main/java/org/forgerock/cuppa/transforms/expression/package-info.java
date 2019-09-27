@@ -17,4 +17,4 @@
 /**
  * Classes related to the expression group filter.
  */
-package org.forgerock.cuppa.internal.filters.expression;
+package org.forgerock.cuppa.transforms.expression;
