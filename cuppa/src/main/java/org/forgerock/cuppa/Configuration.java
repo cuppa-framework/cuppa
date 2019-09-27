@@ -17,6 +17,7 @@
 package org.forgerock.cuppa;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
@@ -30,6 +31,7 @@ import org.forgerock.cuppa.reporters.Reporter;
  */
 public final class Configuration {
     List<Function<TestBlock, TestBlock>> testTransforms = new ArrayList<>();
+    List<Function<TestBlock, TestBlock>> coreTestTransforms;
     TestInstantiator testInstantiator = Class::newInstance;
     Reporter additionalReporter;
     private final Options runOptions;
@@ -76,5 +78,20 @@ public final class Configuration {
      */
     public Options getRunOptions() {
         return runOptions;
+    }
+
+    /**
+     * Remove the test transforms that are defined by the core cuppa framework. If this method is called, the
+     * {@link ConfigurationProvider} will need to make sure to add the following filters, if it intends to support the
+     * features they provide:
+     * <ul>
+     *     <li>{@link org.forgerock.cuppa.transforms.ExpressionTagTestBlockFilter}</li>
+     *     <li>{@link org.forgerock.cuppa.transforms.TagTestBlockFilter}</li>
+     *     <li>{@link org.forgerock.cuppa.internal.filters.OnlyTestBlockFilter}</li>
+     *     <li>{@link org.forgerock.cuppa.internal.filters.EmptyTestBlockFilter}</li>
+     * </ul>
+     */
+    public void removeCoreTestTransforms() {
+        this.coreTestTransforms = Collections.emptyList();
     }
 }

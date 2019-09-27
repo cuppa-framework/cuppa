@@ -17,6 +17,7 @@
 package org.forgerock.cuppa;
 
 import static java.util.Collections.emptyList;
+import static java.util.stream.Collectors.toList;
 import static org.forgerock.cuppa.model.TestBlockType.ROOT;
 
 import java.util.Arrays;
@@ -56,7 +57,6 @@ public final class Runner {
     private static final List<Function<TestBlock, TestBlock>> DEFAULT_CORE_TEST_TRANSFORMS =
             Arrays.asList(new OnlyTestBlockFilter(), new EmptyTestBlockFilter());
 
-    private final List<Function<TestBlock, TestBlock>> coreTestTransforms;
     private final Configuration configuration;
 
     /**
@@ -93,7 +93,7 @@ public final class Runner {
         this(Stream.concat(Stream.of(
                 new ExpressionTagTestBlockFilter(runTags),
                 new TagTestBlockFilter(runTags)),
-                DEFAULT_CORE_TEST_TRANSFORMS.stream()).collect(Collectors.toList()), configuration);
+                DEFAULT_CORE_TEST_TRANSFORMS.stream()).collect(toList()), configuration);
     }
 
     /**
@@ -111,12 +111,16 @@ public final class Runner {
      * @param configuration Cuppa configuration to control the behaviour of the runner.
      */
     public Runner(Configuration configuration) {
-        this(DEFAULT_CORE_TEST_TRANSFORMS, configuration);
+        this(Stream.concat(
+                configuration.getRunOptions().get(TagsRunOption.class)
+                        .map(tags -> Stream.of(new ExpressionTagTestBlockFilter(tags), new TagTestBlockFilter(tags)))
+                        .orElseGet(Stream::empty),
+                DEFAULT_CORE_TEST_TRANSFORMS.stream()).collect(toList()), configuration);
     }
 
     private Runner(List<Function<TestBlock, TestBlock>> coreTestTransforms, Configuration configuration) {
-        this.coreTestTransforms = coreTestTransforms;
         this.configuration = configuration;
+        configuration.coreTestTransforms = coreTestTransforms;
     }
 
 
@@ -142,7 +146,8 @@ public final class Runner {
                 : reporter;
         TestContainer.INSTANCE.runTests(() -> {
             fullReporter.start(rootBlock);
-            TestBlock transformedRootBlock = transformTests(rootBlock, configuration.testTransforms);
+            TestBlock transformedRootBlock = transformTests(rootBlock,
+                    Stream.concat(configuration.testTransforms.stream(), configuration.coreTestTransforms.stream()));
             runTests(transformedRootBlock, fullReporter);
             fullReporter.end();
         });
@@ -164,7 +169,7 @@ public final class Runner {
 
     private TestBlock mergeRootTestBlocks(TestBlock testBlock1, TestBlock testBlock2) {
         return EMPTY_TEST_BLOCK.toBuilder().setTestBlocks(Stream.concat(testBlock1.testBlocks.stream(),
-                testBlock2.testBlocks.stream()).collect(Collectors.toList())).build();
+                testBlock2.testBlocks.stream()).collect(toList())).build();
     }
 
     private static Configuration getConfiguration(Options runOptions) {
@@ -181,9 +186,8 @@ public final class Runner {
         return configuration;
     }
 
-    private TestBlock transformTests(TestBlock rootBlock, List<Function<TestBlock, TestBlock>> transforms) {
-        return Stream.concat(transforms.stream(), coreTestTransforms.stream())
-                .reduce(Function.identity(), Function::andThen)
+    private TestBlock transformTests(TestBlock rootBlock, Stream<Function<TestBlock, TestBlock>> transforms) {
+        return transforms.reduce(Function.identity(), Function::andThen)
                 .apply(rootBlock);
     }
 
@@ -195,7 +199,7 @@ public final class Runner {
     private TestBlockRunner createRunner(TestBlock testBlock, List<TestBlockRunner> parents, Reporter reporter) {
         TestBlockRunner runner = new TestBlockRunner(testBlock, parents, reporter);
         List<TestBlockRunner> newParents = Stream.concat(parents.stream(), Stream.of(runner))
-                .collect(Collectors.toList());
+                .collect(toList());
         for (TestBlock nestedBlock : testBlock.testBlocks) {
             TestBlockRunner child = createRunner(nestedBlock, newParents, reporter);
             runner.addChild(child);
