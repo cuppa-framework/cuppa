@@ -30,6 +30,8 @@
 <h3>Recent posts</h3>
 <ul>
     
+    <li><a href="/blog/2019/09/30/1.5.0-released.html">1.5.0 Released</a></li>
+    
     <li><a href="/blog/2018/02/16/1.4.0-released.html">1.4.0 Released</a></li>
     
     <li><a href="/blog/2016/09/21/1.3.1-released.html">1.3.1 Released</a></li>
@@ -47,6 +49,41 @@
 </ul>
         </nav>
         <div class="col-md-9">
+
+            <div class="post-list-item">
+    
+
+<h1>
+
+    <a href="/blog/2019/09/30/1.5.0-released.html">1.5.0 Released</a>
+
+</h1>
+<p class="meta">
+    
+    
+    <a href="https://github.com/phillcunnington">Phill Cunnington
+    
+    <img src="//www.gravatar.com/avatar/a40cda49d1dda08ec8ff271b0e06c642?s=135" class="blog-thumb" />
+    
+    </a>
+    
+    <div class="blog-date">
+    September 30, 2019
+    </div>
+</p>
+
+<hr>
+<p><strong>Cuppa 1.5.0 is now available.</strong></p>
+
+<p>This release exposes the run parameters for which groups/tags to run to the <code class="highlighter-rouge">ConfigurationProvider</code> via <code class="highlighter-rouge">Configuration#getRunOptions()</code> and <code class="highlighter-rouge">Runner.TagRunOption</code> option type. To enable working with the now-visible groups expressions, the <code class="highlighter-rouge">expression</code> package and classes are now public and supported.</p>
+
+<p>With this extra information, it is possible to apply tags in different ways to the out-of-the-box behaviour, and so an additional method is added to remove the default test transforms, <code class="highlighter-rouge">Configuration#removeCoreTestTransforms()</code>.</p>
+
+<p>Finally, the two existing <code class="highlighter-rouge">Runner</code> constructors have been deprecated, and constructors that use the new <code class="highlighter-rouge">Options</code> to provide tag configuration are added.</p>
+
+<p>Check out <a href="https://github.com/cuppa-framework/cuppa/releases/tag/v1.5.0">the release</a>.</p>
+
+            </div>
 
             <div class="post-list-item">
     
@@ -169,35 +206,6 @@ itself and ability to remove <code class="highlighter-rouge">Option</code>s from
 This release contains some additional reporter methods for reporting the successful execution of hooks as well as a fix for running Cuppa in a multi-threaded environment.</p>
 
 <p>Check out <a href="https://github.com/cuppa-framework/cuppa/releases/tag/v1.2.0">the release</a>.</p>
-
-            </div>
-
-            <div class="post-list-item">
-    
-
-<h1>
-
-    <a href="/blog/2016/04/12/1.1.0-released.html">1.1.0 Released</a>
-
-</h1>
-<p class="meta">
-    
-    
-    <a href="https://github.com/joebandenburg">Joe Bandenburg
-    
-    <img src="//www.gravatar.com/avatar/785c4b4fe07574c8350791f355195f36?s=135" class="blog-thumb" />
-    
-    </a>
-    
-    <div class="blog-date">
-    April 12, 2016
-    </div>
-</p>
-
-<hr>
-<p><strong>Cuppa 1.1.0 is now available.</strong> We’ve added a number of small changes to allow reporters to provide more information.</p>
-
-<p>Check out <a href="https://github.com/cuppa-framework/cuppa/releases/tag/v1.1.0">the release notes</a>.</p>
 
             </div>
 

@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>1.5.0 Released | Cuppa</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="/css/bootstrap.min.css" type="text/css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:400,700,300" type="text/css">
+    <link rel="stylesheet" href="/css/styles.css" type="text/css">
+</head>
+<body>
+    <nav class="navbar navbar-inverse navbar-static-top">
+        <div class="container">
+            <div class="navbar-header">
+                <a href="/" class="navbar-brand">Cuppa</a>
+            </div>
+            <ul class="nav navbar-nav">
+                <li><a href="/docs/getting-started">Docs</a></li>
+                <li class="active"><a href="/blog/">Blog</a></li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                <li><a href="https://github.com/cuppa-framework/cuppa">GitHub <img src="/img/GitHub-Mark-Light-32px.png" width="20" height="20" class="github-logo"></a></li>
+            </ul>
+        </div>
+    </nav>
+    <div class="container">
+    <div class="row">
+        <nav class="col-md-3 sidebar">
+<h3>Recent posts</h3>
+<ul>
+    
+    <li><a href="/blog/2019/09/30/1.5.0-released.html" class="active">1.5.0 Released</a></li>
+    
+    <li><a href="/blog/2018/02/16/1.4.0-released.html">1.4.0 Released</a></li>
+    
+    <li><a href="/blog/2016/09/21/1.3.1-released.html">1.3.1 Released</a></li>
+    
+    <li><a href="/blog/2016/09/20/1.3.0-released.html">1.3.0 Released</a></li>
+    
+    <li><a href="/blog/2016/09/14/1.2.0-released.html">1.2.0 Released</a></li>
+    
+    <li><a href="/blog/2016/04/12/1.1.0-released.html">1.1.0 Released</a></li>
+    
+    <li><a href="/blog/2016/03/22/1.0-release.html">1.0.0 Released</a></li>
+    
+    <li><a href="/blog/2016/01/24/coming-soon.html">First Release Coming Soon</a></li>
+    
+</ul>
+        </nav>
+        <div class="col-md-9">
+
+
+<h1>
+
+    1.5.0 Released
+
+</h1>
+<p class="meta">
+    
+    
+    <a href="https://github.com/phillcunnington">Phill Cunnington
+    
+    <img src="//www.gravatar.com/avatar/a40cda49d1dda08ec8ff271b0e06c642?s=135" class="blog-thumb" />
+    
+    </a>
+    
+    <div class="blog-date">
+    September 30, 2019
+    </div>
+</p>
+
+<hr>
+<p><strong>Cuppa 1.5.0 is now available.</strong></p>
+
+<p>This release exposes the run parameters for which groups/tags to run to the <code class="highlighter-rouge">ConfigurationProvider</code> via <code class="highlighter-rouge">Configuration#getRunOptions()</code> and <code class="highlighter-rouge">Runner.TagRunOption</code> option type. To enable working with the now-visible groups expressions, the <code class="highlighter-rouge">expression</code> package and classes are now public and supported.</p>
+
+<p>With this extra information, it is possible to apply tags in different ways to the out-of-the-box behaviour, and so an additional method is added to remove the default test transforms, <code class="highlighter-rouge">Configuration#removeCoreTestTransforms()</code>.</p>
+
+<p>Finally, the two existing <code class="highlighter-rouge">Runner</code> constructors have been deprecated, and constructors that use the new <code class="highlighter-rouge">Options</code> to provide tag configuration are added.</p>
+
+<p>Check out <a href="https://github.com/cuppa-framework/cuppa/releases/tag/v1.5.0">the release</a>.</p>
+
+        </div>
+    </div>
+</div>
+    <div class="container">
+        <footer class="text-right">
+            © 2015–2016 ForgeRock AS.<br>
+            Documentation licensed under <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>.
+        </footer>
+    </div>
+    <script>
+        (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+                    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+                m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+        })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+        ga('create', 'UA-72837005-1', 'auto');
+        ga('send', 'pageview');
+    </script>
+</body>
+</html>
