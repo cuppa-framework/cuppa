@@ -91,7 +91,6 @@ subprojects {
   }
 
   artifacts {
-    archives jar
     archives javadocJar
     archives sourcesJar
   }
