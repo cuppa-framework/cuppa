@@ -57,6 +57,7 @@ public final class Runner {
             Arrays.asList(new OnlyTestBlockFilter(), new EmptyTestBlockFilter());
 
     private final Configuration configuration;
+    private final ExitCodeReporter exitCodeReporter = new ExitCodeReporter();
 
     /**
      * Creates a new runner with no run tags and a configuration loaded from the classpath.
@@ -141,8 +142,8 @@ public final class Runner {
      */
     public void run(TestBlock rootBlock, Reporter reporter) {
         Reporter fullReporter = (configuration.additionalReporter != null)
-                ? new CompositeReporter(Arrays.asList(reporter, configuration.additionalReporter))
-                : reporter;
+                ? new CompositeReporter(Arrays.asList(exitCodeReporter, reporter, configuration.additionalReporter))
+                : new CompositeReporter(Arrays.asList(exitCodeReporter, reporter));
         TestContainer.INSTANCE.runTests(() -> {
             fullReporter.start(rootBlock);
             TestBlock transformedRootBlock = transformTests(rootBlock,
@@ -150,6 +151,16 @@ public final class Runner {
             runTests(transformedRootBlock, fullReporter);
             fullReporter.end();
         });
+    }
+
+    /**
+     * Returns the final status of the test run as an exit code.
+     * See {@link ExitCodeReporter} for details on the possible exit codes and their meanings.
+     *
+     * @return The exit code of the test run.
+     */
+    public int getExitCode() {
+        return exitCodeReporter.getExitCode();
     }
 
     private TestBlock defineTestsWithConfiguration(Iterable<Class<?>> testClasses, TestInstantiator testInstantiator) {
